@@ -24,20 +24,47 @@
 **
 ****************************************************************************/
 
-#include <QObject>
-#include <QTest>
+#pragma once
 
-#include <astxmlparser_tests.h>
+#include <QMetaType>
+#include <QString>
 
-int main(int argc, char *argv[])
+namespace MalTester {
+namespace Internal {
+namespace Data {
+
+class SourceLocation
 {
-    Q_UNUSED(argc);
-    Q_UNUSED(argv);
+public:
+    SourceLocation()
+        : m_line(-1)
+        , m_column(-1)
+    {}
 
-    int ret = 0;
-    const auto runTest = [&ret](QObject *obj) { ret |= QTest::qExec(obj); };
+    SourceLocation(const QString &path, int line, int column)
+        : m_path(path)
+        , m_line(line)
+        , m_column(column)
+    {}
 
-    runTest(new MalTester::Tests::AstXmlParserTests);
+    const QString fileName() const;
+    const QString &path() const { return m_path; }
+    int line() const { return m_line; }
+    int column() const { return m_column; }
 
-    return ret;
-}
+    bool isValid() const { return !m_path.isEmpty() && m_line != -1 && m_column != -1; }
+
+private:
+    QString m_path;
+    int m_line;
+    int m_column;
+};
+
+bool operator==(const SourceLocation &a, const SourceLocation &b);
+bool operator!=(const SourceLocation &a, const SourceLocation &b);
+
+} // namespace Data
+} // namespace Internal
+} // namespace MalTester
+
+Q_DECLARE_METATYPE(MalTester::Internal::Data::SourceLocation)

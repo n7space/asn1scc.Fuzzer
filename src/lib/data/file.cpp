@@ -23,21 +23,55 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
+#include "file.h"
 
-#include <QObject>
-#include <QTest>
+#include "visitor.h"
 
-#include <astxmlparser_tests.h>
+using namespace MalTester::Internal::Data;
 
-int main(int argc, char *argv[])
+File::File(const QString &path)
+    : Node(path, {path, 0, 0})
+    , m_polluted(false)
+{}
+
+File::~File() {}
+
+void File::accept(Visitor &visitor) const
 {
-    Q_UNUSED(argc);
-    Q_UNUSED(argv);
+    visitor.visit(*this);
+}
 
-    int ret = 0;
-    const auto runTest = [&ret](QObject *obj) { ret |= QTest::qExec(obj); };
+const Definitions *File::definitions(const QString &name) const
+{
+    const auto it = m_definitionsByNameMap.find(name);
+    return it != m_definitionsByNameMap.end() ? it->second : nullptr;
+}
 
-    runTest(new MalTester::Tests::AstXmlParserTests);
+void File::add(std::unique_ptr<Definitions> defs)
+{
+    defs->setParent(this);
+    m_definitionsByNameMap[defs->name()] = defs.get();
+    m_definitionsList.push_back(std::move(defs));
+}
 
-    return ret;
+void File::addTypeReference(std::unique_ptr<TypeReference> ref)
+{
+    m_referencesMap.insert(std::make_pair(ref->location().line(), ref.get()));
+    m_references.push_back(std::move(ref));
+}
+
+void File::addErrorMessage(const ErrorMessage &message)
+{
+    m_errorList.push_back(message);
+}
+
+void File::clearReferences()
+{
+    m_referencesMap.clear();
+    m_references.clear();
+}
+
+void File::clearErrors()
+{
+    m_errorList.clear();
 }

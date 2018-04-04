@@ -23,21 +23,22 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
+#include "valueassignment.h"
 
-#include <QObject>
-#include <QTest>
+#include "visitor.h"
 
-#include <astxmlparser_tests.h>
+using namespace MalTester::Internal::Data;
 
-int main(int argc, char *argv[])
+ValueAssignment::ValueAssignment(const QString &name,
+                                 const SourceLocation &location,
+                                 std::unique_ptr<Types::Type> type)
+    : Node(name, location)
+    , m_type(std::move(type))
+{}
+
+ValueAssignment::~ValueAssignment() {}
+
+void ValueAssignment::accept(Visitor &visitor) const
 {
-    Q_UNUSED(argc);
-    Q_UNUSED(argv);
-
-    int ret = 0;
-    const auto runTest = [&ret](QObject *obj) { ret |= QTest::qExec(obj); };
-
-    runTest(new MalTester::Tests::AstXmlParserTests);
-
-    return ret;
+    visitor.visit(*this);
 }

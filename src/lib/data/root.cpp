@@ -23,21 +23,49 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
+#include "root.h"
 
-#include <QObject>
-#include <QTest>
+#include <QFileInfo>
 
-#include <astxmlparser_tests.h>
+#include "project.h"
+#include "visitor.h"
 
-int main(int argc, char *argv[])
+using namespace MalTester::Internal::Data;
+
+Root::Root()
+    : Node("ROOT", {})
+{}
+
+Root::~Root() {}
+
+void Root::accept(Visitor &visitor) const
 {
-    Q_UNUSED(argc);
-    Q_UNUSED(argv);
+    visitor.visit(*this);
+}
 
-    int ret = 0;
-    const auto runTest = [&ret](QObject *obj) { ret |= QTest::qExec(obj); };
+void Root::add(std::unique_ptr<Project> project)
+{
+    project->setParent(this);
+    m_nameToProjectMap[project->name()] = project.get();
+    m_projects.push_back(std::move(project));
+}
 
-    runTest(new MalTester::Tests::AstXmlParserTests);
+void Root::remove(const QString &name)
+{
+    const auto mapIt = m_nameToProjectMap.find(name);
+    if (mapIt != m_nameToProjectMap.end())
+        m_nameToProjectMap.erase(mapIt);
 
-    return ret;
+    for (auto vecIt = m_projects.begin(); vecIt != m_projects.end(); vecIt++) {
+        if ((*vecIt)->name() == name) {
+            m_projects.erase(vecIt);
+            break;
+        }
+    }
+}
+
+Project *Root::project(const QString &name) const
+{
+    auto it = m_nameToProjectMap.find(name);
+    return it != m_nameToProjectMap.end() ? it->second : nullptr;
 }

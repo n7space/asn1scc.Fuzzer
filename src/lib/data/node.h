@@ -23,21 +23,52 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
+#pragma once
 
-#include <QObject>
-#include <QTest>
+#include <QString>
 
-#include <astxmlparser_tests.h>
+#include "sourcelocation.h"
 
-int main(int argc, char *argv[])
+namespace MalTester {
+namespace Internal {
+namespace Data {
+
+class Visitor;
+
+class Node
 {
-    Q_UNUSED(argc);
-    Q_UNUSED(argv);
+protected:
+    Node(const QString &name, const SourceLocation &location)
+        : m_name(name)
+        , m_location(location)
+        , m_parent(nullptr)
+    {}
 
-    int ret = 0;
-    const auto runTest = [&ret](QObject *obj) { ret |= QTest::qExec(obj); };
+public:
+    virtual ~Node();
 
-    runTest(new MalTester::Tests::AstXmlParserTests);
+    virtual void accept(Visitor &visitor) const = 0;
 
-    return ret;
-}
+    template<typename VisitorType, typename... Args>
+    typename VisitorType::ValueType valueFor(Args... args) const
+    {
+        VisitorType visitor(args...);
+        this->accept(visitor);
+        return visitor.value();
+    }
+
+    const QString &name() const { return m_name; }
+    const SourceLocation &location() const { return m_location; }
+
+    Node *parent() const { return m_parent; }
+    void setParent(Node *parent) { m_parent = parent; }
+
+private:
+    QString m_name;
+    SourceLocation m_location;
+    Node *m_parent;
+};
+
+} // namespace Data
+} // namespace Internal
+} // namespace MalTester

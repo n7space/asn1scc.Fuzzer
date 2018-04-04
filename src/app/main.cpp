@@ -24,21 +24,20 @@
 **
 ****************************************************************************/
 
-#include <iostream>
-
 #include <QtCore/qglobal.h>
 
-#include <testclass.h>
+#include <astxmlparser.h>
 
 int main(int argc, char *argv[])
 {
     Q_UNUSED(argc);
     Q_UNUSED(argv);
 
-    std::cout << __func__ << " Hello world!" << std::endl;
+    QXmlStreamReader reader;
 
-    MalTester::Internal::TestClass testClass;
-    std::cout << __func__ << " " << testClass.num() << std::endl;
+    const auto *parser = new MalTester::Internal::AstXmlParser(reader);
+
+    delete parser;
 
     return 0;
 }

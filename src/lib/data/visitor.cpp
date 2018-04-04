@@ -23,12 +23,8 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
+#include "visitor.h"
 
-#include "testclass.h"
+using namespace MalTester::Internal::Data;
 
-using namespace MalTester::Internal;
-
-int TestClass::num()
-{
-    return 0;
-}
+Visitor::~Visitor() {}

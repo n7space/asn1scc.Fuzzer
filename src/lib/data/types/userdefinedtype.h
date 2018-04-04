@@ -24,20 +24,33 @@
 **
 ****************************************************************************/
 
-#include <QObject>
-#include <QTest>
+#pragma once
 
-#include <astxmlparser_tests.h>
+#include <QString>
 
-int main(int argc, char *argv[])
+#include "type.h"
+
+namespace MalTester {
+namespace Internal {
+namespace Data {
+namespace Types {
+
+class UserdefinedType : public Type
 {
-    Q_UNUSED(argc);
-    Q_UNUSED(argv);
+public:
+    UserdefinedType(const QString &name, const QString &module);
 
-    int ret = 0;
-    const auto runTest = [&ret](QObject *obj) { ret |= QTest::qExec(obj); };
+    QString name() const override;
+    QString label() const override;
 
-    runTest(new MalTester::Tests::AstXmlParserTests);
+private:
+    QString baseIconFile() const override;
 
-    return ret;
-}
+    QString m_name;
+    QString m_module;
+};
+
+} // namespace Types
+} // namespace Data
+} // namespace Internal
+} // namespace MalTester

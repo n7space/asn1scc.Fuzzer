@@ -24,20 +24,25 @@
 **
 ****************************************************************************/
 
-#include <QObject>
-#include <QTest>
+#include "labeltype.h"
 
-#include <astxmlparser_tests.h>
+using namespace MalTester::Internal::Data::Types;
 
-int main(int argc, char *argv[])
+LabelType::LabelType(const QString &name)
+    : m_name(name)
+{}
+
+QString LabelType::name() const
 {
-    Q_UNUSED(argc);
-    Q_UNUSED(argv);
+    return m_name;
+}
 
-    int ret = 0;
-    const auto runTest = [&ret](QObject *obj) { ret |= QTest::qExec(obj); };
+QString LabelType::label() const
+{
+    return QString();
+}
 
-    runTest(new MalTester::Tests::AstXmlParserTests);
-
-    return ret;
+QString LabelType::baseIconFile() const
+{
+    return QString();
 }

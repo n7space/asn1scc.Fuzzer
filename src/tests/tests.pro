@@ -9,7 +9,8 @@ include(../../includelib.pri)
 
 SOURCES += \
     main.cpp \
-    testclass_tests.cpp
+    \
+    astxmlparser_tests.cpp
 
 HEADERS += \
-    testclass_tests.h
+    astxmlparser_tests.h

@@ -23,21 +23,35 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
+#pragma once
 
-#include <QObject>
-#include <QTest>
+namespace MalTester {
+namespace Internal {
+namespace Data {
 
-#include <astxmlparser_tests.h>
+class Definitions;
+class File;
+class Root;
+class TypeAssignment;
+class ValueAssignment;
+class Project;
 
-int main(int argc, char *argv[])
+class Visitor
 {
-    Q_UNUSED(argc);
-    Q_UNUSED(argv);
+protected:
+    Visitor() {}
 
-    int ret = 0;
-    const auto runTest = [&ret](QObject *obj) { ret |= QTest::qExec(obj); };
+public:
+    virtual ~Visitor();
 
-    runTest(new MalTester::Tests::AstXmlParserTests);
+    virtual void visit(const Root &root) = 0;
+    virtual void visit(const Definitions &defs) = 0;
+    virtual void visit(const File &file) = 0;
+    virtual void visit(const TypeAssignment &type) = 0;
+    virtual void visit(const ValueAssignment &value) = 0;
+    virtual void visit(const Project &project) = 0;
+};
 
-    return ret;
-}
+} // namespace Data
+} // namespace Internal
+} // namespace MalTester

@@ -25,14 +25,33 @@
 ****************************************************************************/
 #pragma once
 
+#include <QString>
+
+#include "sourcelocation.h"
+
 namespace MalTester {
 namespace Internal {
+namespace Data {
 
-class TestClass
+class ErrorMessage
 {
 public:
-    int num();
+    ErrorMessage() = default;
+
+    ErrorMessage(const SourceLocation &location, const QString &message)
+        : m_location(location)
+        , m_message(message)
+    {}
+
+    const SourceLocation &location() const { return m_location; }
+    const QString &message() const { return m_message; }
+    bool isValid() const { return location().isValid() && !message().isEmpty(); }
+
+private:
+    SourceLocation m_location;
+    QString m_message;
 };
 
+} // namespace Data
 } // namespace Internal
-} // namespace MalTest
+} // namespace MalTester

@@ -23,21 +23,43 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
+#pragma once
 
-#include <QObject>
-#include <QTest>
+#include <map>
+#include <memory>
+#include <vector>
 
-#include <astxmlparser_tests.h>
+#include <QString>
 
-int main(int argc, char *argv[])
+#include "node.h"
+
+namespace MalTester {
+namespace Internal {
+namespace Data {
+
+class Project;
+
+class Root : public Node
 {
-    Q_UNUSED(argc);
-    Q_UNUSED(argv);
+public:
+    Root();
+    ~Root() override;
 
-    int ret = 0;
-    const auto runTest = [&ret](QObject *obj) { ret |= QTest::qExec(obj); };
+    void accept(Visitor &visitor) const override;
 
-    runTest(new MalTester::Tests::AstXmlParserTests);
+    void add(std::unique_ptr<Project> project);
+    void remove(const QString &name);
 
-    return ret;
-}
+    using Projects = std::vector<std::unique_ptr<Project>>;
+    const Projects &projects() const { return m_projects; }
+
+    Project *project(const QString &name) const;
+
+private:
+    Projects m_projects;
+    std::map<QString, Project *> m_nameToProjectMap;
+};
+
+} // namespace Data
+} // namespace Internal
+} // namespace MalTester

@@ -23,21 +23,32 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
+#pragma once
 
-#include <QObject>
-#include <QTest>
+#include <QString>
 
-#include <astxmlparser_tests.h>
+#include "sourcelocation.h"
 
-int main(int argc, char *argv[])
+namespace MalTester {
+namespace Internal {
+namespace Data {
+
+class TypeReference
 {
-    Q_UNUSED(argc);
-    Q_UNUSED(argv);
+public:
+    explicit TypeReference(const SourceLocation &location = {});
+    TypeReference(const QString &name, const QString &module, const SourceLocation &location);
 
-    int ret = 0;
-    const auto runTest = [&ret](QObject *obj) { ret |= QTest::qExec(obj); };
+    const SourceLocation &location() const { return m_location; }
+    const QString &name() const { return m_name; }
+    const QString &module() const { return m_module; }
 
-    runTest(new MalTester::Tests::AstXmlParserTests);
+private:
+    SourceLocation m_location;
+    QString m_name;
+    QString m_module;
+};
 
-    return ret;
-}
+} // namespace Data
+} // namespace Internal
+} // namespace MalTester

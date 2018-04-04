@@ -23,21 +23,8 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
+#include "node.h"
 
-#include <QObject>
-#include <QTest>
+using namespace MalTester::Internal::Data;
 
-#include <astxmlparser_tests.h>
-
-int main(int argc, char *argv[])
-{
-    Q_UNUSED(argc);
-    Q_UNUSED(argv);
-
-    int ret = 0;
-    const auto runTest = [&ret](QObject *obj) { ret |= QTest::qExec(obj); };
-
-    runTest(new MalTester::Tests::AstXmlParserTests);
-
-    return ret;
-}
+Node::~Node() {}

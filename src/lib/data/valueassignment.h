@@ -23,21 +23,36 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
+#pragma once
 
-#include <QObject>
-#include <QTest>
+#include <memory>
 
-#include <astxmlparser_tests.h>
+#include <QString>
 
-int main(int argc, char *argv[])
+#include "node.h"
+#include "sourcelocation.h"
+#include "types/type.h"
+
+namespace MalTester {
+namespace Internal {
+namespace Data {
+
+class ValueAssignment : public Node
 {
-    Q_UNUSED(argc);
-    Q_UNUSED(argv);
+public:
+    ValueAssignment(const QString &name,
+                    const SourceLocation &location,
+                    std::unique_ptr<Types::Type> type);
+    ~ValueAssignment() override;
 
-    int ret = 0;
-    const auto runTest = [&ret](QObject *obj) { ret |= QTest::qExec(obj); };
+    void accept(Visitor &visitor) const override;
 
-    runTest(new MalTester::Tests::AstXmlParserTests);
+    const Types::Type *type() const { return m_type.get(); }
 
-    return ret;
-}
+private:
+    std::unique_ptr<Types::Type> m_type;
+};
+
+} // namespace Data
+} // namespace Internal
+} // namespace MalTester

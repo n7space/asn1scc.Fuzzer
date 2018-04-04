@@ -23,16 +23,44 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
+#pragma once
 
-#include <testclass_tests.h>
+#include <map>
+#include <memory>
+#include <vector>
 
-#include <testclass.h>
+#include "file.h"
+#include "node.h"
 
-using namespace MalTester::Internal;
-using namespace MalTester::Tests;
+namespace MalTester {
+namespace Internal {
+namespace Data {
 
-void TestClassTests::test_first()
+class Project : public Node
 {
-    TestClass tc;
-    QCOMPARE(tc.num(), 0);
-}
+public:
+    Project(const QString &projectName);
+    ~Project() override;
+
+    void accept(Visitor &visitor) const override;
+
+    void add(std::unique_ptr<File> file);
+    void remove(const QString &path);
+
+    using Files = std::vector<std::unique_ptr<File>>;
+    const Files &files() const { return m_files; }
+    File *file(const QString &path) const;
+
+    int buildersCount() const { return m_buildersCount; }
+    void setBuildersCount(const int buildersCount) { m_buildersCount = buildersCount; }
+
+private:
+    int m_buildersCount;
+
+    Files m_files;
+    std::map<QString, File *> m_filesByPathMap;
+};
+
+} // namespace Data
+} // namespace Internal
+} // namespace MalTester

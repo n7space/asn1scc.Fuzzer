@@ -25,18 +25,28 @@
 ****************************************************************************/
 #pragma once
 
-#include <QtTest/QtTest>
+#include <QString>
 
 namespace MalTester {
-namespace Tests {
+namespace Internal {
+namespace Data {
 
-class TestClassTests : public QObject
+class ImportedType
 {
-    Q_OBJECT
+public:
+    ImportedType(const QString &module, const QString &name)
+        : m_module(module)
+        , m_name(name)
+    {}
 
-private slots:
-    void test_first();
+    const QString &module() const { return m_module; }
+    const QString &name() const { return m_name; }
+
+private:
+    QString m_module;
+    QString m_name;
 };
 
-} // namespace MalTest
-} // namespace Tests
+} // namespace Data
+} // namespace Internal
+} // namespace MalTester

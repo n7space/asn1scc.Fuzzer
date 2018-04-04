@@ -24,20 +24,23 @@
 **
 ****************************************************************************/
 
-#include <QObject>
-#include <QTest>
+#include "sourcelocation.h"
 
-#include <astxmlparser_tests.h>
+#include <QFileInfo>
 
-int main(int argc, char *argv[])
+using namespace MalTester::Internal::Data;
+
+bool MalTester::Internal::Data::operator==(const SourceLocation &a, const SourceLocation &b)
 {
-    Q_UNUSED(argc);
-    Q_UNUSED(argv);
+    return a.line() == b.line() && a.column() == b.column() && a.path() == b.path();
+}
 
-    int ret = 0;
-    const auto runTest = [&ret](QObject *obj) { ret |= QTest::qExec(obj); };
+bool MalTester::Internal::Data::operator!=(const SourceLocation &a, const SourceLocation &b)
+{
+    return !(a == b);
+}
 
-    runTest(new MalTester::Tests::AstXmlParserTests);
-
-    return ret;
+const QString SourceLocation::fileName() const
+{
+    return QFileInfo(path()).fileName();
 }

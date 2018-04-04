@@ -24,20 +24,26 @@
 **
 ****************************************************************************/
 
-#include <QObject>
-#include <QTest>
+#include "userdefinedtype.h"
 
-#include <astxmlparser_tests.h>
+using namespace MalTester::Internal::Data::Types;
 
-int main(int argc, char *argv[])
+UserdefinedType::UserdefinedType(const QString &name, const QString &module)
+    : m_name(name)
+    , m_module(module)
+{}
+
+QString UserdefinedType::name() const
 {
-    Q_UNUSED(argc);
-    Q_UNUSED(argv);
+    return m_name;
+}
 
-    int ret = 0;
-    const auto runTest = [&ret](QObject *obj) { ret |= QTest::qExec(obj); };
+QString UserdefinedType::label() const
+{
+    return ": " + name() + "." + m_module;
+}
 
-    runTest(new MalTester::Tests::AstXmlParserTests);
-
-    return ret;
+QString UserdefinedType::baseIconFile() const
+{
+    return QStringLiteral(":/asn1acn/images/outline/userdefined.png");
 }

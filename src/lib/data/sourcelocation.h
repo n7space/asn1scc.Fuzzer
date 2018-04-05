@@ -3,7 +3,7 @@
 ** Copyright (C) 2018 N7 Space sp. z o. o.
 ** Contact: http://n7space.com
 **
-** This file is part of ASN.1/ACN Tool for generating test cases
+** This file is part of ASN.1/ACN MalTester - Tool for generating test cases
 ** based on ASN.1/ACN models and simulating malformed or malicious data.
 **
 ** Tool was developed under a programme and funded by
@@ -30,7 +30,6 @@
 #include <QString>
 
 namespace MalTester {
-namespace Internal {
 namespace Data {
 
 class SourceLocation
@@ -64,7 +63,6 @@ bool operator==(const SourceLocation &a, const SourceLocation &b);
 bool operator!=(const SourceLocation &a, const SourceLocation &b);
 
 } // namespace Data
-} // namespace Internal
 } // namespace MalTester
 
-Q_DECLARE_METATYPE(MalTester::Internal::Data::SourceLocation)
+Q_DECLARE_METATYPE(MalTester::Data::SourceLocation)

@@ -3,7 +3,7 @@
 ** Copyright (C) 2018 N7 Space sp. z o. o.
 ** Contact: http://n7space.com
 **
-** This file is part of ASN.1/ACN Tool for generating test cases
+** This file is part of ASN.1/ACN MalTester - Tool for generating test cases
 ** based on ASN.1/ACN models and simulating malformed or malicious data.
 **
 ** Tool was developed under a programme and funded by
@@ -26,14 +26,12 @@
 
 #include "astxmlparser.h"
 
-#include <QMap>
-
 #include <data/sourcelocation.h>
 
 #include <data/types/builtintypes.h>
 #include <data/types/userdefinedtype.h>
 
-using namespace MalTester::Internal;
+using namespace MalTester;
 
 AstXmlParser::AstXmlParser(QXmlStreamReader &xmlReader)
     : m_xmlReader(xmlReader)

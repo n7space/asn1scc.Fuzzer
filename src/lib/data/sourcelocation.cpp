@@ -3,7 +3,7 @@
 ** Copyright (C) 2018 N7 Space sp. z o. o.
 ** Contact: http://n7space.com
 **
-** This file is part of ASN.1/ACN Tool for generating test cases
+** This file is part of ASN.1/ACN MalTester - Tool for generating test cases
 ** based on ASN.1/ACN models and simulating malformed or malicious data.
 **
 ** Tool was developed under a programme and funded by
@@ -28,14 +28,14 @@
 
 #include <QFileInfo>
 
-using namespace MalTester::Internal::Data;
+using namespace MalTester::Data;
 
-bool MalTester::Internal::Data::operator==(const SourceLocation &a, const SourceLocation &b)
+bool MalTester::Data::operator==(const SourceLocation &a, const SourceLocation &b)
 {
     return a.line() == b.line() && a.column() == b.column() && a.path() == b.path();
 }
 
-bool MalTester::Internal::Data::operator!=(const SourceLocation &a, const SourceLocation &b)
+bool MalTester::Data::operator!=(const SourceLocation &a, const SourceLocation &b)
 {
     return !(a == b);
 }

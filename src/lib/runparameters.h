@@ -23,23 +23,22 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
+#pragma once
 
-#include <QCoreApplication>
+#include <QString>
+#include <QStringList>
 
-#include <inputparametersparser.h>
-#include <testgenerator.h>
+namespace MalTester {
 
-int main(int argc, char *argv[])
+struct RunParameters
 {
-    QCoreApplication app(argc, argv);
-    QCoreApplication::setApplicationName("MalTester-App");
-    QCoreApplication::setApplicationVersion("1.0");
+    QStringList m_inputFiles;
 
-    MalTester::InputParametersParser p;
-    p.parse(argc, argv);
+    QString m_mainStructureName;
+    QString m_asn1SccCommand;
+    QString m_outputDir;
 
-    MalTester::TestGenerator t(p.parameters());
-    t.run();
+    enum class CcsdsWrap { tc, tm, none } m_ccsdsWrap;
+};
 
-    return 0;
-}
+} // namespace MalTester

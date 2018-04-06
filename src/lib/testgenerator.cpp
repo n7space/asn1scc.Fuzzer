@@ -24,22 +24,12 @@
 **
 ****************************************************************************/
 
-#include <QCoreApplication>
+#include "testgenerator.h"
 
-#include <inputparametersparser.h>
-#include <testgenerator.h>
+using namespace MalTester;
 
-int main(int argc, char *argv[])
-{
-    QCoreApplication app(argc, argv);
-    QCoreApplication::setApplicationName("MalTester-App");
-    QCoreApplication::setApplicationVersion("1.0");
+TestGenerator::TestGenerator(const RunParameters &params)
+    : m_params(params)
+{}
 
-    MalTester::InputParametersParser p;
-    p.parse(argc, argv);
-
-    MalTester::TestGenerator t(p.parameters());
-    t.run();
-
-    return 0;
-}
+void TestGenerator::run() const {}

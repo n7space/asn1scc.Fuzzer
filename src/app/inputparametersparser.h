@@ -23,23 +23,42 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
+#pragma once
 
-#include <QCoreApplication>
+#include <QCommandLineOption>
+#include <QCommandLineParser>
 
-#include <inputparametersparser.h>
-#include <testgenerator.h>
+#include <runparameters.h>
 
-int main(int argc, char *argv[])
+namespace MalTester {
+
+class InputParametersParser
 {
-    QCoreApplication app(argc, argv);
-    QCoreApplication::setApplicationName("MalTester-App");
-    QCoreApplication::setApplicationVersion("1.0");
+public:
+    InputParametersParser();
 
-    MalTester::InputParametersParser p;
-    p.parse(argc, argv);
+    void parse(int argc, char *argv[]);
+    RunParameters parameters() const;
 
-    MalTester::TestGenerator t(p.parameters());
-    t.run();
+private:
+    void setupParser();
+    void updateRunParams();
 
-    return 0;
-}
+    QStringList readFilesList();
+    QString readMainStructureName();
+    QString readAsn1SccPath();
+    QString readOutputDir();
+    RunParameters::CcsdsWrap readCcsdsValue();
+
+    void printUsageAndExit(const QString &message = QString());
+
+    QCommandLineOption m_mainStructure;
+    QCommandLineOption m_asn1sccPath;
+    QCommandLineOption m_outputDir;
+    QCommandLineOption m_wrapAsCcsds;
+
+    QCommandLineParser m_parser;
+    RunParameters m_params;
+};
+
+} // namespace MalTester

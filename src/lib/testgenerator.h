@@ -23,23 +23,20 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
+#pragma once
 
-#include <QCoreApplication>
+#include <runparameters.h>
 
-#include <inputparametersparser.h>
-#include <testgenerator.h>
+namespace MalTester {
 
-int main(int argc, char *argv[])
+class TestGenerator
 {
-    QCoreApplication app(argc, argv);
-    QCoreApplication::setApplicationName("MalTester-App");
-    QCoreApplication::setApplicationVersion("1.0");
+public:
+    TestGenerator(const RunParameters &params);
+    void run() const;
 
-    MalTester::InputParametersParser p;
-    p.parse(argc, argv);
+private:
+    const RunParameters m_params;
+};
 
-    MalTester::TestGenerator t(p.parameters());
-    t.run();
-
-    return 0;
-}
+} // namespace MalTester

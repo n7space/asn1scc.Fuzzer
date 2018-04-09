@@ -8,8 +8,9 @@ include(../../includelib.pri)
 
 SOURCES += \
     main.cpp \
-    inputparametersparser.cpp
+    inputparametersparser.cpp \
+    maintask.cpp
 
 HEADERS += \
-    inputparametersparser.h
-
+    inputparametersparser.h \
+    maintask.h

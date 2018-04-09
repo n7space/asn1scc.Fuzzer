@@ -24,26 +24,18 @@
 **
 ****************************************************************************/
 
-#include <QCoreApplication>
-#include <QTimer>
+#include "maintask.h"
 
-#include <maintask.h>
+#include <inputparametersparser.h>
+#include <testgenerator.h>
 
-void initializeApplication(QCoreApplication &app, MainTask &task)
+void MainTask::start()
 {
-    QCoreApplication::setApplicationName("MalTester-App");
-    QCoreApplication::setApplicationVersion("0.1");
+    MalTester::InputParametersParser p;
+    p.parse(m_argc, m_argv);
 
-    QObject::connect(&task, &MainTask::finished, &app, &QCoreApplication::quit);
-    QTimer::singleShot(0, &task, &MainTask::start);
-}
+    MalTester::TestGenerator t(p.parameters());
+    t.run();
 
-int main(int argc, char *argv[])
-{
-    QCoreApplication app(argc, argv);
-    MainTask task(argc, argv);
-
-    initializeApplication(app, task);
-
-    return app.exec();
+    emit finished();
 }

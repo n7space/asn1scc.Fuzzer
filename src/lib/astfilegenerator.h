@@ -23,22 +23,54 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
+#pragma once
 
-#include "testgenerator.h"
+#include <memory>
 
-#include <astfilegenerator.h>
+#include <QProcess>
 
-using namespace MalTester;
+#include <runparameters.h>
 
-TestGenerator::TestGenerator(const RunParameters &params)
-    : m_params(params)
-{}
+namespace MalTester {
 
-void TestGenerator::run() const
+class AstFileGenerator
 {
-    QString outPath(".ast.xml");
+public:
+    enum class State {
+        ProcessStarted,
+        ProcessTimeouted,
+        ProcessCrashed,
 
-    AstFileGenerator astGen(m_params, outPath);
-    if (astGen.generateAstFile() != AstFileGenerator::State::BuildSuccess)
-        return;
-}
+        BuildFailed,
+        BuildSuccess,
+        Unknown
+    };
+
+    AstFileGenerator(const RunParameters &params, const QString &outPath);
+    ~AstFileGenerator();
+
+    State generateAstFile();
+
+private:
+    QProcess *createProcess() const;
+
+    QStringList createRunArgs() const;
+    QString astArg() const;
+    QString outputPathArg() const;
+    QStringList inputFilesArg() const;
+
+    State processFinished() const;
+
+    State handleTimeout() const;
+    State handleNormalExit() const;
+    State handleCrashExit() const;
+
+    void writeMessage(const QString &message) const;
+
+    const RunParameters &m_params;
+    const QString m_outputPath;
+
+    std::unique_ptr<QProcess> m_process;
+};
+
+} // namespace MalTester

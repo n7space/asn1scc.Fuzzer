@@ -22,6 +22,7 @@ SOURCES += \
     data/types/userdefinedtype.cpp \
     \
     astxmlparser.cpp \
+    astfilegenerator.cpp \
     testgenerator.cpp
 
 HEADERS += \
@@ -47,4 +48,5 @@ HEADERS += \
     \
     astxmlparser.h \
     runparameters.h \
+    astfilegenerator.h \
     testgenerator.h

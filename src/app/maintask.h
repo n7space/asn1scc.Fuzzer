@@ -27,6 +27,8 @@
 
 #include <QCoreApplication>
 
+namespace MalTester {
+
 class MainTask : public QObject
 {
     Q_OBJECT
@@ -48,3 +50,5 @@ private:
     const int m_argc;
     char **m_argv;
 };
+
+} // namespace MalTester

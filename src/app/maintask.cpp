@@ -29,6 +29,8 @@
 #include <inputparametersparser.h>
 #include <testgenerator.h>
 
+using namespace MalTester;
+
 void MainTask::start()
 {
     MalTester::InputParametersParser p;

@@ -24,26 +24,12 @@
 **
 ****************************************************************************/
 
-#include <QCoreApplication>
-#include <QTimer>
+#include "testgenerator.h"
 
-#include <maintask.h>
+using namespace MalTester;
 
-void initializeApplication(QCoreApplication &app, MainTask &task)
-{
-    QCoreApplication::setApplicationName("MalTester-App");
-    QCoreApplication::setApplicationVersion("0.1");
+TestGenerator::TestGenerator(const RunParameters &params)
+    : m_params(params)
+{}
 
-    QObject::connect(&task, &MainTask::finished, &app, &QCoreApplication::quit);
-    QTimer::singleShot(0, &task, &MainTask::start);
-}
-
-int main(int argc, char *argv[])
-{
-    QCoreApplication app(argc, argv);
-    MainTask task(argc, argv);
-
-    initializeApplication(app, task);
-
-    return app.exec();
-}
+void TestGenerator::run() const {}

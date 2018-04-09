@@ -23,27 +23,28 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
+#pragma once
 
 #include <QCoreApplication>
-#include <QTimer>
 
-#include <maintask.h>
-
-void initializeApplication(QCoreApplication &app, MainTask &task)
+class MainTask : public QObject
 {
-    QCoreApplication::setApplicationName("MalTester-App");
-    QCoreApplication::setApplicationVersion("0.1");
+    Q_OBJECT
 
-    QObject::connect(&task, &MainTask::finished, &app, &QCoreApplication::quit);
-    QTimer::singleShot(0, &task, &MainTask::start);
-}
+public:
+    MainTask(int argc, char *argv[], QObject *parent = nullptr)
+        : QObject(parent)
+        , m_argc(argc)
+        , m_argv(argv)
+    {}
 
-int main(int argc, char *argv[])
-{
-    QCoreApplication app(argc, argv);
-    MainTask task(argc, argv);
+public slots:
+    void start();
 
-    initializeApplication(app, task);
+signals:
+    void finished();
 
-    return app.exec();
-}
+private:
+    const int m_argc;
+    char **m_argv;
+};

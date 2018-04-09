@@ -23,27 +23,22 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
+#pragma once
 
-#include <QCoreApplication>
-#include <QTimer>
+#include <QString>
+#include <QStringList>
 
-#include <maintask.h>
+namespace MalTester {
 
-void initializeApplication(QCoreApplication &app, MainTask &task)
+struct RunParameters
 {
-    QCoreApplication::setApplicationName("MalTester-App");
-    QCoreApplication::setApplicationVersion("0.1");
+    QStringList m_inputFiles;
 
-    QObject::connect(&task, &MainTask::finished, &app, &QCoreApplication::quit);
-    QTimer::singleShot(0, &task, &MainTask::start);
-}
+    QString m_mainStructureName;
+    QString m_asn1SccCommand;
+    QString m_outputDir;
 
-int main(int argc, char *argv[])
-{
-    QCoreApplication app(argc, argv);
-    MainTask task(argc, argv);
+    enum class CcsdsWrap { tc, tm, none } m_ccsdsWrap;
+};
 
-    initializeApplication(app, task);
-
-    return app.exec();
-}
+} // namespace MalTester

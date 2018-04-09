@@ -19,7 +19,8 @@ SOURCES += \
     data/types/labeltype.cpp \
     data/types/userdefinedtype.cpp \
     \
-    astxmlparser.cpp
+    astxmlparser.cpp \
+    testgenerator.cpp
 
 HEADERS += \
     data/definitions.h \
@@ -42,4 +43,6 @@ HEADERS += \
     data/types/type.h \
     data/types/userdefinedtype.h \
     \
-    astxmlparser.h
+    astxmlparser.h \
+    runparameters.h \
+    testgenerator.h

@@ -23,27 +23,20 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
+#pragma once
 
-#include <QCoreApplication>
-#include <QTimer>
+#include <runparameters.h>
 
-#include <maintask.h>
+namespace MalTester {
 
-void initializeApplication(QCoreApplication &app, MainTask &task)
+class TestGenerator
 {
-    QCoreApplication::setApplicationName("MalTester-App");
-    QCoreApplication::setApplicationVersion("0.1");
+public:
+    TestGenerator(const RunParameters &params);
+    void run() const;
 
-    QObject::connect(&task, &MainTask::finished, &app, &QCoreApplication::quit);
-    QTimer::singleShot(0, &task, &MainTask::start);
-}
+private:
+    const RunParameters m_params;
+};
 
-int main(int argc, char *argv[])
-{
-    QCoreApplication app(argc, argv);
-    MainTask task(argc, argv);
-
-    initializeApplication(app, task);
-
-    return app.exec();
-}
+} // namespace MalTester

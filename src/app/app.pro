@@ -6,4 +6,11 @@ QT -= gui
 
 include(../../includelib.pri)
 
-SOURCES += main.cpp
+SOURCES += \
+    main.cpp \
+    inputparametersparser.cpp \
+    maintask.cpp
+
+HEADERS += \
+    inputparametersparser.h \
+    maintask.h

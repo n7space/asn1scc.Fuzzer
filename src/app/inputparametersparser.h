@@ -23,27 +23,42 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
+#pragma once
 
-#include <QCoreApplication>
-#include <QTimer>
+#include <QCommandLineOption>
+#include <QCommandLineParser>
 
-#include <maintask.h>
+#include <runparameters.h>
 
-void initializeApplication(QCoreApplication &app, MainTask &task)
+namespace MalTester {
+
+class InputParametersParser
 {
-    QCoreApplication::setApplicationName("MalTester-App");
-    QCoreApplication::setApplicationVersion("0.1");
+public:
+    InputParametersParser();
 
-    QObject::connect(&task, &MainTask::finished, &app, &QCoreApplication::quit);
-    QTimer::singleShot(0, &task, &MainTask::start);
-}
+    void parse(int argc, char *argv[]);
+    RunParameters parameters() const;
 
-int main(int argc, char *argv[])
-{
-    QCoreApplication app(argc, argv);
-    MainTask task(argc, argv);
+private:
+    void setupParser();
+    void updateRunParams();
 
-    initializeApplication(app, task);
+    QStringList readFilesList();
+    QString readMainStructureName();
+    QString readAsn1SccPath();
+    QString readOutputDir();
+    RunParameters::CcsdsWrap readCcsdsValue();
 
-    return app.exec();
-}
+    void printUsageAndExit(const QString &message = QString());
+
+    QCommandLineOption m_mainStructure;
+    QCommandLineOption m_asn1sccPath;
+    QCommandLineOption m_outputDir;
+    QCommandLineOption m_wrapAsCcsds;
+
+    QCommandLineParser m_parser;
+    RunParameters m_params;
+};
+
+} // namespace MalTester

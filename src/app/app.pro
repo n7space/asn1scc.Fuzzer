@@ -1,6 +1,7 @@
 TEMPLATE = app
 
-CONFIG += console c++11
+CONFIG += console
+CONFIG += c++14
 CONFIG -= app_bundle
 QT -= gui
 

@@ -1,6 +1,8 @@
 TEMPLATE = lib
 
 CONFIG += staticlib
+CONFIG += c++14
+
 QT -= gui
 
 SOURCES += \

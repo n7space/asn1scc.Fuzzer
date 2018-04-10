@@ -23,6 +23,7 @@ SOURCES += \
     \
     astxmlparser.cpp \
     astfilegenerator.cpp \
+    astfileprocessor.cpp \
     testgenerator.cpp
 
 HEADERS += \
@@ -49,4 +50,5 @@ HEADERS += \
     astxmlparser.h \
     runparameters.h \
     astfilegenerator.h \
+    astfileprocessor.h \
     testgenerator.h

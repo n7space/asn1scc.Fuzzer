@@ -25,27 +25,26 @@
 ****************************************************************************/
 #pragma once
 
+#include <map>
 #include <memory>
 
-#include <QTemporaryDir>
+#include <QString>
 
 #include <data/project.h>
 
-#include <runparameters.h>
-
 namespace MalTester {
 
-class TestGenerator
+class AstFileProcessor
 {
 public:
-    TestGenerator(const RunParameters &params);
+    AstFileProcessor(const QString &astPath);
 
-    void run() const;
+    std::unique_ptr<Data::Project> process() const;
 
 private:
-    std::unique_ptr<Data::Project> createDataTree() const;
+    QString readAstFileContent() const;
 
-    const RunParameters m_params;
+    QString m_astPath;
 };
 
 } // namespace MalTester

@@ -49,7 +49,7 @@ public:
     AstFileGenerator(const RunParameters &params, const QString &outPath);
     ~AstFileGenerator();
 
-    State generateAstFile();
+    State generate();
 
 private:
     QProcess *createProcess() const;

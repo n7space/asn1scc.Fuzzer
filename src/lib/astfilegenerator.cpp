@@ -28,8 +28,6 @@
 
 using namespace MalTester;
 
-static const int PROCESS_TIMEOUT_MS = 5000; // TODO: place for default timeout value (if needed)
-
 AstFileGenerator::AstFileGenerator(const RunParameters &params, const QString &outputPath)
     : m_params(params)
     , m_outputPath(outputPath)
@@ -41,11 +39,11 @@ AstFileGenerator::~AstFileGenerator()
     m_process->close();
 }
 
-AstFileGenerator::State AstFileGenerator::generateAstFile()
+AstFileGenerator::State AstFileGenerator::generate()
 {
     m_process.reset(createProcess());
     m_process->start();
-    return m_process->waitForFinished(PROCESS_TIMEOUT_MS) ? processFinished() : handleTimeout();
+    return m_process->waitForFinished() ? processFinished() : handleTimeout();
 }
 
 QProcess *AstFileGenerator::createProcess() const

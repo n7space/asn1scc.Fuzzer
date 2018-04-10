@@ -125,13 +125,10 @@ RunParameters::CcsdsWrap InputParametersParser::readCcsdsValue()
 
 void InputParametersParser::printUsageAndExit(const QString &message)
 {
-    if (!message.isEmpty()) {
-        fputs("\n", stderr);
-        fputs(qPrintable(message), stderr);
-        fputs("\n\n", stderr);
-    }
+    if (!message.isEmpty())
+        qInfo(qPrintable(message));
 
-    fputs(qPrintable(m_parser.helpText()), stderr);
+    qInfo(qPrintable(m_parser.helpText()));
 
     exit(1);
 }

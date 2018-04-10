@@ -36,8 +36,7 @@ namespace MalTester {
 class AstFileGenerator
 {
 public:
-    enum class State {
-        ProcessStarted,
+    enum class Result {
         ProcessTimeouted,
         ProcessCrashed,
 
@@ -49,7 +48,7 @@ public:
     AstFileGenerator(const RunParameters &params, const QString &outPath);
     ~AstFileGenerator();
 
-    State generate();
+    Result generate();
 
 private:
     QProcess *createProcess() const;
@@ -59,11 +58,11 @@ private:
     QString outputPathArg() const;
     QStringList inputFilesArg() const;
 
-    State processFinished() const;
+    Result processFinished() const;
 
-    State handleTimeout() const;
-    State handleNormalExit() const;
-    State handleCrashExit() const;
+    Result handleTimeout() const;
+    Result handleNormalExit() const;
+    Result handleCrashExit() const;
 
     void writeMessage(const QString &message) const;
 

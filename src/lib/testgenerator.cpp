@@ -51,7 +51,7 @@ std::unique_ptr<Data::Project> TestGenerator::createDataTree() const
     const QString outPath = dir.filePath(QLatin1String("ast.xml"));
 
     AstFileGenerator astGen(m_params, outPath);
-    if (astGen.generate() != AstFileGenerator::State::BuildSuccess)
+    if (astGen.generate() != AstFileGenerator::Result::BuildSuccess)
         return nullptr;
 
     AstFileProcessor astProc(outPath);

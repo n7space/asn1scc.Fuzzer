@@ -39,7 +39,7 @@ AstFileGenerator::~AstFileGenerator()
     m_process->close();
 }
 
-AstFileGenerator::State AstFileGenerator::generate()
+AstFileGenerator::Result AstFileGenerator::generate()
 {
     m_process.reset(createProcess());
     m_process->start();
@@ -77,7 +77,7 @@ QStringList AstFileGenerator::inputFilesArg() const
     return m_params.m_inputFiles;
 }
 
-AstFileGenerator::State AstFileGenerator::processFinished() const
+AstFileGenerator::Result AstFileGenerator::processFinished() const
 {
     switch (m_process->exitStatus()) {
     case (QProcess::NormalExit):
@@ -85,38 +85,36 @@ AstFileGenerator::State AstFileGenerator::processFinished() const
     case (QProcess::CrashExit):
         return handleCrashExit();
     default:
-        return State::Unknown;
+        return Result::Unknown;
     }
 }
 
-AstFileGenerator::State AstFileGenerator::handleNormalExit() const
+AstFileGenerator::Result AstFileGenerator::handleNormalExit() const
 {
     if (m_process->exitCode() != 0) {
         writeMessage("Build failed");
-        return State::BuildFailed;
+        return Result::BuildFailed;
     }
 
-    return State::BuildSuccess;
+    return Result::BuildSuccess;
 }
 
-AstFileGenerator::State AstFileGenerator::handleCrashExit() const
+AstFileGenerator::Result AstFileGenerator::handleCrashExit() const
 {
     writeMessage("Crashed");
-    return State::ProcessCrashed;
+    return Result::ProcessCrashed;
 }
 
-AstFileGenerator::State AstFileGenerator::handleTimeout() const
+AstFileGenerator::Result AstFileGenerator::handleTimeout() const
 {
     writeMessage("Timeouted");
-    return State::ProcessTimeouted;
+    return Result::ProcessTimeouted;
 }
 
 void AstFileGenerator::writeMessage(const QString &message) const
 {
     auto fullMsg = m_params.m_asn1SccCommand + ": " + message;
 
-    fputs(qPrintable(m_process->readAll()), stderr);
-    fputs("\n\n", stderr);
-    fputs(qPrintable(fullMsg), stderr);
-    fputs("\n\n", stderr);
+    qCritical(m_process->readAll());
+    qCritical(qPrintable(fullMsg));
 }

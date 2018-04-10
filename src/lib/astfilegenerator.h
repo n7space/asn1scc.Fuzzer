@@ -25,30 +25,51 @@
 ****************************************************************************/
 #pragma once
 
-#include <QCoreApplication>
+#include <memory>
+
+#include <QProcess>
+
+#include <runparameters.h>
 
 namespace MalTester {
 
-class MainTask : public QObject
+class AstFileGenerator
 {
-    Q_OBJECT
-
 public:
-    MainTask(int argc, char *argv[], QObject *parent = nullptr)
-        : QObject(parent)
-        , m_argc(argc)
-        , m_argv(argv)
-    {}
+    enum class Result {
+        ProcessTimeouted,
+        ProcessCrashed,
 
-public slots:
-    void start();
+        BuildFailed,
+        BuildSuccess,
+        Unknown
+    };
 
-signals:
-    void finished();
+    AstFileGenerator(const RunParameters &params, const QString &outPath);
+    ~AstFileGenerator();
+
+    Result generate();
 
 private:
-    const int m_argc;
-    char **m_argv;
+    QProcess *createProcess() const;
+
+    QStringList createRunArgs() const;
+    QString astArg() const;
+    QString outputPathArg() const;
+    QStringList inputFilesArg() const;
+
+    Result processFinished() const;
+
+    Result handleTimeout() const;
+    Result handleNormalExit() const;
+    Result handleCrashExit() const;
+
+    void writeMessage(const QString &message) const;
+
+    const RunParameters &m_params;
+    const QString m_outputPath;
+
+    std::unique_ptr<QProcess> m_process;
 };
 
 } // namespace MalTester

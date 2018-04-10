@@ -25,30 +25,26 @@
 ****************************************************************************/
 #pragma once
 
-#include <QCoreApplication>
+#include <map>
+#include <memory>
+
+#include <QString>
+
+#include <data/project.h>
 
 namespace MalTester {
 
-class MainTask : public QObject
+class AstFileProcessor
 {
-    Q_OBJECT
-
 public:
-    MainTask(int argc, char *argv[], QObject *parent = nullptr)
-        : QObject(parent)
-        , m_argc(argc)
-        , m_argv(argv)
-    {}
+    AstFileProcessor(const QString &astPath);
 
-public slots:
-    void start();
-
-signals:
-    void finished();
+    std::unique_ptr<Data::Project> process() const;
 
 private:
-    const int m_argc;
-    char **m_argv;
+    QString readAstFileContent() const;
+
+    QString m_astPath;
 };
 
 } // namespace MalTester

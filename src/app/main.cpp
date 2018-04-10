@@ -29,19 +29,19 @@
 
 #include <maintask.h>
 
-void initializeApplication(QCoreApplication &app, MainTask &task)
+void initializeApplication(QCoreApplication &app, MalTester::MainTask &task)
 {
     QCoreApplication::setApplicationName("MalTester-App");
     QCoreApplication::setApplicationVersion("0.1");
 
-    QObject::connect(&task, &MainTask::finished, &app, &QCoreApplication::quit);
-    QTimer::singleShot(0, &task, &MainTask::start);
+    QObject::connect(&task, &MalTester::MainTask::finished, &app, &QCoreApplication::quit);
+    QTimer::singleShot(0, &task, &MalTester::MainTask::start);
 }
 
 int main(int argc, char *argv[])
 {
     QCoreApplication app(argc, argv);
-    MainTask task(argc, argv);
+    MalTester::MainTask task(argc, argv);
 
     initializeApplication(app, task);
 

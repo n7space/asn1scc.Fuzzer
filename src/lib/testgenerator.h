@@ -25,6 +25,12 @@
 ****************************************************************************/
 #pragma once
 
+#include <memory>
+
+#include <QTemporaryDir>
+
+#include <data/project.h>
+
 #include <runparameters.h>
 
 namespace MalTester {
@@ -33,9 +39,12 @@ class TestGenerator
 {
 public:
     TestGenerator(const RunParameters &params);
+
     void run() const;
 
 private:
+    std::unique_ptr<Data::Project> createDataTree() const;
+
     const RunParameters m_params;
 };
 

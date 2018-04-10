@@ -26,10 +26,34 @@
 
 #include "testgenerator.h"
 
+#include <astfilegenerator.h>
+#include <astfileprocessor.h>
+
 using namespace MalTester;
 
 TestGenerator::TestGenerator(const RunParameters &params)
     : m_params(params)
 {}
 
-void TestGenerator::run() const {}
+void TestGenerator::run() const
+{
+    auto ast = createDataTree();
+    if (ast == nullptr)
+        return;
+}
+
+std::unique_ptr<Data::Project> TestGenerator::createDataTree() const
+{
+    const QTemporaryDir dir;
+    if (!dir.isValid())
+        return nullptr;
+
+    const QString outPath = dir.filePath(QLatin1String("ast.xml"));
+
+    AstFileGenerator astGen(m_params, outPath);
+    if (astGen.generate() != AstFileGenerator::Result::BuildSuccess)
+        return nullptr;
+
+    AstFileProcessor astProc(outPath);
+    return astProc.process();
+}

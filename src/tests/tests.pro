@@ -2,7 +2,8 @@ TEMPLATE = app
 
 QT += testlib
 QT -= gui
-CONFIG += console c++11
+CONFIG += console
+CONFIG += c++14
 CONFIG -= app_bundle
 
 include(../../includelib.pri)

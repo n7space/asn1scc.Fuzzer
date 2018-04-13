@@ -23,45 +23,47 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-#pragma once
 
-#include <QString>
+#include "acnparameters.h"
 
-#include <data/acnparameters.h>
-#include <data/constraint.h>
+using namespace MalTester::Data;
 
-namespace MalTester {
-namespace Data {
-namespace Types {
-
-class Type
+Encoding AcnParameters::mapEncoding(const QStringRef &in)
 {
-public:
-    Type()
-        : m_constraint(nullptr)
-        , m_acnParams(nullptr)
-    {}
+    if (in == "pos-int")
+        return Encoding::pos_int;
+    else if (in == "twos-complement")
+        return Encoding::twos_complement;
+    else if (in == "ASCII")
+        return Encoding::ASCII;
+    else if (in == "BCD")
+        return Encoding::BCD;
+    else if (in == "IEEE754_1985_32")
+        return Encoding::IEEE754_1985_32;
+    else if (in == "IEEE754_1985_64")
+        return Encoding::IEEE754_1985_64;
 
-    virtual ~Type()
-    {
-        delete m_constraint;
-        delete m_acnParams;
-    }
+    return Encoding::undefined;
+}
 
-    virtual QString name() const = 0;
-    virtual QString label() const = 0;
+Endianness AcnParameters::mapEndianess(const QStringRef &in)
+{
+    if (in == "big")
+        return Endianness::big;
+    else if (in == "little")
+        return Endianness::little;
 
-    Constraint *constraint() const { return m_constraint; }
-    AcnParameters *acnParams() const { return m_acnParams; }
+    return Endianness::undefined;
+}
 
-protected:
-    Constraint *m_constraint;
-    AcnParameters *m_acnParams;
+AlignToNext AcnParameters::mapAlignToNext(const QStringRef &in)
+{
+    if (in == "byte")
+        return AlignToNext::byte;
+    else if (in == "word")
+        return AlignToNext::word;
+    else if (in == "dword")
+        return AlignToNext::dword;
 
-private:
-    virtual QString baseIconFile() const = 0;
-};
-
-} // namespace Types
-} // namespace Data
-} // namespace MalTester
+    return AlignToNext::undefined;
+}

@@ -29,7 +29,8 @@
 
 #include <QString>
 
-#include "type.h"
+#include <data/acnparameters.h>
+#include <data/types/type.h>
 
 namespace MalTester {
 namespace Data {
@@ -64,25 +65,6 @@ private:
     QString baseIconFile() const override
     {
         return QStringLiteral(":/asn1acn/images/outline/null.png");
-    }
-};
-
-class Integer : public BuiltinType
-{
-public:
-    Integer() { m_constraint = new Constraint(Integer::toVariantPair); }
-
-    QString name() const override { return QLatin1String("INTEGER"); }
-
-private:
-    QString baseIconFile() const override
-    {
-        return QStringLiteral(":/asn1acn/images/outline/integer.png");
-    }
-
-    static Constraint::VariantPair toVariantPair(const Constraint::StringPair &range)
-    {
-        return {range.first.toInt(), range.second.toInt()};
     }
 };
 

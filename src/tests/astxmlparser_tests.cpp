@@ -771,6 +771,40 @@ void AstXmlParserTests::test_singleTypeAssignmentWithRangedConstraints()
     QVERIFY(constraintRanges.contains(QPair<QVariant, QVariant>(50, 80)));
 }
 
+void AstXmlParserTests::test_singleTypeAssignmentWitAcnData()
+{
+    parse(
+        R"(<?xml version="1.0" encoding="utf-8"?>)"
+        R"(<AstRoot>)"
+        R"(  <Asn1File FileName="Test2File.asn">)"
+        R"(    <Modules>)"
+        R"(      <Module Name="TestDefinitions" Line="13" CharPositionInLine="42">)"
+        R"(        <TypeAssignments>"
+        R"(          <TypeAssignment Name="MyInt" Line="4" CharPositionInLine="10">)"
+        R"(            <Asn1Type id="Constrained.MyInt" Line="3" CharPositionInLine="14" ParameterizedTypeInstance="false" align-to-next="dword">"
+        R"(              <INTEGER endianness="big" size="8" encoding="BCD">"
+        R"(                <Constraints>"
+        R"(                  <IntegerValue>1</IntegerValue>"
+        R"(                </Constraints>"
+        R"(                <WithComponentConstraints />"
+        R"(              </INTEGER>"
+        R"(            </Asn1Type>"
+        R"(          </TypeAssignment>"
+        R"(        </TypeAssignments>"
+        R"(      </Module>)"
+        R"(    </Modules>)"
+        R"(  </Asn1File>)"
+        R"(</AstRoot>)");
+
+    const auto type = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyInt");
+    const auto acnParams = type->type()->acnParams();
+
+    QCOMPARE(acnParams->size(), 8);
+    QCOMPARE(acnParams->encoding(), Data::Encoding::BCD);
+    QCOMPARE(acnParams->endianness(), Data::Endianness::big);
+    QCOMPARE(acnParams->alignToNext(), Data::AlignToNext::dword);
+}
+
 void AstXmlParserTests::parsingFails(const QString &xmlData)
 {
     setXmlData(xmlData);

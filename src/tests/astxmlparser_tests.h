@@ -62,6 +62,7 @@ private slots:
     void test_parametrizedInstancesContentsAreIgnored();
     void test_singleTypeAssignmentWithRangedConstraints();
     void test_singleTypeAssignmentWithSimpleConstraint();
+    void test_singleTypeAssignmentWitAcnData();
 
 private:
     void setXmlData(const QString &str);

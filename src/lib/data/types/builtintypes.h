@@ -38,6 +38,12 @@ namespace Types {
 
 class BuiltinType : public Type
 {
+protected:
+    BuiltinType(std::unique_ptr<Constraints> constraints = nullptr,
+                std::unique_ptr<AcnParameters> acnParams = nullptr)
+        : Type(std::move(constraints), std::move(acnParams))
+    {}
+
 public:
     static std::unique_ptr<Type> createBuiltinType(const QString &name);
 

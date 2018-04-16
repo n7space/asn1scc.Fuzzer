@@ -25,10 +25,12 @@
 ****************************************************************************/
 #pragma once
 
+#include <memory>
+
 #include <QString>
 
 #include <data/acnparameters.h>
-#include <data/constraint.h>
+#include <data/constraints.h>
 
 namespace MalTester {
 namespace Data {
@@ -36,27 +38,27 @@ namespace Types {
 
 class Type
 {
-public:
-    Type()
-        : m_constraint(nullptr)
-        , m_acnParams(nullptr)
+protected:
+    Type(std::unique_ptr<Constraints> constraints = nullptr,
+         std::unique_ptr<AcnParameters> acnParams = nullptr)
+        : m_constraints(std::move(constraints))
+        , m_acnParams(std::move(acnParams))
     {}
 
-    virtual ~Type()
-    {
-        delete m_constraint;
-        delete m_acnParams;
-    }
+public:
+    virtual ~Type() {}
 
     virtual QString name() const = 0;
     virtual QString label() const = 0;
 
-    Constraint *constraint() const { return m_constraint; }
-    AcnParameters *acnParams() const { return m_acnParams; }
+    const Constraints *constraint() const { return m_constraints.get(); }
+    const AcnParameters *acnParams() const { return m_acnParams.get(); }
+    Constraints *constraint() { return m_constraints.get(); }
+    AcnParameters *acnParams() { return m_acnParams.get(); }
 
 protected:
-    Constraint *m_constraint;
-    AcnParameters *m_acnParams;
+    std::unique_ptr<Constraints> m_constraints;
+    std::unique_ptr<AcnParameters> m_acnParams;
 
 private:
     virtual QString baseIconFile() const = 0;

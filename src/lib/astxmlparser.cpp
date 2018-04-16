@@ -403,7 +403,7 @@ void AstXmlParser::readRanges(std::unique_ptr<Data::Types::Type> &type, const QS
             readRange(type, valName);
         else if (m_xmlReader.name() == valName) {
             QString val = m_xmlReader.readElementText();
-            type->constraint()->addRange(Data::Constraint::StringPair(val, val));
+            type->constraint()->addRange(Data::Constraints::StringPair(val, val));
         } else
             m_xmlReader.skipCurrentElement();
     }
@@ -421,7 +421,7 @@ void AstXmlParser::readRange(std::unique_ptr<Data::Types::Type> &type, const QSt
             m_xmlReader.skipCurrentElement();
     }
 
-    type->constraint()->addRange(Data::Constraint::StringPair(a, b));
+    type->constraint()->addRange(Data::Constraints::StringPair(a, b));
 }
 
 QString AstXmlParser::readValue(const QString &valName)

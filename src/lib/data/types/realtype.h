@@ -27,7 +27,7 @@
 
 #include <QString>
 
-#include <data/constraint.h>
+#include <data/constraints.h>
 
 #include <data/types/builtintypes.h>
 
@@ -38,7 +38,9 @@ namespace Types {
 class Real : public BuiltinType
 {
 public:
-    Real() { m_constraint = new Constraint(Real::toVariantPair); }
+    Real()
+        : BuiltinType(std::make_unique<Constraints>(&Real::toVariantPair))
+    {}
 
     QString name() const override { return QLatin1String("REAL"); }
 
@@ -48,7 +50,7 @@ private:
         return QStringLiteral(":/asn1acn/images/outline/real.png");
     }
 
-    static Constraint::VariantPair toVariantPair(const Constraint::StringPair &range)
+    static Constraints::VariantPair toVariantPair(const Constraints::StringPair &range)
     {
         return {range.first.toDouble(), range.second.toDouble()};
     }

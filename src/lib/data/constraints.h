@@ -34,14 +34,14 @@
 namespace MalTester {
 namespace Data {
 
-class Constraint
+class Constraints
 {
 public:
     using VariantPair = QPair<QVariant, QVariant>;
     using StringPair = QPair<QString, QString>;
     using Ranges = QList<VariantPair>;
 
-    Constraint(std::function<VariantPair(StringPair)> convert)
+    Constraints(std::function<VariantPair(StringPair)> convert)
         : m_convertRange(convert)
     {}
 

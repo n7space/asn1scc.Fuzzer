@@ -28,7 +28,7 @@
 #include <QString>
 
 #include <data/acnparameters.h>
-#include <data/constraint.h>
+#include <data/constraints.h>
 
 #include <data/types/builtintypes.h>
 
@@ -69,10 +69,9 @@ class Integer : public BuiltinType
 {
 public:
     Integer()
-    {
-        m_constraint = new Constraint(Integer::toVariantPair);
-        m_acnParams = new IntegerAcnParameters;
-    }
+        : BuiltinType(std::make_unique<Constraints>(&Integer::toVariantPair),
+                      std::make_unique<IntegerAcnParameters>())
+    {}
 
     QString name() const override { return QLatin1String("INTEGER"); }
 
@@ -82,7 +81,7 @@ private:
         return QStringLiteral(":/asn1acn/images/outline/integer.png");
     }
 
-    static Constraint::VariantPair toVariantPair(const Constraint::StringPair &range)
+    static Constraints::VariantPair toVariantPair(const Constraints::StringPair &range)
     {
         return {range.first.toInt(), range.second.toInt()};
     }

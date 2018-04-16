@@ -29,7 +29,6 @@
 #include <data/sourcelocation.h>
 
 #include <data/types/builtintypes.h>
-#include <data/types/integertype.h>
 #include <data/types/typevisitor.h>
 #include <data/types/userdefinedtype.h>
 
@@ -119,15 +118,11 @@ public:
 
     void visit(Data::Types::Integer &type) override
     {
-        auto acnParams = type.acnParams();
-        if (!acnParams)
-            return;
+        using namespace Data::Types;
 
-        acnParams->setSize(m_attributes.value(QLatin1String("size")).toInt());
-        acnParams->setEndianness(
-            Data::AcnParameters::mapEndianess(m_attributes.value(QLatin1String("endianness"))));
-        acnParams->setEncoding(
-            Data::AcnParameters::mapEncoding(m_attributes.value(QLatin1String("encoding"))));
+        type.setSize(m_attributes.value(QLatin1String("size")).toInt());
+        type.setEndianness(Integer::mapEndianess(m_attributes.value(QLatin1String("endianness"))));
+        type.setEncoding(Integer::mapEncoding(m_attributes.value(QLatin1String("encoding"))));
     }
 
     void visit(Data::Types::UserdefinedType &type) override

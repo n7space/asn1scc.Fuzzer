@@ -29,7 +29,6 @@
 
 #include <QString>
 
-#include <data/acnparameters.h>
 #include <data/constraints.h>
 
 namespace MalTester {
@@ -43,10 +42,9 @@ enum class AlignToNext { byte, word, dword, unspecified };
 class Type
 {
 protected:
-    Type(std::unique_ptr<Constraints> constraints = nullptr,
-         std::unique_ptr<AcnParameters> acnParams = nullptr)
+    Type(std::unique_ptr<Constraints> constraints = nullptr)
         : m_constraints(std::move(constraints))
-        , m_acnParams(std::move(acnParams))
+        , m_alignment(AlignToNext::unspecified)
     {}
 
 public:
@@ -56,9 +54,7 @@ public:
     virtual void accept(TypeVisitor &visitor) = 0;
 
     const Constraints *constraint() const { return m_constraints.get(); }
-    const AcnParameters *acnParams() const { return m_acnParams.get(); }
     Constraints *constraint() { return m_constraints.get(); }
-    AcnParameters *acnParams() { return m_acnParams.get(); }
 
     void setAlignToNext(const AlignToNext alignToNext) { m_alignment = alignToNext; }
     AlignToNext alignToNext() const { return m_alignment; }
@@ -67,8 +63,6 @@ public:
 
 private:
     std::unique_ptr<Constraints> m_constraints;
-    std::unique_ptr<AcnParameters> m_acnParams;
-
     AlignToNext m_alignment;
 };
 

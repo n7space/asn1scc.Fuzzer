@@ -26,8 +26,6 @@
 
 #include "builtintypes.h"
 
-#include "integertype.h"
-#include "realtype.h"
 #include "typevisitor.h"
 
 using namespace MalTester::Data::Types;
@@ -121,4 +119,45 @@ void Sequence::accept(TypeVisitor &visitor)
 void SequenceOf::accept(TypeVisitor &visitor)
 {
     visitor.visit(*this);
+}
+
+void Integer::accept(TypeVisitor &visitor)
+{
+    visitor.visit(*this);
+}
+
+void Real::accept(TypeVisitor &visitor)
+{
+    visitor.visit(*this);
+}
+
+IntegerEncoding Integer::mapEncoding(const QStringRef &in)
+{
+    if (in == "pos-int")
+        return IntegerEncoding::pos_int;
+    if (in == "twos-complement")
+        return IntegerEncoding::twos_complement;
+    if (in == "ASCII")
+        return IntegerEncoding::ASCII;
+    if (in == "BCD")
+        return IntegerEncoding::BCD;
+    return IntegerEncoding::unspecified;
+}
+
+Endianness Integer::mapEndianess(const QStringRef &in)
+{
+    if (in == "big")
+        return Endianness::big;
+    if (in == "little")
+        return Endianness::little;
+    return Endianness::unspecified;
+}
+
+RealEncoding Real::mapEncoding(const QStringRef &in)
+{
+    if (in == "IEEE754_1985_32")
+        return RealEncoding::IEEE754_1985_32;
+    if (in == "IEEE754_1985_64")
+        return RealEncoding::IEEE754_1985_64;
+    return RealEncoding::unspecified;
 }

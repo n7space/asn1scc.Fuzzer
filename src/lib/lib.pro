@@ -16,7 +16,6 @@ SOURCES += \
     data/typereference.cpp \
     data/valueassignment.cpp \
     data/visitor.cpp \
-    data/acnparameters.cpp \
     \
     data/types/type.cpp \
     data/types/typevisitor.cpp \
@@ -44,7 +43,6 @@ HEADERS += \
     data/valueassignment.h \
     data/visitor.h \
     data/visitorwithvalue.h \
-    data/acnparameters.h \
     data/constraints.h \
     \
     data/types/builtintypes.h \
@@ -52,8 +50,6 @@ HEADERS += \
     data/types/type.h \
     data/types/typevisitor.h \
     data/types/userdefinedtype.h \
-    data/types/integertype.h \
-    data/types/realtype.h \
     \
     astxmlparser.h \
     runparameters.h \

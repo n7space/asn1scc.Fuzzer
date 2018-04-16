@@ -29,7 +29,6 @@
 
 #include <QString>
 
-#include <data/acnparameters.h>
 #include <data/types/type.h>
 
 namespace MalTester {
@@ -39,9 +38,8 @@ namespace Types {
 class BuiltinType : public Type
 {
 protected:
-    BuiltinType(std::unique_ptr<Constraints> constraints = nullptr,
-                std::unique_ptr<AcnParameters> acnParams = nullptr)
-        : Type(std::move(constraints), std::move(acnParams))
+    BuiltinType(std::unique_ptr<Constraints> constraints = nullptr)
+        : Type(std::move(constraints))
     {}
 
 public:
@@ -126,6 +124,75 @@ public:
     QString name() const override { return QLatin1String("SEQUENCE OF"); }
 
     void accept(TypeVisitor &visitor) override;
+};
+
+enum class Endianness { big, little, unspecified };
+
+enum class IntegerEncoding {
+    pos_int,
+    twos_complement,
+    ASCII,
+    BCD,
+    unspecified,
+};
+
+class Integer : public BuiltinType
+{
+public:
+    Integer()
+        : BuiltinType(std::make_unique<Constraints>(&Integer::toVariantPair))
+        , m_encoding(IntegerEncoding::unspecified)
+        , m_endianness(Endianness::unspecified)
+        , m_size(0) // TODO?
+    {}
+
+    QString name() const override { return QLatin1String("INTEGER"); }
+
+    void accept(TypeVisitor &visitor) override;
+
+    void setSize(const int size) { m_size = size; }
+    int size() const { return m_size; }
+
+    void setEncoding(const IntegerEncoding encoding) { m_encoding = encoding; }
+    IntegerEncoding encoding() const { return m_encoding; }
+
+    void setEndianness(const Endianness endianness) { m_endianness = endianness; }
+    Endianness endianness() const { return m_endianness; }
+
+    static IntegerEncoding mapEncoding(const QStringRef &in);
+    static Endianness mapEndianess(const QStringRef &in);
+
+private:
+    static Constraints::VariantPair toVariantPair(const Constraints::StringPair &range)
+    {
+        return {range.first.toInt(), range.second.toInt()};
+    }
+
+    IntegerEncoding m_encoding;
+    Endianness m_endianness;
+    int m_size;
+};
+
+enum class RealEncoding { IEEE754_1985_32, IEEE754_1985_64, unspecified };
+
+class Real : public BuiltinType
+{
+public:
+    Real()
+        : BuiltinType(std::make_unique<Constraints>(&Real::toVariantPair))
+    {}
+
+    QString name() const override { return QLatin1String("REAL"); }
+
+    void accept(TypeVisitor &visitor) override;
+
+    static RealEncoding mapEncoding(const QStringRef &ref);
+
+private:
+    static Constraints::VariantPair toVariantPair(const Constraints::StringPair &range)
+    {
+        return {range.first.toDouble(), range.second.toDouble()};
+    }
 };
 
 } // namespace Types

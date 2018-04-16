@@ -45,11 +45,6 @@ public:
     QString name() const override { return QLatin1String("REAL"); }
 
 private:
-    QString baseIconFile() const override
-    {
-        return QStringLiteral(":/asn1acn/images/outline/real.png");
-    }
-
     static Constraints::VariantPair toVariantPair(const Constraints::StringPair &range)
     {
         return {range.first.toDouble(), range.second.toDouble()};

@@ -71,11 +71,6 @@ public:
     QString name() const override { return QLatin1String("INTEGER"); }
 
 private:
-    QString baseIconFile() const override
-    {
-        return QStringLiteral(":/asn1acn/images/outline/integer.png");
-    }
-
     static Constraints::VariantPair toVariantPair(const Constraints::StringPair &range)
     {
         return {range.first.toInt(), range.second.toInt()};

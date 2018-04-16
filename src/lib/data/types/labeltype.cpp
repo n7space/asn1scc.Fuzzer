@@ -36,13 +36,3 @@ QString LabelType::name() const
 {
     return m_name;
 }
-
-QString LabelType::label() const
-{
-    return QString();
-}
-
-QString LabelType::baseIconFile() const
-{
-    return QString();
-}

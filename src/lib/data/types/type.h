@@ -51,7 +51,6 @@ public:
     virtual ~Type();
 
     virtual QString name() const = 0;
-    virtual QString label() const = 0;
 
     const Constraints *constraint() const { return m_constraints.get(); }
     const AcnParameters *acnParams() const { return m_acnParams.get(); }
@@ -68,9 +67,6 @@ private:
     std::unique_ptr<AcnParameters> m_acnParams;
 
     AlignToNext m_alignment;
-
-private:
-    virtual QString baseIconFile() const = 0;
 };
 
 } // namespace Types

@@ -40,11 +40,8 @@ public:
     LabelType(const QString &label);
 
     QString name() const override;
-    QString label() const override;
 
 private:
-    QString baseIconFile() const override;
-
     QString m_name;
 };
 

@@ -649,6 +649,128 @@ void AstXmlParserTests::test_parametrizedInstancesContentsAreIgnored()
     QVERIFY(ref == m_parsedData["Test2File.asn"]->referencesMap().end());
 }
 
+void AstXmlParserTests::test_singleTypeAssignmentWithSimpleConstraint()
+{
+    parse(
+        R"(<?xml version="1.0" encoding="utf-8"?>)"
+        R"(<AstRoot>)"
+        R"(  <Asn1File FileName="Test2File.asn">)"
+        R"(    <Modules>)"
+        R"(      <Module Name="TestDefinitions" Line="13" CharPositionInLine="42">)"
+        R"(        <TypeAssignments>"
+        R"(          <TypeAssignment Name="MyInt" Line="4" CharPositionInLine="10">)"
+        R"(            <Asn1Type id="Constrained.MyInt" Line="3" CharPositionInLine="14" ParameterizedTypeInstance="false">"
+        R"(              <INTEGER>"
+        R"(                <Constraints>"
+        R"(                  <IntegerValue>1</IntegerValue>"
+        R"(                </Constraints>"
+        R"(                <WithComponentConstraints />"
+        R"(              </INTEGER>"
+        R"(            </Asn1Type>"
+        R"(          </TypeAssignment>"
+        R"(        </TypeAssignments>"
+        R"(      </Module>)"
+        R"(    </Modules>)"
+        R"(  </Asn1File>)"
+        R"(</AstRoot>)");
+
+    QCOMPARE(m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->types().size(),
+             std::size_t{1});
+    const auto type = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyInt");
+    QCOMPARE(type->name(), QStringLiteral("MyInt"));
+    QCOMPARE(type->location().path(), QStringLiteral("Test2File.asn"));
+    QCOMPARE(type->location().line(), 4);
+    QCOMPARE(type->location().column(), 10);
+
+    QCOMPARE(type->parent(), m_parsedData["Test2File.asn"]->definitions("TestDefinitions"));
+
+    auto constraintRanges = type->type()->constraint()->ranges();
+    QCOMPARE(constraintRanges.size(), 1);
+
+    QVERIFY(constraintRanges.contains(QPair<QVariant, QVariant>(1, 1)));
+}
+
+void AstXmlParserTests::test_singleTypeAssignmentWithRangedConstraints()
+{
+    parse(R"(<?xml version="1.0" encoding="utf-8"?>)"
+          R"(<AstRoot>)"
+          R"(  <Asn1File FileName="Test2File.asn">)"
+          R"(    <Modules>)"
+          R"(      <Module Name="TestDefinitions" Line="13" CharPositionInLine="42">)"
+          R"(        <TypeAssignments>)"
+          R"(          <TypeAssignment Name="MyInt" Line="4" CharPositionInLine="10">)"
+          R"(            <Asn1Type>)"
+          R"(              <INTEGER>
+          R"(                <Constraints>
+          R"(                  <OR>
+          R"(                    <OR>
+          R"(                      <OR>
+          R"(                        <OR>
+          R"(                          <OR>
+          R"(                            <Range>
+          R"(                              <a>
+          R"(                                <IntegerValue>10</IntegerValue>
+          R"(                              </a>
+          R"(                              <b>
+          R"(                                <IntegerValue>20</IntegerValue>
+          R"(                              </b>
+          R"(                            </Range>
+          R"(                            <Range>
+          R"(                              <a>
+          R"(                                <IntegerValue>30</IntegerValue>
+          R"(                              </a>
+          R"(                              <b>
+          R"(                                <IntegerValue>40</IntegerValue>
+          R"(                              </b>
+          R"(                            </Range>
+          R"(                          </OR>
+          R"(                          <IntegerValue>42</IntegerValue>
+          R"(                        </OR>
+          R"(                        <IntegerValue>44</IntegerValue>
+          R"(                      </OR>
+          R"(                      <IntegerValue>46</IntegerValue>
+          R"(                    </OR>
+          R"(                    <Range>
+          R"(                      <a>
+          R"(                        <IntegerValue>50</IntegerValue>
+          R"(                      </a>
+          R"(                      <b>
+          R"(                        <IntegerValue>80</IntegerValue>
+          R"(                      </b>
+          R"(                    </Range>
+          R"(                  </OR>
+          R"(                </Constraints>
+          R"(                <WithComponentConstraints />
+          R"(              </INTEGER>
+          R"(            </Asn1Type>)"
+          R"(          </TypeAssignment>)"
+          R"(        </TypeAssignments>)"
+          R"(      </Module>)"
+          R"(    </Modules>)"
+          R"(  </Asn1File>)"
+          R"(</AstRoot>)");
+
+    QCOMPARE(m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->types().size(),
+             std::size_t{1});
+    const auto type = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyInt");
+    QCOMPARE(type->name(), QStringLiteral("MyInt"));
+    QCOMPARE(type->location().path(), QStringLiteral("Test2File.asn"));
+    QCOMPARE(type->location().line(), 4);
+    QCOMPARE(type->location().column(), 10);
+
+    QCOMPARE(type->parent(), m_parsedData["Test2File.asn"]->definitions("TestDefinitions"));
+
+    auto constraintRanges = type->type()->constraint()->ranges();
+    QCOMPARE(constraintRanges.size(), 6);
+
+    QVERIFY(constraintRanges.contains(QPair<QVariant, QVariant>(10, 20)));
+    QVERIFY(constraintRanges.contains(QPair<QVariant, QVariant>(30, 40)));
+    QVERIFY(constraintRanges.contains(QPair<QVariant, QVariant>(42, 42)));
+    QVERIFY(constraintRanges.contains(QPair<QVariant, QVariant>(44, 44)));
+    QVERIFY(constraintRanges.contains(QPair<QVariant, QVariant>(46, 46)));
+    QVERIFY(constraintRanges.contains(QPair<QVariant, QVariant>(50, 80)));
+}
+
 void AstXmlParserTests::parsingFails(const QString &xmlData)
 {
     setXmlData(xmlData);

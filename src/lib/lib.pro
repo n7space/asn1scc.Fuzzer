@@ -41,6 +41,7 @@ HEADERS += \
     data/valueassignment.h \
     data/visitor.h \
     data/visitorwithvalue.h \
+    data/constraint.h \
     \
     data/types/builtintypes.h \
     data/types/labeltype.h \

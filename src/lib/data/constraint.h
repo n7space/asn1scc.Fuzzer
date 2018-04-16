@@ -25,34 +25,33 @@
 ****************************************************************************/
 #pragma once
 
-#include <QString>
+#include <functional>
 
-#include <data/constraint.h>
+#include <QPair>
+#include <QString>
+#include <QVariant>
 
 namespace MalTester {
 namespace Data {
-namespace Types {
 
-class Type
+class Constraint
 {
 public:
-    Type()
-        : m_constraint(nullptr)
+    using VariantPair = QPair<QVariant, QVariant>;
+    using StringPair = QPair<QString, QString>;
+    using Ranges = QList<VariantPair>;
+
+    Constraint(std::function<VariantPair(StringPair)> convert)
+        : m_convertRange(convert)
     {}
-    virtual ~Type() { delete m_constraint; }
 
-    virtual QString name() const = 0;
-    virtual QString label() const = 0;
-
-    Constraint *constraint() const { return m_constraint; }
-
-protected:
-    Constraint *m_constraint;
+    const Ranges &ranges() const { return m_ranges; }
+    void addRange(const StringPair &range) { m_ranges.push_back(m_convertRange(range)); }
 
 private:
-    virtual QString baseIconFile() const = 0;
+    Ranges m_ranges;
+    std::function<VariantPair(StringPair)> m_convertRange;
 };
 
-} // namespace Types
 } // namespace Data
 } // namespace MalTester

@@ -79,14 +79,23 @@ private:
 
     std::unique_ptr<Data::Types::Type> readType();
     std::unique_ptr<Data::Types::Type> readTypeDetails(const Data::SourceLocation &location);
-    std::unique_ptr<Data::Types::Type> readReferenceType(const Data::SourceLocation &location);
     std::unique_ptr<Data::Types::Type> buildTypeFromName(const Data::SourceLocation &location,
-                                                         const QStringRef &name);
+                                                         const QStringRef &name,
+                                                         bool isParametrized);
+    std::unique_ptr<Data::Types::Type> createReferenceType(const Data::SourceLocation &location);
 
-    void readTypeContents(const QStringRef &name);
+    void readTypeContents(const QStringRef &name, std::unique_ptr<Data::Types::Type> &type);
+
     void readSequence();
     void readSequenceOf();
     void readChoice();
+    void readReferenceType(std::unique_ptr<Data::Types::Type> &type);
+    void readInteger(std::unique_ptr<Data::Types::Type> &type);
+
+    void readConstraint(std::unique_ptr<Data::Types::Type> &type, const QString &valName);
+    void readRanges(std::unique_ptr<Data::Types::Type> &type, const QString &valName);
+    void readRange(std::unique_ptr<Data::Types::Type> &type, const QString &valName);
+    QString readValue(const QString &valName);
 
     QString readTypeAssignmentAttribute();
     QString readModuleAttribute();

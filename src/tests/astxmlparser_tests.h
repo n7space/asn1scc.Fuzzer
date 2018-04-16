@@ -60,9 +60,13 @@ private slots:
     void test_multipleModules();
     void test_multipleFiles();
     void test_parametrizedInstancesContentsAreIgnored();
-    void test_singleTypeAssignmentWithRangedConstraints();
-    void test_singleTypeAssignmentWithSimpleConstraint();
-    void test_singleTypeAssignmentWitAcnData();
+
+    void test_singleIntegerTypeAssignmentWithSimpleConstraint();
+    void test_singleIntegerTypeAssignmentWithRangedConstraints();
+    void test_singleIntegerTypeAssignmentWitAcnData();
+
+    void test_singleRealTypeAssignmentWithSimpleConstraint();
+    void test_singleRealTypeAssignmentWithRangedConstraints();
 
 private:
     void setXmlData(const QString &str);

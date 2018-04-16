@@ -25,7 +25,9 @@
 ****************************************************************************/
 
 #include "builtintypes.h"
+
 #include "integertype.h"
+#include "realtype.h"
 
 using namespace MalTester::Data::Types;
 

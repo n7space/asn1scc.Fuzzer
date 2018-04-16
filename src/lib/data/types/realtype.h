@@ -27,7 +27,6 @@
 
 #include <QString>
 
-#include <data/acnparameters.h>
 #include <data/constraint.h>
 
 #include <data/types/builtintypes.h>
@@ -36,55 +35,22 @@ namespace MalTester {
 namespace Data {
 namespace Types {
 
-class IntegerAcnParameters : public AcnParameters
+class Real : public BuiltinType
 {
 public:
-    IntegerAcnParameters()
-        : m_size(0)
-        , m_encoding(Encoding::undefined)
-        , m_endianness(Endianness::undefined)
-        , m_alignToNext(AlignToNext::undefined)
-    {}
+    Real() { m_constraint = new Constraint(Real::toVariantPair); }
 
-    void setSize(const int size) override { m_size = size; }
-    int size() const override { return m_size; }
-
-    void setEncoding(const Encoding encoding) override { m_encoding = encoding; }
-    Encoding encoding() const override { return m_encoding; }
-
-    void setEndianness(const Endianness endianness) override { m_endianness = endianness; }
-    Endianness endianness() const override { return m_endianness; }
-
-    void setAlignToNext(const AlignToNext alignToNext) override { m_alignToNext = alignToNext; }
-    AlignToNext alignToNext() const override { return m_alignToNext; }
-
-private:
-    int m_size;
-    Encoding m_encoding;
-    Endianness m_endianness;
-    AlignToNext m_alignToNext;
-};
-
-class Integer : public BuiltinType
-{
-public:
-    Integer()
-    {
-        m_constraint = new Constraint(Integer::toVariantPair);
-        m_acnParams = new IntegerAcnParameters;
-    }
-
-    QString name() const override { return QLatin1String("INTEGER"); }
+    QString name() const override { return QLatin1String("REAL"); }
 
 private:
     QString baseIconFile() const override
     {
-        return QStringLiteral(":/asn1acn/images/outline/integer.png");
+        return QStringLiteral(":/asn1acn/images/outline/real.png");
     }
 
     static Constraint::VariantPair toVariantPair(const Constraint::StringPair &range)
     {
-        return {range.first.toInt(), range.second.toInt()};
+        return {range.first.toDouble(), range.second.toDouble()};
     }
 };
 

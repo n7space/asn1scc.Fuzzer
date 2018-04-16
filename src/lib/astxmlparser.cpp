@@ -29,9 +29,117 @@
 #include <data/sourcelocation.h>
 
 #include <data/types/builtintypes.h>
+#include <data/types/integertype.h>
+#include <data/types/typevisitor.h>
 #include <data/types/userdefinedtype.h>
 
 using namespace MalTester;
+
+namespace {
+class TypeAttributesAssigningVisitor : public Data::Types::TypeVisitor
+{
+public:
+    TypeAttributesAssigningVisitor(const QXmlStreamAttributes &attributes)
+        : m_attributes(attributes)
+    {}
+
+    ~TypeAttributesAssigningVisitor() override {}
+
+    void visit(Data::Types::Boolean &type) override
+    {
+        Q_UNUSED(type);
+        // TODO?
+    }
+
+    void visit(Data::Types::Null &type) override
+    {
+        Q_UNUSED(type);
+        // TODO?
+    }
+
+    void visit(Data::Types::BitString &type) override
+    {
+        Q_UNUSED(type);
+        // TODO?
+    }
+
+    void visit(Data::Types::OctetString &type) override
+    {
+        Q_UNUSED(type);
+        // TODO?
+    }
+
+    void visit(Data::Types::IA5String &type) override
+    {
+        Q_UNUSED(type);
+        // TODO?
+    }
+
+    void visit(Data::Types::NumericString &type) override
+    {
+        Q_UNUSED(type);
+        // TODO?
+    }
+
+    void visit(Data::Types::Enumarated &type) override
+    {
+        Q_UNUSED(type);
+        // TODO?
+    }
+
+    void visit(Data::Types::Choice &type) override
+    {
+        Q_UNUSED(type);
+        // TODO?
+    }
+
+    void visit(Data::Types::Sequence &type) override
+    {
+        Q_UNUSED(type);
+        // TODO?
+    }
+
+    void visit(Data::Types::SequenceOf &type) override
+    {
+        Q_UNUSED(type);
+        // TODO?
+    }
+
+    void visit(Data::Types::Real &type) override
+    {
+        Q_UNUSED(type);
+        // TODO?
+    }
+
+    void visit(Data::Types::LabelType &type) override
+    {
+        Q_UNUSED(type);
+        // TODO?
+    }
+
+    void visit(Data::Types::Integer &type) override
+    {
+        auto acnParams = type.acnParams();
+        if (!acnParams)
+            return;
+
+        acnParams->setSize(m_attributes.value(QLatin1String("size")).toInt());
+        acnParams->setEndianness(
+            Data::AcnParameters::mapEndianess(m_attributes.value(QLatin1String("endianness"))));
+        acnParams->setEncoding(
+            Data::AcnParameters::mapEncoding(m_attributes.value(QLatin1String("encoding"))));
+    }
+
+    void visit(Data::Types::UserdefinedType &type) override
+    {
+        Q_UNUSED(type);
+        // TODO?
+    }
+
+private:
+    const QXmlStreamAttributes &m_attributes;
+};
+} // namespace
 
 AstXmlParser::AstXmlParser(QXmlStreamReader &xmlReader)
     : m_xmlReader(xmlReader)
@@ -292,9 +400,16 @@ std::unique_ptr<Data::Types::Type> AstXmlParser::buildTypeFromName(
         return type;
     }
 
+    readTypeAttributes(type);
     readTypeContents(name, type);
 
     return type;
+}
+
+void AstXmlParser::readTypeAttributes(std::unique_ptr<Data::Types::Type> &type)
+{
+    TypeAttributesAssigningVisitor visitor(m_xmlReader.attributes());
+    type->accept(visitor);
 }
 
 std::unique_ptr<Data::Types::Type> AstXmlParser::createReferenceType(
@@ -352,26 +467,12 @@ void AstXmlParser::readChoice()
 
 void AstXmlParser::readInteger(std::unique_ptr<Data::Types::Type> &type)
 {
-    readIntegerAcnParams(type);
     readConstraint(type, "IntegerValue");
 }
 
 void AstXmlParser::readReal(std::unique_ptr<Data::Types::Type> &type)
 {
     readConstraint(type, "RealValue");
-}
-
-void AstXmlParser::readIntegerAcnParams(std::unique_ptr<Data::Types::Type> &type)
-{
-    auto acnParams = type->acnParams();
-    if (!acnParams)
-        return;
-
-    acnParams->setSize(m_xmlReader.attributes().value(QLatin1String("size")).toInt());
-    acnParams->setEndianness(Data::AcnParameters::mapEndianess(
-        m_xmlReader.attributes().value(QLatin1String("endianness"))));
-    acnParams->setEncoding(Data::AcnParameters::mapEncoding(
-        m_xmlReader.attributes().value(QLatin1String("encoding"))));
 }
 
 void AstXmlParser::readReferenceType(std::unique_ptr<Data::Types::Type> &type)

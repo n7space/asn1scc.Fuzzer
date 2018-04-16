@@ -23,48 +23,13 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-#pragma once
+#include "boolean.h"
 
-namespace MalTester {
-namespace Data {
-namespace Types {
+#include "typevisitor.h"
 
-class Boolean;
-class Null;
-class BitString;
-class OctetString;
-class IA5String;
-class NumericString;
-class Enumerated;
-class Choice;
-class Sequence;
-class SequenceOf;
-class Real;
-class LabelType;
-class Integer;
-class UserdefinedType;
+using namespace MalTester::Data::Types;
 
-class TypeVisitor
+void Boolean::accept(TypeVisitor &visitor)
 {
-public:
-    virtual ~TypeVisitor();
-
-    virtual void visit(Boolean &type) = 0;
-    virtual void visit(Null &type) = 0;
-    virtual void visit(BitString &type) = 0;
-    virtual void visit(OctetString &type) = 0;
-    virtual void visit(IA5String &type) = 0;
-    virtual void visit(NumericString &type) = 0;
-    virtual void visit(Enumerated &type) = 0;
-    virtual void visit(Choice &type) = 0;
-    virtual void visit(Sequence &type) = 0;
-    virtual void visit(SequenceOf &type) = 0;
-    virtual void visit(Real &type) = 0;
-    virtual void visit(LabelType &type) = 0;
-    virtual void visit(Integer &type) = 0;
-    virtual void visit(UserdefinedType &type) = 0;
-};
-
-} // namespace Types
-} // namespace Data
-} // namespace MalTester
+    visitor.visit(*this);
+}

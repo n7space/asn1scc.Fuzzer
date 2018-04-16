@@ -27,7 +27,7 @@
 
 #include <QtTest>
 
-#include <data/types/builtintypes.h>
+#include <data/types/integer.h>
 
 using namespace MalTester::Tests;
 using namespace MalTester;

@@ -23,48 +23,32 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-#pragma once
+#include "real.h"
 
-namespace MalTester {
-namespace Data {
-namespace Types {
+#include "typevisitor.h"
 
-class Boolean;
-class Null;
-class BitString;
-class OctetString;
-class IA5String;
-class NumericString;
-class Enumerated;
-class Choice;
-class Sequence;
-class SequenceOf;
-class Real;
-class LabelType;
-class Integer;
-class UserdefinedType;
+using namespace MalTester::Data;
+using namespace MalTester::Data::Types;
 
-class TypeVisitor
+static Constraints::VariantPair toVariantPair(const Constraints::StringPair &range)
 {
-public:
-    virtual ~TypeVisitor();
+    return {range.first.toDouble(), range.second.toDouble()};
+}
 
-    virtual void visit(Boolean &type) = 0;
-    virtual void visit(Null &type) = 0;
-    virtual void visit(BitString &type) = 0;
-    virtual void visit(OctetString &type) = 0;
-    virtual void visit(IA5String &type) = 0;
-    virtual void visit(NumericString &type) = 0;
-    virtual void visit(Enumerated &type) = 0;
-    virtual void visit(Choice &type) = 0;
-    virtual void visit(Sequence &type) = 0;
-    virtual void visit(SequenceOf &type) = 0;
-    virtual void visit(Real &type) = 0;
-    virtual void visit(LabelType &type) = 0;
-    virtual void visit(Integer &type) = 0;
-    virtual void visit(UserdefinedType &type) = 0;
-};
+Real::Real()
+    : Type(std::make_unique<Constraints>(toVariantPair))
+{}
 
-} // namespace Types
-} // namespace Data
-} // namespace MalTester
+void Real::accept(TypeVisitor &visitor)
+{
+    visitor.visit(*this);
+}
+
+RealEncoding Real::mapEncoding(const QStringRef &in)
+{
+    if (in == "IEEE754_1985_32")
+        return RealEncoding::IEEE754_1985_32;
+    if (in == "IEEE754_1985_64")
+        return RealEncoding::IEEE754_1985_64;
+    return RealEncoding::unspecified;
+}

@@ -25,44 +25,20 @@
 ****************************************************************************/
 #pragma once
 
+#include <QString>
+
+#include <data/types/type.h>
+
 namespace MalTester {
 namespace Data {
 namespace Types {
 
-class Boolean;
-class Null;
-class BitString;
-class OctetString;
-class IA5String;
-class NumericString;
-class Enumerated;
-class Choice;
-class Sequence;
-class SequenceOf;
-class Real;
-class LabelType;
-class Integer;
-class UserdefinedType;
-
-class TypeVisitor
+class NumericString : public Type
 {
 public:
-    virtual ~TypeVisitor();
+    QString name() const override { return QLatin1String("NumericString"); }
 
-    virtual void visit(Boolean &type) = 0;
-    virtual void visit(Null &type) = 0;
-    virtual void visit(BitString &type) = 0;
-    virtual void visit(OctetString &type) = 0;
-    virtual void visit(IA5String &type) = 0;
-    virtual void visit(NumericString &type) = 0;
-    virtual void visit(Enumerated &type) = 0;
-    virtual void visit(Choice &type) = 0;
-    virtual void visit(Sequence &type) = 0;
-    virtual void visit(SequenceOf &type) = 0;
-    virtual void visit(Real &type) = 0;
-    virtual void visit(LabelType &type) = 0;
-    virtual void visit(Integer &type) = 0;
-    virtual void visit(UserdefinedType &type) = 0;
+    void accept(TypeVisitor &visitor) override;
 };
 
 } // namespace Types

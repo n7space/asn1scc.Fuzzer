@@ -23,14 +23,25 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
+#include "typefactory.h"
 
-#include "builtintypes.h"
-
+#include "bitstring.h"
+#include "boolean.h"
+#include "choice.h"
+#include "enumerated.h"
+#include "ia5string.h"
+#include "integer.h"
+#include "null.h"
+#include "numericstring.h"
+#include "octetstring.h"
+#include "real.h"
+#include "sequence.h"
+#include "sequenceof.h"
 #include "typevisitor.h"
 
 using namespace MalTester::Data::Types;
 
-std::unique_ptr<Type> BuiltinType::createBuiltinType(const QString &name)
+std::unique_ptr<Type> TypeFactory::createBuiltinType(const QString &name)
 {
     if (name == QStringLiteral("BOOLEAN"))
         return std::make_unique<Boolean>();
@@ -57,7 +68,7 @@ std::unique_ptr<Type> BuiltinType::createBuiltinType(const QString &name)
         return std::make_unique<NumericString>();
 
     if (name == QStringLiteral("Enumerated"))
-        return std::make_unique<Enumarated>();
+        return std::make_unique<Enumerated>();
 
     if (name == QStringLiteral("CHOICE"))
         return std::make_unique<Choice>();
@@ -69,95 +80,4 @@ std::unique_ptr<Type> BuiltinType::createBuiltinType(const QString &name)
         return std::make_unique<SequenceOf>();
 
     return nullptr;
-}
-
-void Boolean::accept(TypeVisitor &visitor)
-{
-    visitor.visit(*this);
-}
-
-void Null::accept(TypeVisitor &visitor)
-{
-    visitor.visit(*this);
-}
-
-void BitString::accept(TypeVisitor &visitor)
-{
-    visitor.visit(*this);
-}
-
-void OctetString::accept(TypeVisitor &visitor)
-{
-    visitor.visit(*this);
-}
-
-void IA5String::accept(TypeVisitor &visitor)
-{
-    visitor.visit(*this);
-}
-
-void NumericString::accept(TypeVisitor &visitor)
-{
-    visitor.visit(*this);
-}
-
-void Enumarated::accept(TypeVisitor &visitor)
-{
-    visitor.visit(*this);
-}
-
-void Choice::accept(TypeVisitor &visitor)
-{
-    visitor.visit(*this);
-}
-
-void Sequence::accept(TypeVisitor &visitor)
-{
-    visitor.visit(*this);
-}
-
-void SequenceOf::accept(TypeVisitor &visitor)
-{
-    visitor.visit(*this);
-}
-
-void Integer::accept(TypeVisitor &visitor)
-{
-    visitor.visit(*this);
-}
-
-void Real::accept(TypeVisitor &visitor)
-{
-    visitor.visit(*this);
-}
-
-IntegerEncoding Integer::mapEncoding(const QStringRef &in)
-{
-    if (in == "pos-int")
-        return IntegerEncoding::pos_int;
-    if (in == "twos-complement")
-        return IntegerEncoding::twos_complement;
-    if (in == "ASCII")
-        return IntegerEncoding::ASCII;
-    if (in == "BCD")
-        return IntegerEncoding::BCD;
-    return IntegerEncoding::unspecified;
-}
-
-Endianness Integer::mapEndianess(const QStringRef &in)
-{
-    if (in == "big")
-        return Endianness::big;
-    if (in == "little")
-        return Endianness::little;
-    return Endianness::unspecified;
-}
-
-RealEncoding Real::mapEncoding(const QStringRef &in)
-{
-    if (in == "IEEE754_1985_32")
-        return RealEncoding::IEEE754_1985_32;
-    if (in == "IEEE754_1985_64")
-        return RealEncoding::IEEE754_1985_64;
-    return RealEncoding::unspecified;
 }

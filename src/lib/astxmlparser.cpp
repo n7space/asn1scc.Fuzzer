@@ -28,7 +28,8 @@
 
 #include <data/sourcelocation.h>
 
-#include <data/types/builtintypes.h>
+#include <data/types/integer.h>
+#include <data/types/typefactory.h>
 #include <data/types/typevisitor.h>
 #include <data/types/userdefinedtype.h>
 
@@ -80,7 +81,7 @@ public:
         // TODO?
     }
 
-    void visit(Data::Types::Enumarated &type) override
+    void visit(Data::Types::Enumerated &type) override
     {
         Q_UNUSED(type);
         // TODO?
@@ -388,7 +389,7 @@ std::unique_ptr<Data::Types::Type> AstXmlParser::buildTypeFromName(
     auto name = m_xmlReader.name();
     auto type = (name == QStringLiteral("REFERENCE_TYPE"))
                     ? createReferenceType(location)
-                    : Data::Types::BuiltinType::createBuiltinType(name.toString());
+                    : Data::Types::TypeFactory::createBuiltinType(name.toString());
 
     if (isParametrized) {
         m_xmlReader.skipCurrentElement();

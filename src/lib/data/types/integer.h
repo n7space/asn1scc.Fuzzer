@@ -25,44 +25,49 @@
 ****************************************************************************/
 #pragma once
 
+#include <QString>
+
+#include <data/types/type.h>
+
 namespace MalTester {
 namespace Data {
 namespace Types {
 
-class Boolean;
-class Null;
-class BitString;
-class OctetString;
-class IA5String;
-class NumericString;
-class Enumerated;
-class Choice;
-class Sequence;
-class SequenceOf;
-class Real;
-class LabelType;
-class Integer;
-class UserdefinedType;
+enum class Endianness { big, little, unspecified };
 
-class TypeVisitor
+enum class IntegerEncoding {
+    pos_int,
+    twos_complement,
+    ASCII,
+    BCD,
+    unspecified,
+};
+
+class Integer : public Type
 {
 public:
-    virtual ~TypeVisitor();
+    Integer();
 
-    virtual void visit(Boolean &type) = 0;
-    virtual void visit(Null &type) = 0;
-    virtual void visit(BitString &type) = 0;
-    virtual void visit(OctetString &type) = 0;
-    virtual void visit(IA5String &type) = 0;
-    virtual void visit(NumericString &type) = 0;
-    virtual void visit(Enumerated &type) = 0;
-    virtual void visit(Choice &type) = 0;
-    virtual void visit(Sequence &type) = 0;
-    virtual void visit(SequenceOf &type) = 0;
-    virtual void visit(Real &type) = 0;
-    virtual void visit(LabelType &type) = 0;
-    virtual void visit(Integer &type) = 0;
-    virtual void visit(UserdefinedType &type) = 0;
+    QString name() const override;
+
+    void accept(TypeVisitor &visitor) override;
+
+    void setSize(const int size) { m_size = size; }
+    int size() const { return m_size; }
+
+    void setEncoding(const IntegerEncoding encoding) { m_encoding = encoding; }
+    IntegerEncoding encoding() const { return m_encoding; }
+
+    void setEndianness(const Endianness endianness) { m_endianness = endianness; }
+    Endianness endianness() const { return m_endianness; }
+
+    static IntegerEncoding mapEncoding(const QStringRef &in);
+    static Endianness mapEndianess(const QStringRef &in);
+
+private:
+    IntegerEncoding m_encoding;
+    Endianness m_endianness;
+    int m_size;
 };
 
 } // namespace Types

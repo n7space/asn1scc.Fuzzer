@@ -27,41 +27,46 @@
 
 #include <QString>
 
-#include <data/acnparameters.h>
-#include <data/constraint.h>
-
 namespace MalTester {
 namespace Data {
-namespace Types {
 
-class Type
-{
-public:
-    Type()
-        : m_constraint(nullptr)
-        , m_acnParams(nullptr)
-    {}
-
-    virtual ~Type()
-    {
-        delete m_constraint;
-        delete m_acnParams;
-    }
-
-    virtual QString name() const = 0;
-    virtual QString label() const = 0;
-
-    Constraint *constraint() const { return m_constraint; }
-    AcnParameters *acnParams() const { return m_acnParams; }
-
-protected:
-    Constraint *m_constraint;
-    AcnParameters *m_acnParams;
-
-private:
-    virtual QString baseIconFile() const = 0;
+enum class Encoding {
+    pos_int,
+    twos_complement,
+    ASCII,
+    BCD,
+    IEEE754_1985_32,
+    IEEE754_1985_64,
+    undefined
 };
 
-} // namespace Types
+enum class Endianness { big, little, undefined };
+
+enum class AlignToNext { byte, word, dword, undefined };
+
+class AcnParameters
+{
+public:
+    virtual ~AcnParameters() = 0;
+
+    virtual void setSize(const int size) { Q_UNUSED(size); }
+    virtual int size() const { return 0; }
+
+    virtual void setEncoding(const Encoding encoding) { Q_UNUSED(encoding); }
+    virtual Encoding encoding() const { return Encoding::undefined; }
+
+    virtual void setEndianness(const Endianness endianness) { Q_UNUSED(endianness); }
+    virtual Endianness endianness() const { return Endianness::undefined; }
+
+    virtual void setAlignToNext(const AlignToNext alignToNext) { Q_UNUSED(alignToNext); }
+    virtual AlignToNext alignToNext() const { return AlignToNext::undefined; }
+
+    static Encoding mapEncoding(const QStringRef &in);
+    static Endianness mapEndianess(const QStringRef &in);
+    static AlignToNext mapAlignToNext(const QStringRef &in);
+};
+
+inline AcnParameters::~AcnParameters() {}
+
 } // namespace Data
 } // namespace MalTester

@@ -240,13 +240,21 @@ Data::SourceLocation AstXmlParser::readLocationFromAttributes()
     return {m_currentFile, readLineAttribute(), readCharPossitionInLineAttribute()};
 }
 
+QStringRef AstXmlParser::readIsAlignedToNext()
+{
+    return m_xmlReader.attributes().value(QLatin1String("align-to-next"));
+}
+
 std::unique_ptr<Data::Types::Type> AstXmlParser::readType()
 {
     if (!skipToChildElement(QStringLiteral("Asn1Type")))
         return {};
 
     const auto location = readLocationFromAttributes();
-    auto type = readTypeDetails(location);
+    const auto isParametrized = isParametrizedTypeInstance();
+    const auto alignToNext = readIsAlignedToNext();
+
+    auto type = readTypeDetails(location, isParametrized, alignToNext);
 
     m_xmlReader.skipCurrentElement();
 
@@ -259,18 +267,24 @@ bool AstXmlParser::isParametrizedTypeInstance() const
     return !value.isNull() && value == QStringLiteral("true");
 }
 
-std::unique_ptr<Data::Types::Type> AstXmlParser::readTypeDetails(const Data::SourceLocation &location)
+std::unique_ptr<Data::Types::Type> AstXmlParser::readTypeDetails(
+    const Data::SourceLocation &location, const bool isParametrized, const QStringRef &typeAlignment)
 {
-    const bool isParametrized = isParametrizedTypeInstance();
+    auto type = buildTypeFromName(location, isParametrized);
 
-    return m_xmlReader.readNextStartElement()
-               ? buildTypeFromName(location, m_xmlReader.name(), isParametrized)
-               : nullptr;
+    if (type && type->acnParams())
+        type->acnParams()->setAlignToNext(Data::AcnParameters::mapAlignToNext(typeAlignment));
+
+    return type;
 }
 
 std::unique_ptr<Data::Types::Type> AstXmlParser::buildTypeFromName(
-    const Data::SourceLocation &location, const QStringRef &name, bool isParametrized)
+    const Data::SourceLocation &location, bool isParametrized)
 {
+    if (!m_xmlReader.readNextStartElement())
+        return nullptr;
+
+    auto name = m_xmlReader.name();
     auto type = (name == QStringLiteral("REFERENCE_TYPE"))
                     ? createReferenceType(location)
                     : Data::Types::BuiltinType::createBuiltinType(name.toString());
@@ -338,7 +352,23 @@ void AstXmlParser::readChoice()
 
 void AstXmlParser::readInteger(std::unique_ptr<Data::Types::Type> &type)
 {
+    readIntegerAcnParams(type);
     readConstraint(type, "IntegerValue");
+}
+
+void AstXmlParser::readIntegerAcnParams(std::unique_ptr<Data::Types::Type> &type)
+{
+    auto acnParams = type->acnParams();
+    if (!acnParams)
+        return;
+
+    acnParams->setSize(m_xmlReader.attributes().value(QLatin1String("size")).toInt());
+    acnParams->setEndianness(Data::AcnParameters::mapEndianess(
+        m_xmlReader.attributes().value(QLatin1String("endianness"))));
+    acnParams->setEncoding(Data::AcnParameters::mapEncoding(
+        m_xmlReader.attributes().value(QLatin1String("encoding"))));
+    acnParams->setAlignToNext(Data::AcnParameters::mapAlignToNext(
+        m_xmlReader.attributes().value(QLatin1String("align-to-next"))));
 }
 
 void AstXmlParser::readReferenceType(std::unique_ptr<Data::Types::Type> &type)

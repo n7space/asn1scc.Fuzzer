@@ -76,11 +76,13 @@ private:
     void readImportedType(const QString &moduleName);
 
     Data::SourceLocation readLocationFromAttributes();
+    QStringRef readIsAlignedToNext();
 
     std::unique_ptr<Data::Types::Type> readType();
-    std::unique_ptr<Data::Types::Type> readTypeDetails(const Data::SourceLocation &location);
+    std::unique_ptr<Data::Types::Type> readTypeDetails(const Data::SourceLocation &location,
+                                                       const bool isParametrized,
+                                                       const QStringRef &typeAlignment);
     std::unique_ptr<Data::Types::Type> buildTypeFromName(const Data::SourceLocation &location,
-                                                         const QStringRef &name,
                                                          bool isParametrized);
     std::unique_ptr<Data::Types::Type> createReferenceType(const Data::SourceLocation &location);
 
@@ -90,7 +92,9 @@ private:
     void readSequenceOf();
     void readChoice();
     void readReferenceType(std::unique_ptr<Data::Types::Type> &type);
+
     void readInteger(std::unique_ptr<Data::Types::Type> &type);
+    void readIntegerAcnParams(std::unique_ptr<Data::Types::Type> &type);
 
     void readConstraint(std::unique_ptr<Data::Types::Type> &type, const QString &valName);
     void readRanges(std::unique_ptr<Data::Types::Type> &type, const QString &valName);

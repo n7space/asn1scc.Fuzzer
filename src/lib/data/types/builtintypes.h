@@ -52,60 +52,80 @@ class Boolean : public BuiltinType
 {
 public:
     QString name() const override { return QLatin1String("BOOLEAN"); }
+
+    void accept(TypeVisitor &visitor) override;
 };
 
 class Null : public BuiltinType
 {
 public:
     QString name() const override { return QLatin1String("NULL"); }
+
+    void accept(TypeVisitor &visitor) override;
 };
 
 class BitString : public BuiltinType
 {
 public:
     QString name() const override { return QLatin1String("BIT STRING"); }
+
+    void accept(TypeVisitor &visitor) override;
 };
 
 class OctetString : public BuiltinType
 {
 public:
     QString name() const override { return QLatin1String("OCTET STRING"); }
+
+    void accept(TypeVisitor &visitor) override;
 };
 
 class IA5String : public BuiltinType
 {
 public:
     QString name() const override { return QLatin1String("IA5String"); }
+
+    void accept(TypeVisitor &visitor) override;
 };
 
 class NumericString : public BuiltinType
 {
 public:
     QString name() const override { return QLatin1String("NumericString"); }
+
+    void accept(TypeVisitor &visitor) override;
 };
 
 class Enumarated : public BuiltinType
 {
 public:
     QString name() const override { return QLatin1String("ENUMERATED"); }
+
+    void accept(TypeVisitor &visitor) override;
 };
 
 class Choice : public BuiltinType
 {
 public:
     QString name() const override { return QLatin1String("CHOICE"); }
+
+    void accept(TypeVisitor &visitor) override;
 };
 
 class Sequence : public BuiltinType
 {
 public:
     QString name() const override { return QLatin1String("SEQUENCE"); }
+
+    void accept(TypeVisitor &visitor) override;
 };
 
 class SequenceOf : public BuiltinType
 {
 public:
     QString name() const override { return QLatin1String("SEQUENCE OF"); }
+
+    void accept(TypeVisitor &visitor) override;
 };
 
 } // namespace Types

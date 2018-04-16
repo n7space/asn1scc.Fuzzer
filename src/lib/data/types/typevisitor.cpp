@@ -23,37 +23,8 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-#pragma once
+#include "typevisitor.h"
 
-#include <QString>
+using namespace MalTester::Data::Types;
 
-#include <data/constraints.h>
-
-#include <data/types/builtintypes.h>
-#include <data/types/typevisitor.h>
-
-namespace MalTester {
-namespace Data {
-namespace Types {
-
-class Real : public BuiltinType
-{
-public:
-    Real()
-        : BuiltinType(std::make_unique<Constraints>(&Real::toVariantPair))
-    {}
-
-    QString name() const override { return QLatin1String("REAL"); }
-
-    void accept(TypeVisitor &visitor) override { visitor.visit(*this); }
-
-private:
-    static Constraints::VariantPair toVariantPair(const Constraints::StringPair &range)
-    {
-        return {range.first.toDouble(), range.second.toDouble()};
-    }
-};
-
-} // namespace Types
-} // namespace Data
-} // namespace MalTester
+TypeVisitor::~TypeVisitor() {}

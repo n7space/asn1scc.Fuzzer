@@ -31,6 +31,7 @@
 #include <data/constraints.h>
 
 #include <data/types/builtintypes.h>
+#include <data/types/typevisitor.h>
 
 namespace MalTester {
 namespace Data {
@@ -69,6 +70,8 @@ public:
     {}
 
     QString name() const override { return QLatin1String("INTEGER"); }
+
+    void accept(TypeVisitor &visitor) override { visitor.visit(*this); }
 
 private:
     static Constraints::VariantPair toVariantPair(const Constraints::StringPair &range)

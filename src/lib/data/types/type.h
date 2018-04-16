@@ -36,6 +36,8 @@ namespace MalTester {
 namespace Data {
 namespace Types {
 
+class TypeVisitor;
+
 enum class AlignToNext { byte, word, dword, unspecified };
 
 class Type
@@ -51,6 +53,7 @@ public:
     virtual ~Type();
 
     virtual QString name() const = 0;
+    virtual void accept(TypeVisitor &visitor) = 0;
 
     const Constraints *constraint() const { return m_constraints.get(); }
     const AcnParameters *acnParams() const { return m_acnParams.get(); }

@@ -28,6 +28,7 @@
 
 #include "integertype.h"
 #include "realtype.h"
+#include "typevisitor.h"
 
 using namespace MalTester::Data::Types;
 
@@ -70,4 +71,54 @@ std::unique_ptr<Type> BuiltinType::createBuiltinType(const QString &name)
         return std::make_unique<SequenceOf>();
 
     return nullptr;
+}
+
+void Boolean::accept(TypeVisitor &visitor)
+{
+    visitor.visit(*this);
+}
+
+void Null::accept(TypeVisitor &visitor)
+{
+    visitor.visit(*this);
+}
+
+void BitString::accept(TypeVisitor &visitor)
+{
+    visitor.visit(*this);
+}
+
+void OctetString::accept(TypeVisitor &visitor)
+{
+    visitor.visit(*this);
+}
+
+void IA5String::accept(TypeVisitor &visitor)
+{
+    visitor.visit(*this);
+}
+
+void NumericString::accept(TypeVisitor &visitor)
+{
+    visitor.visit(*this);
+}
+
+void Enumarated::accept(TypeVisitor &visitor)
+{
+    visitor.visit(*this);
+}
+
+void Choice::accept(TypeVisitor &visitor)
+{
+    visitor.visit(*this);
+}
+
+void Sequence::accept(TypeVisitor &visitor)
+{
+    visitor.visit(*this);
+}
+
+void SequenceOf::accept(TypeVisitor &visitor)
+{
+    visitor.visit(*this);
 }

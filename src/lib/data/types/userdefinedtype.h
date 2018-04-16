@@ -41,6 +41,8 @@ public:
 
     QString name() const override;
 
+    void accept(TypeVisitor &visitor) override;
+
 private:
     QString m_name;
     QString m_module;

@@ -23,8 +23,9 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-
 #include "labeltype.h"
+
+#include <data/types/typevisitor.h>
 
 using namespace MalTester::Data::Types;
 
@@ -35,4 +36,9 @@ LabelType::LabelType(const QString &name)
 QString LabelType::name() const
 {
     return m_name;
+}
+
+void LabelType::accept(TypeVisitor &visitor)
+{
+    visitor.visit(*this);
 }

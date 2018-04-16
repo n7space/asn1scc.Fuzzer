@@ -19,6 +19,7 @@ SOURCES += \
     data/acnparameters.cpp \
     \
     data/types/type.cpp \
+    data/types/typevisitor.cpp \
     data/types/builtintypes.cpp \
     data/types/labeltype.cpp \
     data/types/userdefinedtype.cpp \
@@ -49,6 +50,7 @@ HEADERS += \
     data/types/builtintypes.h \
     data/types/labeltype.h \
     data/types/type.h \
+    data/types/typevisitor.h \
     data/types/userdefinedtype.h \
     data/types/integertype.h \
     data/types/realtype.h \

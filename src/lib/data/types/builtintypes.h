@@ -68,18 +68,6 @@ private:
     }
 };
 
-class Real : public BuiltinType
-{
-public:
-    QString name() const override { return QLatin1String("REAL"); }
-
-private:
-    QString baseIconFile() const override
-    {
-        return QStringLiteral(":/asn1acn/images/outline/real.png");
-    }
-};
-
 class BitString : public BuiltinType
 {
 public:

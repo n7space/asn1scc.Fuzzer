@@ -50,6 +50,7 @@ HEADERS += \
     data/types/type.h \
     data/types/userdefinedtype.h \
     data/types/integertype.h \
+    data/types/realtype.h \
     \
     astxmlparser.h \
     runparameters.h \

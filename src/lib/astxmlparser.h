@@ -96,6 +96,8 @@ private:
     void readInteger(std::unique_ptr<Data::Types::Type> &type);
     void readIntegerAcnParams(std::unique_ptr<Data::Types::Type> &type);
 
+    void readReal(std::unique_ptr<Data::Types::Type> &type);
+
     void readConstraint(std::unique_ptr<Data::Types::Type> &type, const QString &valName);
     void readRanges(std::unique_ptr<Data::Types::Type> &type, const QString &valName);
     void readRange(std::unique_ptr<Data::Types::Type> &type, const QString &valName);

@@ -324,6 +324,8 @@ void AstXmlParser::readTypeContents(const QStringRef &name, std::unique_ptr<Data
         readReferenceType(type);
     else if (name == QStringLiteral("INTEGER"))
         readInteger(type);
+    else if (name == QStringLiteral("REAL"))
+        readReal(type);
     else
         m_xmlReader.skipCurrentElement();
 }
@@ -354,6 +356,11 @@ void AstXmlParser::readInteger(std::unique_ptr<Data::Types::Type> &type)
 {
     readIntegerAcnParams(type);
     readConstraint(type, "IntegerValue");
+}
+
+void AstXmlParser::readReal(std::unique_ptr<Data::Types::Type> &type)
+{
+    readConstraint(type, "RealValue");
 }
 
 void AstXmlParser::readIntegerAcnParams(std::unique_ptr<Data::Types::Type> &type)

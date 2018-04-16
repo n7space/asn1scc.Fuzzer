@@ -18,6 +18,7 @@ SOURCES += \
     data/visitor.cpp \
     data/acnparameters.cpp \
     \
+    data/types/type.cpp \
     data/types/builtintypes.cpp \
     data/types/labeltype.cpp \
     data/types/userdefinedtype.cpp \

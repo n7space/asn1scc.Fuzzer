@@ -785,7 +785,7 @@ void AstXmlParserTests::test_singleIntegerTypeAssignmentWitAcnData()
     QCOMPARE(acnParams->size(), 8);
     QCOMPARE(acnParams->encoding(), Data::Encoding::BCD);
     QCOMPARE(acnParams->endianness(), Data::Endianness::big);
-    QCOMPARE(acnParams->alignToNext(), Data::AlignToNext::dword);
+    QCOMPARE(type->type()->alignToNext(), Data::Types::AlignToNext::dword);
 }
 
 void AstXmlParserTests::test_singleRealTypeAssignmentWithSimpleConstraint()

@@ -43,7 +43,6 @@ public:
         : m_size(0)
         , m_encoding(Encoding::undefined)
         , m_endianness(Endianness::undefined)
-        , m_alignToNext(AlignToNext::undefined)
     {}
 
     void setSize(const int size) override { m_size = size; }
@@ -55,14 +54,10 @@ public:
     void setEndianness(const Endianness endianness) override { m_endianness = endianness; }
     Endianness endianness() const override { return m_endianness; }
 
-    void setAlignToNext(const AlignToNext alignToNext) override { m_alignToNext = alignToNext; }
-    AlignToNext alignToNext() const override { return m_alignToNext; }
-
 private:
     int m_size;
     Encoding m_encoding;
     Endianness m_endianness;
-    AlignToNext m_alignToNext;
 };
 
 class Integer : public BuiltinType

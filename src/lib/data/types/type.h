@@ -36,6 +36,8 @@ namespace MalTester {
 namespace Data {
 namespace Types {
 
+enum class AlignToNext { byte, word, dword, unspecified };
+
 class Type
 {
 protected:
@@ -46,7 +48,7 @@ protected:
     {}
 
 public:
-    virtual ~Type() {}
+    virtual ~Type();
 
     virtual QString name() const = 0;
     virtual QString label() const = 0;
@@ -56,9 +58,16 @@ public:
     Constraints *constraint() { return m_constraints.get(); }
     AcnParameters *acnParams() { return m_acnParams.get(); }
 
-protected:
+    void setAlignToNext(const AlignToNext alignToNext) { m_alignment = alignToNext; }
+    AlignToNext alignToNext() const { return m_alignment; }
+
+    static AlignToNext mapAlignToNext(const QStringRef &in);
+
+private:
     std::unique_ptr<Constraints> m_constraints;
     std::unique_ptr<AcnParameters> m_acnParams;
+
+    AlignToNext m_alignment;
 
 private:
     virtual QString baseIconFile() const = 0;

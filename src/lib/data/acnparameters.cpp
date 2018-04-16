@@ -55,15 +55,3 @@ Endianness AcnParameters::mapEndianess(const QStringRef &in)
 
     return Endianness::undefined;
 }
-
-AlignToNext AcnParameters::mapAlignToNext(const QStringRef &in)
-{
-    if (in == "byte")
-        return AlignToNext::byte;
-    else if (in == "word")
-        return AlignToNext::word;
-    else if (in == "dword")
-        return AlignToNext::dword;
-
-    return AlignToNext::undefined;
-}

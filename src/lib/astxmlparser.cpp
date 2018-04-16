@@ -271,9 +271,7 @@ std::unique_ptr<Data::Types::Type> AstXmlParser::readTypeDetails(
     const Data::SourceLocation &location, const bool isParametrized, const QStringRef &typeAlignment)
 {
     auto type = buildTypeFromName(location, isParametrized);
-
-    if (type && type->acnParams())
-        type->acnParams()->setAlignToNext(Data::AcnParameters::mapAlignToNext(typeAlignment));
+    type->setAlignToNext(Data::Types::Type::mapAlignToNext(typeAlignment));
 
     return type;
 }
@@ -374,8 +372,6 @@ void AstXmlParser::readIntegerAcnParams(std::unique_ptr<Data::Types::Type> &type
         m_xmlReader.attributes().value(QLatin1String("endianness"))));
     acnParams->setEncoding(Data::AcnParameters::mapEncoding(
         m_xmlReader.attributes().value(QLatin1String("encoding"))));
-    acnParams->setAlignToNext(Data::AcnParameters::mapAlignToNext(
-        m_xmlReader.attributes().value(QLatin1String("align-to-next"))));
 }
 
 void AstXmlParser::readReferenceType(std::unique_ptr<Data::Types::Type> &type)

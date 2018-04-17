@@ -34,7 +34,17 @@ std::unique_ptr<Type> Enumerated::clone() const
     return std::make_unique<Enumerated>(*this);
 }
 
+QString Enumerated::name() const
+{
+    return QLatin1String("ENUMERATED");
+}
+
 void Enumerated::accept(TypeVisitor &visitor)
 {
     visitor.visit(*this);
+}
+
+void Enumerated::addItem(const QString &key, const EnumeratedItem &item)
+{
+    m_items.insert(key, item);
 }

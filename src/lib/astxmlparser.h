@@ -97,7 +97,13 @@ private:
     void readInteger(std::unique_ptr<Data::Types::Type> &type);
     void readReal(std::unique_ptr<Data::Types::Type> &type);
 
+    void readEnumerated(std::unique_ptr<Data::Types::Type> &type);
+    void readEnumeratedItem(std::unique_ptr<Data::Types::Type> &type);
+    int readValueFromAttributes();
+
     void readConstraints(std::unique_ptr<Data::Types::Type> &type, const QString &valName);
+    void readConstraint(std::unique_ptr<Data::Types::Type> &type, const QString &valName);
+
     void readRanges(std::unique_ptr<Data::Types::Type> &type, const QString &valName);
     void readRange(std::unique_ptr<Data::Types::Type> &type, const QString &valName);
     QString readValue(const QString &valName);

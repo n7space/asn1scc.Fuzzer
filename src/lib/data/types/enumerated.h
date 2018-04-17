@@ -25,23 +25,58 @@
 ****************************************************************************/
 #pragma once
 
+#include <QHash>
 #include <QString>
 
+#include <data/sourcelocation.h>
+
+#include <data/types/constraints.h>
 #include <data/types/type.h>
 
 namespace MalTester {
 namespace Data {
 namespace Types {
 
-class Enumerated : public Type
+class EnumeratedItem
+{
+public:
+    EnumeratedItem() = default;
+
+    EnumeratedItem(const QString &name, int value, const SourceLocation &location)
+        : m_name(name)
+        , m_value(value)
+        , m_location(location)
+    {}
+
+    EnumeratedItem(const EnumeratedItem &other) = default;
+
+    const QString &name() const { return m_name; }
+    int value() const { return m_value; }
+    const SourceLocation &location() const { return m_location; }
+
+private:
+    QString m_name;
+    int m_value;
+    SourceLocation m_location;
+};
+
+class Enumerated : public Type, public WithConstraints<EnumeratedConstraints>
 {
 public:
     Enumerated() = default;
     Enumerated(const Enumerated &other) = default;
 
-    QString name() const override { return QLatin1String("ENUMERATED"); }
+    QString name() const override;
     void accept(TypeVisitor &visitor) override;
     std::unique_ptr<Type> clone() const override;
+
+    using Items = QHash<QString, EnumeratedItem>;
+
+    const Items &items() const { return m_items; }
+    void addItem(const QString &key, const EnumeratedItem &item);
+
+private:
+    Items m_items;
 };
 
 } // namespace Types

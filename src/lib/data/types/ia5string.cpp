@@ -29,6 +29,11 @@
 
 using namespace MalTester::Data::Types;
 
+std::unique_ptr<Type> IA5String::clone() const
+{
+    return std::make_unique<IA5String>(*this);
+}
+
 void IA5String::accept(TypeVisitor &visitor)
 {
     visitor.visit(*this);

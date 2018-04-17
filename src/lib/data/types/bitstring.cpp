@@ -29,6 +29,11 @@
 
 using namespace MalTester::Data::Types;
 
+std::unique_ptr<Type> BitString::clone() const
+{
+    return std::make_unique<BitString>(*this);
+}
+
 void BitString::accept(TypeVisitor &visitor)
 {
     visitor.visit(*this);

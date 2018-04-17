@@ -47,11 +47,14 @@ protected:
         , m_alignment(AlignToNext::unspecified)
     {}
 
+    Type(const Type &other);
+
 public:
     virtual ~Type();
 
     virtual QString name() const = 0;
     virtual void accept(TypeVisitor &visitor) = 0;
+    virtual std::unique_ptr<Type> clone() const = 0;
 
     const Constraints *constraint() const { return m_constraints.get(); }
     Constraints *constraint() { return m_constraints.get(); }

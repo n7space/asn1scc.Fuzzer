@@ -29,6 +29,11 @@
 
 using namespace MalTester::Data::Types;
 
+std::unique_ptr<Type> Boolean::clone() const
+{
+    return std::make_unique<Boolean>(*this);
+}
+
 void Boolean::accept(TypeVisitor &visitor)
 {
     visitor.visit(*this);

@@ -47,10 +47,11 @@ class Integer : public Type
 {
 public:
     Integer();
+    Integer(const Integer &other) = default;
 
     QString name() const override;
-
     void accept(TypeVisitor &visitor) override;
+    std::unique_ptr<Type> clone() const override;
 
     void setSize(const int size) { m_size = size; }
     int size() const { return m_size; }

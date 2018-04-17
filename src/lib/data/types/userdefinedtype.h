@@ -38,10 +38,13 @@ class UserdefinedType : public Type
 {
 public:
     UserdefinedType(const QString &name, const QString &module);
+    UserdefinedType(const UserdefinedType &other) = default;
 
     QString name() const override;
-
     void accept(TypeVisitor &visitor) override;
+    std::unique_ptr<Type> clone() const override;
+
+    const QString &module() const { return m_module; }
 
 private:
     QString m_name;

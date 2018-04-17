@@ -33,3 +33,8 @@ void Null::accept(TypeVisitor &visitor)
 {
     visitor.visit(*this);
 }
+
+std::unique_ptr<Type> Null::clone() const
+{
+    return std::make_unique<Null>(*this);
+}

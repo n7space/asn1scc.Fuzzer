@@ -39,10 +39,11 @@ class Real : public Type
 {
 public:
     Real();
+    Real(const Real &other) = default;
 
     QString name() const override { return QLatin1String("REAL"); }
-
     void accept(TypeVisitor &visitor) override;
+    std::unique_ptr<Type> clone() const override;
 
     static RealEncoding mapEncoding(const QStringRef &ref);
 };

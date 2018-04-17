@@ -36,9 +36,12 @@ namespace Types {
 class Enumerated : public Type
 {
 public:
-    QString name() const override { return QLatin1String("ENUMERATED"); }
+    Enumerated() = default;
+    Enumerated(const Enumerated &other) = default;
 
+    QString name() const override { return QLatin1String("ENUMERATED"); }
     void accept(TypeVisitor &visitor) override;
+    std::unique_ptr<Type> clone() const override;
 };
 
 } // namespace Types

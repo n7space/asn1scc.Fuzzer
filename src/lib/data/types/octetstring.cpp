@@ -33,3 +33,8 @@ void OctetString::accept(TypeVisitor &visitor)
 {
     visitor.visit(*this);
 }
+
+std::unique_ptr<Type> OctetString::clone() const
+{
+    return std::make_unique<OctetString>(*this);
+}

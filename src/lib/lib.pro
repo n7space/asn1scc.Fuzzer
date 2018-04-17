@@ -55,7 +55,6 @@ HEADERS += \
     data/valueassignment.h \
     data/visitor.h \
     data/visitorwithvalue.h \
-    data/constraints.h \
     \
     data/types/typefactory.h \
     data/types/labeltype.h \
@@ -74,6 +73,7 @@ HEADERS += \
     data/types/sequence.h \
     data/types/sequenceof.h \
     data/types/real.h \
+    data/types/constraints.h \
     \
     astxmlparser.h \
     runparameters.h \

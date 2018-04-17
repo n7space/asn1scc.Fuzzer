@@ -27,31 +27,44 @@
 
 #include <functional>
 
+#include <QList>
 #include <QPair>
-#include <QString>
-#include <QVariant>
 
 namespace MalTester {
 namespace Data {
+namespace Types {
 
-class Constraints
+template<typename T>
+class RangeConstraints
 {
 public:
-    using VariantPair = QPair<QVariant, QVariant>;
-    using StringPair = QPair<QString, QString>;
-    using Ranges = QList<VariantPair>;
-
-    Constraints(std::function<VariantPair(StringPair)> convert)
-        : m_convertRange(convert)
-    {}
+    using Range = QPair<T, T>;
+    using Ranges = QList<Range>;
 
     const Ranges &ranges() const { return m_ranges; }
-    void addRange(const StringPair &range) { m_ranges.push_back(m_convertRange(range)); }
+    void addRange(const T &begin, const T &end) { m_ranges.push_back({begin, end}); }
 
 private:
     Ranges m_ranges;
-    std::function<VariantPair(StringPair)> m_convertRange;
 };
 
+template<typename T>
+class WithConstraints
+{
+public:
+    WithConstraints() = default;
+    WithConstraints(const WithConstraints &other) = default;
+
+    T &constraints() { return m_constraints; }
+    const T &constraints() const { return m_constraints; }
+
+private:
+    T m_constraints;
+};
+
+using IntegerConstraints = RangeConstraints<int>;
+using RealConstraints = RangeConstraints<double>;
+
+} // namespace Types
 } // namespace Data
 } // namespace MalTester

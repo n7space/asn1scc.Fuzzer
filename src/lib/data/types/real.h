@@ -27,7 +27,8 @@
 
 #include <QString>
 
-#include <data/types/type.h>
+#include "constraints.h"
+#include "type.h"
 
 namespace MalTester {
 namespace Data {
@@ -35,10 +36,10 @@ namespace Types {
 
 enum class RealEncoding { IEEE754_1985_32, IEEE754_1985_64, unspecified };
 
-class Real : public Type
+class Real : public Type, public WithConstraints<RealConstraints>
 {
 public:
-    Real();
+    Real() = default;
     Real(const Real &other) = default;
 
     QString name() const override { return QLatin1String("REAL"); }

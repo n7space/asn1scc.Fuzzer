@@ -30,15 +30,6 @@
 using namespace MalTester::Data;
 using namespace MalTester::Data::Types;
 
-static Constraints::VariantPair toVariantPair(const Constraints::StringPair &range)
-{
-    return {range.first.toDouble(), range.second.toDouble()};
-}
-
-Real::Real()
-    : Type(std::make_unique<Constraints>(toVariantPair))
-{}
-
 void Real::accept(TypeVisitor &visitor)
 {
     visitor.visit(*this);

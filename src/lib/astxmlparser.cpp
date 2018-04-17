@@ -29,6 +29,7 @@
 #include <data/sourcelocation.h>
 
 #include <data/types/integer.h>
+#include <data/types/real.h>
 #include <data/types/typefactory.h>
 #include <data/types/typevisitor.h>
 #include <data/types/userdefinedtype.h>
@@ -111,11 +112,7 @@ public:
         // TODO?
     }
 
-    void visit(Data::Types::LabelType &type) override
-    {
-        Q_UNUSED(type);
-        // TODO?
-    }
+    void visit(Data::Types::LabelType &type) override { Q_UNUSED(type); }
 
     void visit(Data::Types::Integer &type) override
     {
@@ -134,6 +131,107 @@ public:
 
 private:
     const QXmlStreamAttributes &m_attributes;
+};
+
+class RangeConstraintAssigningVisitor : public Data::Types::TypeVisitor
+{
+public:
+    RangeConstraintAssigningVisitor(QXmlStreamReader &xmlReader,
+                                    const QString &begin,
+                                    const QString &end)
+        : m_xmlReader(xmlReader)
+        , m_begin(begin)
+        , m_end(end)
+    {}
+
+    ~RangeConstraintAssigningVisitor() override {}
+
+    void visit(Data::Types::Boolean &type) override
+    {
+        Q_UNUSED(type);
+        // TODO?
+    }
+
+    void visit(Data::Types::Null &type) override
+    {
+        Q_UNUSED(type);
+        // TODO?
+    }
+
+    void visit(Data::Types::BitString &type) override
+    {
+        Q_UNUSED(type);
+        // TODO?
+    }
+
+    void visit(Data::Types::OctetString &type) override
+    {
+        Q_UNUSED(type);
+        // TODO?
+    }
+
+    void visit(Data::Types::IA5String &type) override
+    {
+        Q_UNUSED(type);
+        // TODO?
+    }
+
+    void visit(Data::Types::NumericString &type) override
+    {
+        Q_UNUSED(type);
+        // TODO?
+    }
+
+    void visit(Data::Types::Enumerated &type) override
+    {
+        Q_UNUSED(type);
+        // TODO?
+    }
+
+    void visit(Data::Types::Choice &type) override { Q_UNUSED(type); }
+
+    void visit(Data::Types::Sequence &type) override
+    {
+        Q_UNUSED(type);
+        // TODO?
+    }
+
+    void visit(Data::Types::SequenceOf &type) override
+    {
+        Q_UNUSED(type);
+        // TODO?
+    }
+
+    void visit(Data::Types::Real &type) override
+    {
+        bool beginOk = false;
+        bool endOk = false;
+        type.constraints().addRange(m_begin.toDouble(&beginOk), m_end.toDouble(&endOk));
+        if (!beginOk || !endOk)
+            m_xmlReader.raiseError("Incorrect range for REAL: " + m_begin + " " + m_end);
+    }
+
+    void visit(Data::Types::LabelType &type) override { Q_UNUSED(type); }
+
+    void visit(Data::Types::Integer &type) override
+    {
+        bool beginOk = false;
+        bool endOk = false;
+        type.constraints().addRange(m_begin.toInt(&beginOk), m_end.toInt(&endOk));
+        if (!beginOk || !endOk)
+            m_xmlReader.raiseError("Incorrect range for INTEGER: " + m_begin + " " + m_end);
+    }
+
+    void visit(Data::Types::UserdefinedType &type) override
+    {
+        Q_UNUSED(type);
+        // TODO?
+    }
+
+private:
+    QXmlStreamReader &m_xmlReader;
+    const QString m_begin;
+    const QString m_end;
 };
 } // namespace
 
@@ -463,12 +561,12 @@ void AstXmlParser::readChoice()
 
 void AstXmlParser::readInteger(std::unique_ptr<Data::Types::Type> &type)
 {
-    readConstraint(type, "IntegerValue");
+    readConstraints(type, "IntegerValue");
 }
 
 void AstXmlParser::readReal(std::unique_ptr<Data::Types::Type> &type)
 {
-    readConstraint(type, "RealValue");
+    readConstraints(type, "RealValue");
 }
 
 void AstXmlParser::readReferenceType(std::unique_ptr<Data::Types::Type> &type)
@@ -477,7 +575,7 @@ void AstXmlParser::readReferenceType(std::unique_ptr<Data::Types::Type> &type)
     readType();
 }
 
-void AstXmlParser::readConstraint(std::unique_ptr<Data::Types::Type> &type, const QString &valName)
+void AstXmlParser::readConstraints(std::unique_ptr<Data::Types::Type> &type, const QString &valName)
 {
     while (m_xmlReader.readNextStartElement()) {
         if (m_xmlReader.name() == QStringLiteral("Constraints"))
@@ -496,7 +594,8 @@ void AstXmlParser::readRanges(std::unique_ptr<Data::Types::Type> &type, const QS
             readRange(type, valName);
         else if (m_xmlReader.name() == valName) {
             QString val = m_xmlReader.readElementText();
-            type->constraint()->addRange(Data::Constraints::StringPair(val, val));
+            RangeConstraintAssigningVisitor visitor(m_xmlReader, val, val);
+            type->accept(visitor);
         } else
             m_xmlReader.skipCurrentElement();
     }
@@ -514,7 +613,8 @@ void AstXmlParser::readRange(std::unique_ptr<Data::Types::Type> &type, const QSt
             m_xmlReader.skipCurrentElement();
     }
 
-    type->constraint()->addRange(Data::Constraints::StringPair(a, b));
+    RangeConstraintAssigningVisitor visitor(m_xmlReader, a, b);
+    type->accept(visitor);
 }
 
 QString AstXmlParser::readValue(const QString &valName)

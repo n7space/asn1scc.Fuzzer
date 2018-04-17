@@ -29,8 +29,6 @@
 
 #include <QString>
 
-#include <data/constraints.h>
-
 namespace MalTester {
 namespace Data {
 namespace Types {
@@ -42,12 +40,11 @@ enum class AlignToNext { byte, word, dword, unspecified };
 class Type
 {
 protected:
-    Type(std::unique_ptr<Constraints> constraints = nullptr)
-        : m_constraints(std::move(constraints))
-        , m_alignment(AlignToNext::unspecified)
+    Type()
+        : m_alignment(AlignToNext::unspecified)
     {}
 
-    Type(const Type &other);
+    Type(const Type &other) = default;
 
 public:
     virtual ~Type();
@@ -56,16 +53,12 @@ public:
     virtual void accept(TypeVisitor &visitor) = 0;
     virtual std::unique_ptr<Type> clone() const = 0;
 
-    const Constraints *constraint() const { return m_constraints.get(); }
-    Constraints *constraint() { return m_constraints.get(); }
-
     void setAlignToNext(const AlignToNext alignToNext) { m_alignment = alignToNext; }
     AlignToNext alignToNext() const { return m_alignment; }
 
     static AlignToNext mapAlignToNext(const QStringRef &in);
 
 private:
-    std::unique_ptr<Constraints> m_constraints;
     AlignToNext m_alignment;
 };
 

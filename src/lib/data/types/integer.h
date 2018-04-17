@@ -27,7 +27,8 @@
 
 #include <QString>
 
-#include <data/types/type.h>
+#include "constraints.h"
+#include "type.h"
 
 namespace MalTester {
 namespace Data {
@@ -43,7 +44,7 @@ enum class IntegerEncoding {
     unspecified,
 };
 
-class Integer : public Type
+class Integer : public Type, public WithConstraints<IntegerConstraints>
 {
 public:
     Integer();

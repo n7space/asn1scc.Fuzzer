@@ -28,6 +28,7 @@
 #include <QtTest>
 
 #include <data/types/integer.h>
+#include <data/types/real.h>
 
 using namespace MalTester::Tests;
 using namespace MalTester;
@@ -675,10 +676,11 @@ void AstXmlParserTests::test_singleIntegerTypeAssignmentWithSimpleConstraint()
         R"(</AstRoot>)");
 
     const auto type = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyInt");
-    const auto constraintRanges = type->type()->constraint()->ranges();
+    const auto intType = dynamic_cast<const Data::Types::Integer *>(type->type());
+    const auto constraintRanges = intType->constraints().ranges();
 
     QCOMPARE(constraintRanges.size(), 1);
-    QVERIFY(constraintRanges.contains(QPair<QVariant, QVariant>(1, 1)));
+    QVERIFY(constraintRanges.contains({1, 1}));
 }
 
 void AstXmlParserTests::test_singleIntegerTypeAssignmentWithRangedConstraints()
@@ -742,16 +744,17 @@ void AstXmlParserTests::test_singleIntegerTypeAssignmentWithRangedConstraints()
           R"(</AstRoot>)");
 
     const auto type = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyInt");
-    const auto constraintRanges = type->type()->constraint()->ranges();
+    const auto intType = dynamic_cast<const Data::Types::Integer *>(type->type());
+    const auto constraintRanges = intType->constraints().ranges();
 
     QCOMPARE(constraintRanges.size(), 6);
 
-    QVERIFY(constraintRanges.contains(QPair<QVariant, QVariant>(10, 20)));
-    QVERIFY(constraintRanges.contains(QPair<QVariant, QVariant>(30, 40)));
-    QVERIFY(constraintRanges.contains(QPair<QVariant, QVariant>(42, 42)));
-    QVERIFY(constraintRanges.contains(QPair<QVariant, QVariant>(44, 44)));
-    QVERIFY(constraintRanges.contains(QPair<QVariant, QVariant>(46, 46)));
-    QVERIFY(constraintRanges.contains(QPair<QVariant, QVariant>(50, 80)));
+    QVERIFY(constraintRanges.contains({10, 20}));
+    QVERIFY(constraintRanges.contains({30, 40}));
+    QVERIFY(constraintRanges.contains({42, 42}));
+    QVERIFY(constraintRanges.contains({44, 44}));
+    QVERIFY(constraintRanges.contains({46, 46}));
+    QVERIFY(constraintRanges.contains({50, 80}));
 }
 
 void AstXmlParserTests::test_singleIntegerTypeAssignmentWitAcnData()
@@ -815,11 +818,12 @@ void AstXmlParserTests::test_singleRealTypeAssignmentWithSimpleConstraint()
         R"(</AstRoot>)");
 
     const auto type = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyReal");
-    auto constraintRanges = type->type()->constraint()->ranges();
+    const auto realType = dynamic_cast<const Data::Types::Real *>(type->type());
+    const auto constraintRanges = realType->constraints().ranges();
 
     QCOMPARE(constraintRanges.size(), 1);
-    QVERIFY(qFuzzyCompare(constraintRanges.at(0).first.toDouble(), 1.1));
-    QVERIFY(qFuzzyCompare(constraintRanges.at(0).second.toDouble(), 1.1));
+    QVERIFY(qFuzzyCompare(constraintRanges.at(0).first, 1.1));
+    QVERIFY(qFuzzyCompare(constraintRanges.at(0).second, 1.1));
 }
 
 void AstXmlParserTests::test_singleRealTypeAssignmentWithRangedConstraints()
@@ -865,15 +869,16 @@ void AstXmlParserTests::test_singleRealTypeAssignmentWithRangedConstraints()
         R"(</AstRoot>)");
 
     const auto type = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyReal");
-    auto constraintRanges = type->type()->constraint()->ranges();
+    const auto realType = dynamic_cast<const Data::Types::Real *>(type->type());
+    const auto constraintRanges = realType->constraints().ranges();
 
     QCOMPARE(constraintRanges.size(), 2);
 
-    QVERIFY(qFuzzyCompare(constraintRanges.at(0).first.toDouble(), 1.1));
-    QVERIFY(qFuzzyCompare(constraintRanges.at(0).second.toDouble(), 2.5));
+    QVERIFY(qFuzzyCompare(constraintRanges.at(0).first, 1.1));
+    QVERIFY(qFuzzyCompare(constraintRanges.at(0).second, 2.5));
 
-    QVERIFY(qFuzzyCompare(constraintRanges.at(1).first.toDouble(), 4.5));
-    QVERIFY(qFuzzyCompare(constraintRanges.at(1).second.toDouble(), 5.5));
+    QVERIFY(qFuzzyCompare(constraintRanges.at(1).first, 4.5));
+    QVERIFY(qFuzzyCompare(constraintRanges.at(1).second, 5.5));
 }
 
 void AstXmlParserTests::parsingFails(const QString &xmlData)

@@ -30,14 +30,8 @@
 using namespace MalTester::Data;
 using namespace MalTester::Data::Types;
 
-static Constraints::VariantPair toVariantPair(const Constraints::StringPair &range)
-{
-    return {range.first.toInt(), range.second.toInt()};
-}
-
 Integer::Integer()
-    : Type(std::make_unique<Constraints>(toVariantPair))
-    , m_encoding(IntegerEncoding::unspecified)
+    : m_encoding(IntegerEncoding::unspecified)
     , m_endianness(Endianness::unspecified)
     , m_size(0) // TODO?
 {}

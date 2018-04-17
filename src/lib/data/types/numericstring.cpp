@@ -33,3 +33,8 @@ void NumericString::accept(TypeVisitor &visitor)
 {
     visitor.visit(*this);
 }
+
+std::unique_ptr<Type> NumericString::clone() const
+{
+    return std::make_unique<NumericString>(*this);
+}

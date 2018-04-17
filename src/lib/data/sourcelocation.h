@@ -46,6 +46,8 @@ public:
         , m_column(column)
     {}
 
+    SourceLocation(const SourceLocation &other) = default;
+
     const QString fileName() const;
     const QString &path() const { return m_path; }
     int line() const { return m_line; }

@@ -36,9 +36,12 @@ namespace Types {
 class IA5String : public Type
 {
 public:
-    QString name() const override { return QLatin1String("IA5String"); }
+    IA5String() = default;
+    IA5String(const IA5String &other) = default;
 
+    QString name() const override { return QLatin1String("IA5String"); }
     void accept(TypeVisitor &visitor) override;
+    std::unique_ptr<Type> clone() const override;
 };
 
 } // namespace Types

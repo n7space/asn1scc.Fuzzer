@@ -36,6 +36,10 @@ ValueAssignment::ValueAssignment(const QString &name,
     , m_type(std::move(type))
 {}
 
+ValueAssignment::ValueAssignment(const ValueAssignment &other)
+    : ValueAssignment(other.name(), other.location(), other.type()->clone())
+{}
+
 ValueAssignment::~ValueAssignment() {}
 
 void ValueAssignment::accept(Visitor &visitor) const

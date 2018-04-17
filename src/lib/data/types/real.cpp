@@ -44,6 +44,11 @@ void Real::accept(TypeVisitor &visitor)
     visitor.visit(*this);
 }
 
+std::unique_ptr<Type> Real::clone() const
+{
+    return std::make_unique<Real>(*this);
+}
+
 RealEncoding Real::mapEncoding(const QStringRef &in)
 {
     if (in == "IEEE754_1985_32")

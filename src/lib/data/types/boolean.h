@@ -36,9 +36,12 @@ namespace Types {
 class Boolean : public Type
 {
 public:
-    QString name() const override { return QLatin1String("BOOLEAN"); }
+    Boolean() = default;
+    Boolean(const Boolean &other) = default;
 
+    QString name() const override { return QLatin1String("BOOLEAN"); }
     void accept(TypeVisitor &visitor) override;
+    std::unique_ptr<Type> clone() const override;
 };
 
 } // namespace Types

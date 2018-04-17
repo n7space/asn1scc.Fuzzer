@@ -36,6 +36,13 @@ Root::Root()
     : Node("ROOT", {})
 {}
 
+Root::Root(const Root &other)
+    : Root()
+{
+    for (const auto &p : other.projects())
+        add(std::make_unique<Project>(*p));
+}
+
 Root::~Root() {}
 
 void Root::accept(Visitor &visitor) const

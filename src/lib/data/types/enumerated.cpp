@@ -29,6 +29,11 @@
 
 using namespace MalTester::Data::Types;
 
+std::unique_ptr<Type> Enumerated::clone() const
+{
+    return std::make_unique<Enumerated>(*this);
+}
+
 void Enumerated::accept(TypeVisitor &visitor)
 {
     visitor.visit(*this);

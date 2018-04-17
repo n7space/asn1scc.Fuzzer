@@ -43,3 +43,8 @@ void UserdefinedType::accept(TypeVisitor &visitor)
 {
     visitor.visit(*this);
 }
+
+std::unique_ptr<Type> UserdefinedType::clone() const
+{
+    return std::make_unique<UserdefinedType>(*this);
+}

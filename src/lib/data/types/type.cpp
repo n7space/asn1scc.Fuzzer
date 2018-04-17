@@ -25,7 +25,13 @@
 ****************************************************************************/
 #include "type.h"
 
+using namespace MalTester::Data;
 using namespace MalTester::Data::Types;
+
+Type::Type(const Type &other)
+    : m_constraints(other.constraint() != nullptr ? new Constraints(*other.constraint()) : nullptr)
+    , m_alignment(other.alignToNext())
+{}
 
 Type::~Type() {}
 

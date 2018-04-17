@@ -42,6 +42,11 @@ Integer::Integer()
     , m_size(0) // TODO?
 {}
 
+std::unique_ptr<Type> Integer::clone() const
+{
+    return std::make_unique<Integer>(*this);
+}
+
 QString Integer::name() const
 {
     return QLatin1String("INTEGER");

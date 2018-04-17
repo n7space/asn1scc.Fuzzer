@@ -41,7 +41,8 @@ class Project;
 class Root : public Node
 {
 public:
-    Root();
+    explicit Root();
+    Root(const Root &other);
     ~Root() override;
 
     void accept(Visitor &visitor) const override;

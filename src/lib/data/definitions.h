@@ -45,6 +45,7 @@ class Definitions : public Node
 {
 public:
     Definitions(const QString &name, const SourceLocation &location);
+    Definitions(const Definitions &other);
     ~Definitions() override;
 
     void accept(Visitor &visitor) const override;

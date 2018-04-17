@@ -38,10 +38,11 @@ class LabelType : public Type
 {
 public:
     LabelType(const QString &label);
+    LabelType(const LabelType &other) = default;
 
     QString name() const override;
-
     void accept(TypeVisitor &visitor) override;
+    std::unique_ptr<Type> clone() const override;
 
 private:
     QString m_name;

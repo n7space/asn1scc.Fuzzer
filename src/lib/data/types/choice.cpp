@@ -29,6 +29,11 @@
 
 using namespace MalTester::Data::Types;
 
+std::unique_ptr<Type> Choice::clone() const
+{
+    return std::make_unique<Choice>(*this);
+}
+
 void Choice::accept(TypeVisitor &visitor)
 {
     visitor.visit(*this);

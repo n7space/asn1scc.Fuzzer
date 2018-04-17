@@ -36,9 +36,12 @@ namespace Types {
 class Sequence : public Type
 {
 public:
-    QString name() const override { return QLatin1String("SEQUENCE"); }
+    Sequence() = default;
+    Sequence(const Sequence &other) = default;
 
+    QString name() const override { return QLatin1String("SEQUENCE"); }
     void accept(TypeVisitor &visitor) override;
+    std::unique_ptr<Type> clone() const override;
 };
 
 } // namespace Types

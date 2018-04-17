@@ -36,9 +36,12 @@ namespace Types {
 class OctetString : public Type
 {
 public:
-    QString name() const override { return QLatin1String("OCTET STRING"); }
+    OctetString() = default;
+    OctetString(const OctetString &other) = default;
 
+    QString name() const override { return QLatin1String("OCTET STRING"); }
     void accept(TypeVisitor &visitor) override;
+    std::unique_ptr<Type> clone() const override;
 };
 
 } // namespace Types

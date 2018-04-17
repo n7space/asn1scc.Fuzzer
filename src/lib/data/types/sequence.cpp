@@ -33,3 +33,8 @@ void Sequence::accept(TypeVisitor &visitor)
 {
     visitor.visit(*this);
 }
+
+std::unique_ptr<Type> Sequence::clone() const
+{
+    return std::make_unique<Sequence>(*this);
+}

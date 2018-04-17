@@ -42,3 +42,8 @@ void LabelType::accept(TypeVisitor &visitor)
 {
     visitor.visit(*this);
 }
+
+std::unique_ptr<Type> LabelType::clone() const
+{
+    return std::make_unique<LabelType>(*this);
+}

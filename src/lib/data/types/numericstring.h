@@ -36,9 +36,12 @@ namespace Types {
 class NumericString : public Type
 {
 public:
-    QString name() const override { return QLatin1String("NumericString"); }
+    NumericString() = default;
+    NumericString(const NumericString &other) = default;
 
+    QString name() const override { return QLatin1String("NumericString"); }
     void accept(TypeVisitor &visitor) override;
+    std::unique_ptr<Type> clone() const override;
 };
 
 } // namespace Types

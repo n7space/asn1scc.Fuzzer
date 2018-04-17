@@ -36,9 +36,12 @@ namespace Types {
 class Null : public Type
 {
 public:
-    QString name() const override { return QLatin1String("NULL"); }
+    Null() = default;
+    Null(const Null &other) = default;
 
+    QString name() const override { return QLatin1String("NULL"); }
     void accept(TypeVisitor &visitor) override;
+    std::unique_ptr<Type> clone() const override;
 };
 
 } // namespace Types

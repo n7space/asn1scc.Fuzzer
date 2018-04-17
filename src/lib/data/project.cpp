@@ -34,6 +34,13 @@ Project::Project(const QString &projectName)
     , m_buildersCount(0)
 {}
 
+Project::Project(const Project &other)
+    : Project(other.name())
+{
+    for (const auto &file : other.files())
+        add(std::make_unique<File>(*file));
+}
+
 Project::~Project() {}
 
 void Project::accept(Visitor &visitor) const

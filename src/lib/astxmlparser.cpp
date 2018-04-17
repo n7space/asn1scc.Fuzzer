@@ -31,6 +31,7 @@
 #include <data/types/enumerated.h>
 #include <data/types/integer.h>
 #include <data/types/real.h>
+#include <data/types/sequenceof.h>
 #include <data/types/typefactory.h>
 #include <data/types/typevisitor.h>
 #include <data/types/userdefinedtype.h>
@@ -124,11 +125,7 @@ public:
         type.setEncoding(Integer::mapEncoding(m_attributes.value(QLatin1String("encoding"))));
     }
 
-    void visit(Data::Types::UserdefinedType &type) override
-    {
-        Q_UNUSED(type);
-        // TODO?
-    }
+    void visit(Data::Types::UserdefinedType &type) override { Q_UNUSED(type); }
 
 private:
     const QXmlStreamAttributes &m_attributes;
@@ -205,8 +202,7 @@ public:
 
     void visit(Data::Types::SequenceOf &type) override
     {
-        Q_UNUSED(type);
-        // TODO?
+        addRange(type.constraints(), "Incorrect SIZE range for SEQUENCE OF");
     }
 
     void visit(Data::Types::Real &type) override
@@ -222,11 +218,7 @@ public:
 
     void visit(Data::Types::Integer &type) override
     {
-        bool beginOk = false;
-        bool endOk = false;
-        type.constraints().addRange(m_begin.toInt(&beginOk), m_end.toInt(&endOk));
-        if (!beginOk || !endOk)
-            m_xmlReader.raiseError("Incorrect range for INTEGER: " + m_begin + " " + m_end);
+        addRange(type.constraints(), "Incorrect range for INTEGER");
     }
 
     void visit(Data::Types::UserdefinedType &type) override
@@ -236,6 +228,15 @@ public:
     }
 
 private:
+    void addRange(Data::Types::IntegerConstraints &constraints, const QString &message)
+    {
+        bool beginOk = false;
+        bool endOk = false;
+        constraints.addRange(m_begin.toInt(&beginOk), m_end.toInt(&endOk));
+        if (!beginOk || !endOk)
+            m_xmlReader.raiseError(message + ": " + m_begin + " " + m_end);
+    }
+
     QXmlStreamReader &m_xmlReader;
     const QString m_begin;
     const QString m_end;
@@ -335,7 +336,7 @@ void AstXmlParser::readTypeAssignment()
     Q_ASSERT(m_currentDefinitions != nullptr);
     const auto location = readLocationFromAttributes();
     const auto name = readNameAttribute();
-    auto type = readType();
+    auto type = findAndReadType();
     m_xmlReader.skipCurrentElement();
 
     m_currentDefinitions->addType(
@@ -349,7 +350,7 @@ void AstXmlParser::readValueAssignment()
     Q_ASSERT(m_currentDefinitions != nullptr);
     const auto location = readLocationFromAttributes();
     const auto name = readNameAttribute();
-    auto type = readType();
+    auto type = findAndReadType();
     m_xmlReader.skipCurrentElement();
 
     m_currentDefinitions->addValue(
@@ -454,11 +455,15 @@ QStringRef AstXmlParser::readIsAlignedToNext()
     return m_xmlReader.attributes().value(QLatin1String("align-to-next"));
 }
 
-std::unique_ptr<Data::Types::Type> AstXmlParser::readType()
+std::unique_ptr<Data::Types::Type> AstXmlParser::findAndReadType()
 {
     if (!skipToChildElement(QStringLiteral("Asn1Type")))
         return {};
+    return readType();
+}
 
+std::unique_ptr<Data::Types::Type> AstXmlParser::readType()
+{
     const auto location = readLocationFromAttributes();
     const auto isParametrized = isParametrizedTypeInstance();
     const auto alignToNext = readIsAlignedToNext();
@@ -531,7 +536,7 @@ void AstXmlParser::readTypeContents(const QStringRef &name, std::unique_ptr<Data
     if (name == QStringLiteral("SEQUENCE"))
         readSequence();
     else if (name == QStringLiteral("SEQUENCE_OF"))
-        readSequenceOf();
+        readSequenceOf(type);
     else if (name == QStringLiteral("CHOICE"))
         readChoice();
     else if (name == QStringLiteral("REFERENCE_TYPE"))
@@ -549,21 +554,27 @@ void AstXmlParser::readTypeContents(const QStringRef &name, std::unique_ptr<Data
 void AstXmlParser::readSequence()
 {
     while (skipToChildElement(QStringLiteral("SEQUENCE_COMPONENT"))) {
-        readType();
+        findAndReadType();
         m_xmlReader.skipCurrentElement();
     }
 }
 
-void AstXmlParser::readSequenceOf()
+void AstXmlParser::readSequenceOf(std::unique_ptr<Data::Types::Type> &type)
 {
-    if (readType())
-        m_xmlReader.skipCurrentElement();
+    while (m_xmlReader.readNextStartElement()) {
+        if (m_xmlReader.name() == QStringLiteral("Constraints"))
+            readRanges(type, "IntegerValue");
+        else if (m_xmlReader.name() == QStringLiteral("Asn1Type"))
+            readType();
+        else
+            m_xmlReader.skipCurrentElement();
+    }
 }
 
 void AstXmlParser::readChoice()
 {
     while (skipToChildElement(QStringLiteral("CHOICE_ALTERNATIVE"))) {
-        readType();
+        findAndReadType();
         m_xmlReader.skipCurrentElement();
     }
 }
@@ -613,7 +624,7 @@ int AstXmlParser::readValueFromAttributes()
 void AstXmlParser::readReferenceType(std::unique_ptr<Data::Types::Type> &type)
 {
     Q_UNUSED(type);
-    readType();
+    findAndReadType();
 }
 
 void AstXmlParser::readConstraints(std::unique_ptr<Data::Types::Type> &type, const QString &valName)
@@ -629,7 +640,8 @@ void AstXmlParser::readConstraints(std::unique_ptr<Data::Types::Type> &type, con
 void AstXmlParser::readRanges(std::unique_ptr<Data::Types::Type> &type, const QString &valName)
 {
     while (m_xmlReader.readNextStartElement()) {
-        if (m_xmlReader.name() == QStringLiteral("OR"))
+        if (m_xmlReader.name() == QStringLiteral("OR")
+            || m_xmlReader.name() == QStringLiteral("SIZE"))
             readRanges(type, valName);
         else if (m_xmlReader.name() == QStringLiteral("Range"))
             readRange(type, valName);

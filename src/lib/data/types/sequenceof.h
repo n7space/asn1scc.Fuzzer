@@ -27,13 +27,14 @@
 
 #include <QString>
 
-#include <data/types/type.h>
+#include "constraints.h"
+#include "type.h"
 
 namespace MalTester {
 namespace Data {
 namespace Types {
 
-class SequenceOf : public Type
+class SequenceOf : public Type, public WithConstraints<IntegerConstraints>
 {
 public:
     SequenceOf() = default;

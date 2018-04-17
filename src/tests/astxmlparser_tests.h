@@ -71,6 +71,10 @@ private slots:
     void test_singleRealTypeAssignmentWithSimpleConstraint();
     void test_singleRealTypeAssignmentWithRangedConstraints();
 
+    void test_sequenceOfAssignmentWithSimpleConstraint();
+    void test_sequenceOfAssignmentWithMultipleRangeConstraints();
+    void test_sequenceOfAssignmentWithRangeConstraintInsideSizeConstraint();
+
 private:
     void setXmlData(const QString &str);
     void parsingFails(const QString &xmlData);

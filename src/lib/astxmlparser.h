@@ -78,6 +78,7 @@ private:
     Data::SourceLocation readLocationFromAttributes();
     QStringRef readIsAlignedToNext();
 
+    std::unique_ptr<Data::Types::Type> findAndReadType();
     std::unique_ptr<Data::Types::Type> readType();
     std::unique_ptr<Data::Types::Type> readTypeDetails(const Data::SourceLocation &location,
                                                        const bool isParametrized,
@@ -90,7 +91,7 @@ private:
     void readTypeAttributes(std::unique_ptr<Data::Types::Type> &type);
 
     void readSequence();
-    void readSequenceOf();
+    void readSequenceOf(std::unique_ptr<Data::Types::Type> &type);
     void readChoice();
     void readReferenceType(std::unique_ptr<Data::Types::Type> &type);
 

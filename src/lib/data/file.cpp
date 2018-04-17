@@ -34,6 +34,19 @@ File::File(const QString &path)
     , m_polluted(false)
 {}
 
+File::File(const File &other)
+    : File(other.location().path())
+{
+    for (const auto &def : other.definitionsList())
+        add(std::make_unique<Definitions>(*def));
+    for (const auto &ref : other.references())
+        addTypeReference(std::make_unique<TypeReference>(*ref));
+    for (const auto &err : other.errors())
+        addErrorMessage(err);
+    if (other.isPolluted())
+        setPolluted();
+}
+
 File::~File() {}
 
 void File::accept(Visitor &visitor) const

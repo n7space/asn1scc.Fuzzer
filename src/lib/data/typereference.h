@@ -37,6 +37,7 @@ class TypeReference
 public:
     explicit TypeReference(const SourceLocation &location = {});
     TypeReference(const QString &name, const QString &module, const SourceLocation &location);
+    TypeReference(const TypeReference &other) = default;
 
     const SourceLocation &location() const { return m_location; }
     const QString &name() const { return m_name; }

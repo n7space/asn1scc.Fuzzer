@@ -38,7 +38,8 @@ namespace Data {
 class Project : public Node
 {
 public:
-    Project(const QString &projectName);
+    explicit Project(const QString &projectName);
+    Project(const Project &other);
     ~Project() override;
 
     void accept(Visitor &visitor) const override;

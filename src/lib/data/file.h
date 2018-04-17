@@ -40,7 +40,8 @@ namespace Data {
 class File : public Node
 {
 public:
-    File(const QString &path);
+    explicit File(const QString &path);
+    File(const File &other);
     ~File() override;
 
     void accept(Visitor &visitor) const override;

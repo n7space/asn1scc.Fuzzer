@@ -42,6 +42,7 @@ public:
     TypeAssignment(const QString &name,
                    const SourceLocation &location,
                    std::unique_ptr<Types::Type> type);
+    TypeAssignment(const TypeAssignment &other);
     ~TypeAssignment() override;
 
     void accept(Visitor &visitor) const override;

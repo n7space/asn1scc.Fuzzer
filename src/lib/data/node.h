@@ -43,6 +43,8 @@ protected:
         , m_parent(nullptr)
     {}
 
+    Node(const Node &other) = delete;
+
 public:
     virtual ~Node();
 

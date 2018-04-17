@@ -36,6 +36,7 @@ class ErrorMessage
 {
 public:
     ErrorMessage() = default;
+    ErrorMessage(const ErrorMessage &other) = default;
 
     ErrorMessage(const SourceLocation &location, const QString &message)
         : m_location(location)

@@ -37,6 +37,7 @@ public:
         : m_module(module)
         , m_name(name)
     {}
+    ImportedValue(const ImportedValue &other) = default;
 
     const QString &module() const { return m_module; }
     const QString &name() const { return m_name; }

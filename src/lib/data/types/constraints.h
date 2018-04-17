@@ -64,6 +64,7 @@ private:
 
 using IntegerConstraints = RangeConstraints<int>;
 using RealConstraints = RangeConstraints<double>;
+using EnumeratedConstraints = RangeConstraints<int>;
 
 } // namespace Types
 } // namespace Data

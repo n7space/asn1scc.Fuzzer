@@ -29,6 +29,8 @@
 #include <QString>
 
 #include <data/sourcelocation.h>
+
+#include <data/types/constraints.h>
 #include <data/types/type.h>
 
 namespace MalTester {
@@ -58,7 +60,7 @@ private:
     SourceLocation m_location;
 };
 
-class Enumerated : public Type
+class Enumerated : public Type, public WithConstraints<EnumeratedConstraints>
 {
 public:
     Enumerated() = default;

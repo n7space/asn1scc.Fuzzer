@@ -668,15 +668,7 @@ void AstXmlParserTests::test_enumeratedItems()
         R"(                  <Item Name="ldev2" Value="1" Line="12" CharPositionInLine="4" />"
         R"(                  <Item Name="ldev3" Value="2" Line="13" CharPositionInLine="4" />"
         R"(                </Items>"
-        R"(                <Constraints>"
-        R"(                  <OR>"
-        R"(                    <OR>"
-        R"(                      <EnumValue>ldev1</EnumValue>"
-        R"(                      <EnumValue>ldev2</EnumValue>"
-        R"(                    </OR>"
-        R"(                    <EnumValue>ldev3</EnumValue>"
-        R"(                  </OR>"
-        R"(                </Constraints>"
+        R"(                <Constraints />"
         R"(                <WithComponentConstraints />"
         R"(              </Enumerated>"
         R"(            </Asn1Type>"
@@ -707,6 +699,52 @@ void AstXmlParserTests::test_enumeratedItems()
     item = items.value("ldev3");
     QCOMPARE(item.location(), Data::SourceLocation("Test2File.asn", 13, 4));
     QCOMPARE(item.value(), 2);
+}
+
+void AstXmlParserTests::test_enumeratedConstraints()
+{
+    parse(
+        R"(<?xml version="1.0" encoding="utf-8"?>)"
+        R"(<AstRoot>)"
+        R"(  <Asn1File FileName="Test2File.asn">)"
+        R"(    <Modules>)"
+        R"(      <Module Name="TestDefinitions" Line="13" CharPositionInLine="42">)"
+        R"(        <TypeAssignments>"
+        R"(          <TypeAssignment Name="MyEnum" Line="9" CharPositionInLine="0">"
+        R"(            <Asn1Type id="Constrained.MyEnum" Line="9" CharPositionInLine="21" ParameterizedTypeInstance="false">"
+        R"(              <Enumerated>"
+        R"(                <Items>"
+        R"(                  <Item Name="ldev1" Value="0" Line="11" CharPositionInLine="4" />"
+        R"(                  <Item Name="ldev2" Value="1" Line="12" CharPositionInLine="4" />"
+        R"(                  <Item Name="ldev3" Value="2" Line="13" CharPositionInLine="4" />"
+        R"(                </Items>"
+        R"(                <Constraints>"
+        R"(                  <OR>"
+        R"(                    <OR>"
+        R"(                      <EnumValue>ldev1</EnumValue>"
+        R"(                      <EnumValue>ldev2</EnumValue>"
+        R"(                    </OR>"
+        R"(                    <EnumValue>ldev3</EnumValue>"
+        R"(                  </OR>"
+        R"(                </Constraints>"
+        R"(                <WithComponentConstraints />"
+        R"(              </Enumerated>"
+        R"(            </Asn1Type>"
+        R"(          </TypeAssignment>"
+        R"(        </TypeAssignments>"
+        R"(      </Module>)"
+        R"(    </Modules>)"
+        R"(  </Asn1File>)"
+        R"(</AstRoot>)");
+
+    const auto type = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyEnum");
+    const auto enumType = dynamic_cast<const Data::Types::Enumerated *>(type->type());
+    const auto constraintRanges = enumType->constraints().ranges();
+
+    QCOMPARE(constraintRanges.size(), 3);
+    QVERIFY(constraintRanges.contains({0, 0}));
+    QVERIFY(constraintRanges.contains({1, 1}));
+    QVERIFY(constraintRanges.contains({2, 2}));
 }
 
 void AstXmlParserTests::test_singleIntegerTypeAssignmentWithSimpleConstraint()

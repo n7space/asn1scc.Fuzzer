@@ -185,8 +185,14 @@ public:
 
     void visit(Data::Types::Enumerated &type) override
     {
-        Q_UNUSED(type);
-        // TODO?
+        const auto &items = type.items();
+        if (!items.contains(m_begin)) {
+            m_xmlReader.raiseError("Incorrect ENUMERATED value: " + m_begin);
+            return;
+        }
+
+        const auto val = items.value(m_begin).value();
+        type.constraints().addRange(val, val);
     }
 
     void visit(Data::Types::Choice &type) override { Q_UNUSED(type); }
@@ -577,6 +583,8 @@ void AstXmlParser::readEnumerated(std::unique_ptr<Data::Types::Type> &type)
     while (m_xmlReader.readNextStartElement()) {
         if (m_xmlReader.name() == QStringLiteral("Items"))
             readEnumeratedItem(type);
+        else if (m_xmlReader.name() == QStringLiteral("Constraints"))
+            readRanges(type, "EnumValue");
         else
             m_xmlReader.skipCurrentElement();
     }
@@ -585,8 +593,6 @@ void AstXmlParser::readEnumerated(std::unique_ptr<Data::Types::Type> &type)
 void AstXmlParser::readEnumeratedItem(std::unique_ptr<Data::Types::Type> &type)
 {
     auto enumType = dynamic_cast<Data::Types::Enumerated *>(type.get());
-    if (!enumType)
-        return;
 
     while (m_xmlReader.readNextStartElement()) {
         if (m_xmlReader.name() == QStringLiteral("Item")) {

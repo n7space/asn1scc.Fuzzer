@@ -506,16 +506,16 @@ std::unique_ptr<Data::Types::Type> AstXmlParser::buildTypeFromName(
         return type;
     }
 
-    readTypeAttributes(type);
-    readTypeContents(name, type);
+    readTypeAttributes(*type);
+    readTypeContents(name, *type);
 
     return type;
 }
 
-void AstXmlParser::readTypeAttributes(std::unique_ptr<Data::Types::Type> &type)
+void AstXmlParser::readTypeAttributes(Data::Types::Type &type)
 {
     TypeAttributesAssigningVisitor visitor(m_xmlReader.attributes());
-    type->accept(visitor);
+    type.accept(visitor);
 }
 
 std::unique_ptr<Data::Types::Type> AstXmlParser::createReferenceType(
@@ -531,7 +531,7 @@ std::unique_ptr<Data::Types::Type> AstXmlParser::createReferenceType(
     return std::make_unique<Data::Types::UserdefinedType>(refName, module);
 }
 
-void AstXmlParser::readTypeContents(const QStringRef &name, std::unique_ptr<Data::Types::Type> &type)
+void AstXmlParser::readTypeContents(const QStringRef &name, Data::Types::Type &type)
 {
     if (name == QStringLiteral("SEQUENCE"))
         readSequence();
@@ -540,7 +540,7 @@ void AstXmlParser::readTypeContents(const QStringRef &name, std::unique_ptr<Data
     else if (name == QStringLiteral("CHOICE"))
         readChoice();
     else if (name == QStringLiteral("REFERENCE_TYPE"))
-        readReferenceType(type);
+        readReferenceType();
     else if (name == QStringLiteral("INTEGER"))
         readInteger(type);
     else if (name == QStringLiteral("REAL"))
@@ -559,7 +559,7 @@ void AstXmlParser::readSequence()
     }
 }
 
-void AstXmlParser::readSequenceOf(std::unique_ptr<Data::Types::Type> &type)
+void AstXmlParser::readSequenceOf(Data::Types::Type &type)
 {
     while (m_xmlReader.readNextStartElement()) {
         if (m_xmlReader.name() == QStringLiteral("Constraints"))
@@ -579,17 +579,17 @@ void AstXmlParser::readChoice()
     }
 }
 
-void AstXmlParser::readInteger(std::unique_ptr<Data::Types::Type> &type)
+void AstXmlParser::readInteger(Data::Types::Type &type)
 {
     readConstraints(type, "IntegerValue");
 }
 
-void AstXmlParser::readReal(std::unique_ptr<Data::Types::Type> &type)
+void AstXmlParser::readReal(Data::Types::Type &type)
 {
     readConstraints(type, "RealValue");
 }
 
-void AstXmlParser::readEnumerated(std::unique_ptr<Data::Types::Type> &type)
+void AstXmlParser::readEnumerated(Data::Types::Type &type)
 {
     while (m_xmlReader.readNextStartElement()) {
         if (m_xmlReader.name() == QStringLiteral("Items"))
@@ -601,15 +601,15 @@ void AstXmlParser::readEnumerated(std::unique_ptr<Data::Types::Type> &type)
     }
 }
 
-void AstXmlParser::readEnumeratedItem(std::unique_ptr<Data::Types::Type> &type)
+void AstXmlParser::readEnumeratedItem(Data::Types::Type &type)
 {
-    auto enumType = dynamic_cast<Data::Types::Enumerated *>(type.get());
+    auto &enumType = dynamic_cast<Data::Types::Enumerated &>(type);
 
     while (m_xmlReader.readNextStartElement()) {
         if (m_xmlReader.name() == QStringLiteral("Item")) {
             const auto itemName = readNameAttribute();
-            enumType->addItem(itemName,
-                              {itemName, readValueFromAttributes(), readLocationFromAttributes()});
+            enumType.addItem(itemName,
+                             {itemName, readValueFromAttributes(), readLocationFromAttributes()});
         }
 
         m_xmlReader.skipCurrentElement();
@@ -621,13 +621,12 @@ int AstXmlParser::readValueFromAttributes()
     return m_xmlReader.attributes().value("Value").toInt();
 }
 
-void AstXmlParser::readReferenceType(std::unique_ptr<Data::Types::Type> &type)
+void AstXmlParser::readReferenceType()
 {
-    Q_UNUSED(type);
     findAndReadType();
 }
 
-void AstXmlParser::readConstraints(std::unique_ptr<Data::Types::Type> &type, const QString &valName)
+void AstXmlParser::readConstraints(Data::Types::Type &type, const QString &valName)
 {
     while (m_xmlReader.readNextStartElement()) {
         if (m_xmlReader.name() == QStringLiteral("Constraints"))
@@ -637,7 +636,7 @@ void AstXmlParser::readConstraints(std::unique_ptr<Data::Types::Type> &type, con
     }
 }
 
-void AstXmlParser::readRanges(std::unique_ptr<Data::Types::Type> &type, const QString &valName)
+void AstXmlParser::readRanges(Data::Types::Type &type, const QString &valName)
 {
     while (m_xmlReader.readNextStartElement()) {
         if (m_xmlReader.name() == QStringLiteral("OR")
@@ -648,13 +647,13 @@ void AstXmlParser::readRanges(std::unique_ptr<Data::Types::Type> &type, const QS
         else if (m_xmlReader.name() == valName) {
             QString val = m_xmlReader.readElementText();
             RangeConstraintAssigningVisitor visitor(m_xmlReader, val, val);
-            type->accept(visitor);
+            type.accept(visitor);
         } else
             m_xmlReader.skipCurrentElement();
     }
 }
 
-void AstXmlParser::readRange(std::unique_ptr<Data::Types::Type> &type, const QString &valName)
+void AstXmlParser::readRange(Data::Types::Type &type, const QString &valName)
 {
     QString a, b;
     while (m_xmlReader.readNextStartElement()) {
@@ -667,7 +666,7 @@ void AstXmlParser::readRange(std::unique_ptr<Data::Types::Type> &type, const QSt
     }
 
     RangeConstraintAssigningVisitor visitor(m_xmlReader, a, b);
-    type->accept(visitor);
+    type.accept(visitor);
 }
 
 QString AstXmlParser::readValue(const QString &valName)

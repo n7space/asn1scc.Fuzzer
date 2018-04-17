@@ -27,7 +27,7 @@
 
 #include <QtTest>
 
-#include <data/types/builtintypes.h>
+#include <data/types/integer.h>
 
 using namespace MalTester::Tests;
 using namespace MalTester;
@@ -779,13 +779,14 @@ void AstXmlParserTests::test_singleIntegerTypeAssignmentWitAcnData()
         R"(  </Asn1File>)"
         R"(</AstRoot>)");
 
-    const auto type = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyInt");
-    const auto acnParams = type->type()->acnParams();
+    const auto myInt = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyInt");
+    const auto type = dynamic_cast<const Data::Types::Integer *>(myInt->type());
 
-    QCOMPARE(acnParams->size(), 8);
-    QCOMPARE(acnParams->encoding(), Data::Encoding::BCD);
-    QCOMPARE(acnParams->endianness(), Data::Endianness::big);
-    QCOMPARE(acnParams->alignToNext(), Data::AlignToNext::dword);
+    QVERIFY(type != nullptr);
+    QCOMPARE(type->size(), 8);
+    QCOMPARE(type->encoding(), Data::Types::IntegerEncoding::BCD);
+    QCOMPARE(type->endianness(), Data::Types::Endianness::big);
+    QCOMPARE(type->alignToNext(), Data::Types::AlignToNext::dword);
 }
 
 void AstXmlParserTests::test_singleRealTypeAssignmentWithSimpleConstraint()

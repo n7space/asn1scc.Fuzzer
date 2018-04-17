@@ -23,35 +23,13 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-#pragma once
+#include "boolean.h"
 
-#include <functional>
+#include "typevisitor.h"
 
-#include <QPair>
-#include <QString>
-#include <QVariant>
+using namespace MalTester::Data::Types;
 
-namespace MalTester {
-namespace Data {
-
-class Constraint
+void Boolean::accept(TypeVisitor &visitor)
 {
-public:
-    using VariantPair = QPair<QVariant, QVariant>;
-    using StringPair = QPair<QString, QString>;
-    using Ranges = QList<VariantPair>;
-
-    Constraint(std::function<VariantPair(StringPair)> convert)
-        : m_convertRange(convert)
-    {}
-
-    const Ranges &ranges() const { return m_ranges; }
-    void addRange(const StringPair &range) { m_ranges.push_back(m_convertRange(range)); }
-
-private:
-    Ranges m_ranges;
-    std::function<VariantPair(StringPair)> m_convertRange;
-};
-
-} // namespace Data
-} // namespace MalTester
+    visitor.visit(*this);
+}

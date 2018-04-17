@@ -23,22 +23,22 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-#include "labeltype.h"
+#pragma once
 
-#include <data/types/typevisitor.h>
+#include <QString>
 
-using namespace MalTester::Data::Types;
+#include <data/types/type.h>
 
-LabelType::LabelType(const QString &name)
-    : m_name(name)
-{}
+namespace MalTester {
+namespace Data {
+namespace Types {
 
-QString LabelType::name() const
+class TypeFactory
 {
-    return m_name;
-}
+public:
+    static std::unique_ptr<Type> createBuiltinType(const QString &name);
+};
 
-void LabelType::accept(TypeVisitor &visitor)
-{
-    visitor.visit(*this);
-}
+} // namespace Types
+} // namespace Data
+} // namespace MalTester

@@ -87,6 +87,7 @@ private:
     std::unique_ptr<Data::Types::Type> createReferenceType(const Data::SourceLocation &location);
 
     void readTypeContents(const QStringRef &name, std::unique_ptr<Data::Types::Type> &type);
+    void readTypeAttributes(std::unique_ptr<Data::Types::Type> &type);
 
     void readSequence();
     void readSequenceOf();
@@ -94,8 +95,6 @@ private:
     void readReferenceType(std::unique_ptr<Data::Types::Type> &type);
 
     void readInteger(std::unique_ptr<Data::Types::Type> &type);
-    void readIntegerAcnParams(std::unique_ptr<Data::Types::Type> &type);
-
     void readReal(std::unique_ptr<Data::Types::Type> &type);
 
     void readConstraint(std::unique_ptr<Data::Types::Type> &type, const QString &valName);

@@ -25,41 +25,45 @@
 ****************************************************************************/
 #pragma once
 
+#include <memory>
+
 #include <QString>
 
-#include <data/acnparameters.h>
-#include <data/constraint.h>
+#include <data/constraints.h>
 
 namespace MalTester {
 namespace Data {
 namespace Types {
 
+class TypeVisitor;
+
+enum class AlignToNext { byte, word, dword, unspecified };
+
 class Type
 {
-public:
-    Type()
-        : m_constraint(nullptr)
-        , m_acnParams(nullptr)
+protected:
+    Type(std::unique_ptr<Constraints> constraints = nullptr)
+        : m_constraints(std::move(constraints))
+        , m_alignment(AlignToNext::unspecified)
     {}
 
-    virtual ~Type()
-    {
-        delete m_constraint;
-        delete m_acnParams;
-    }
+public:
+    virtual ~Type();
 
     virtual QString name() const = 0;
-    virtual QString label() const = 0;
+    virtual void accept(TypeVisitor &visitor) = 0;
 
-    Constraint *constraint() const { return m_constraint; }
-    AcnParameters *acnParams() const { return m_acnParams; }
+    const Constraints *constraint() const { return m_constraints.get(); }
+    Constraints *constraint() { return m_constraints.get(); }
 
-protected:
-    Constraint *m_constraint;
-    AcnParameters *m_acnParams;
+    void setAlignToNext(const AlignToNext alignToNext) { m_alignment = alignToNext; }
+    AlignToNext alignToNext() const { return m_alignment; }
+
+    static AlignToNext mapAlignToNext(const QStringRef &in);
 
 private:
-    virtual QString baseIconFile() const = 0;
+    std::unique_ptr<Constraints> m_constraints;
+    AlignToNext m_alignment;
 };
 
 } // namespace Types

@@ -23,37 +23,13 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-#pragma once
+#include "numericstring.h"
 
-#include <QString>
+#include "typevisitor.h"
 
-#include <data/constraint.h>
+using namespace MalTester::Data::Types;
 
-#include <data/types/builtintypes.h>
-
-namespace MalTester {
-namespace Data {
-namespace Types {
-
-class Real : public BuiltinType
+void NumericString::accept(TypeVisitor &visitor)
 {
-public:
-    Real() { m_constraint = new Constraint(Real::toVariantPair); }
-
-    QString name() const override { return QLatin1String("REAL"); }
-
-private:
-    QString baseIconFile() const override
-    {
-        return QStringLiteral(":/asn1acn/images/outline/real.png");
-    }
-
-    static Constraint::VariantPair toVariantPair(const Constraint::StringPair &range)
-    {
-        return {range.first.toDouble(), range.second.toDouble()};
-    }
-};
-
-} // namespace Types
-} // namespace Data
-} // namespace MalTester
+    visitor.visit(*this);
+}

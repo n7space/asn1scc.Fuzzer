@@ -23,47 +23,24 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
+#pragma once
 
-#include "acnparameters.h"
+#include <QString>
 
-using namespace MalTester::Data;
+#include <data/types/type.h>
 
-Encoding AcnParameters::mapEncoding(const QStringRef &in)
+namespace MalTester {
+namespace Data {
+namespace Types {
+
+class Null : public Type
 {
-    if (in == "pos-int")
-        return Encoding::pos_int;
-    else if (in == "twos-complement")
-        return Encoding::twos_complement;
-    else if (in == "ASCII")
-        return Encoding::ASCII;
-    else if (in == "BCD")
-        return Encoding::BCD;
-    else if (in == "IEEE754_1985_32")
-        return Encoding::IEEE754_1985_32;
-    else if (in == "IEEE754_1985_64")
-        return Encoding::IEEE754_1985_64;
+public:
+    QString name() const override { return QLatin1String("NULL"); }
 
-    return Encoding::undefined;
-}
+    void accept(TypeVisitor &visitor) override;
+};
 
-Endianness AcnParameters::mapEndianess(const QStringRef &in)
-{
-    if (in == "big")
-        return Endianness::big;
-    else if (in == "little")
-        return Endianness::little;
-
-    return Endianness::undefined;
-}
-
-AlignToNext AcnParameters::mapAlignToNext(const QStringRef &in)
-{
-    if (in == "byte")
-        return AlignToNext::byte;
-    else if (in == "word")
-        return AlignToNext::word;
-    else if (in == "dword")
-        return AlignToNext::dword;
-
-    return AlignToNext::undefined;
-}
+} // namespace Types
+} // namespace Data
+} // namespace MalTester

@@ -16,11 +16,24 @@ SOURCES += \
     data/typereference.cpp \
     data/valueassignment.cpp \
     data/visitor.cpp \
-    data/acnparameters.cpp \
     \
-    data/types/builtintypes.cpp \
+    data/types/type.cpp \
+    data/types/typevisitor.cpp \
+    data/types/typefactory.cpp \
     data/types/labeltype.cpp \
     data/types/userdefinedtype.cpp \
+    data/types/integer.cpp \
+    data/types/bitstring.cpp \
+    data/types/boolean.cpp \
+    data/types/choice.cpp \
+    data/types/enumerated.cpp \
+    data/types/ia5string.cpp \
+    data/types/null.cpp \
+    data/types/numericstring.cpp \
+    data/types/octetstring.cpp \
+    data/types/sequence.cpp \
+    data/types/sequenceof.cpp \
+    data/types/real.cpp \
     \
     astxmlparser.cpp \
     astfilegenerator.cpp \
@@ -42,15 +55,25 @@ HEADERS += \
     data/valueassignment.h \
     data/visitor.h \
     data/visitorwithvalue.h \
-    data/constraint.h \
-    data/acnparameters.h \
+    data/constraints.h \
     \
-    data/types/builtintypes.h \
+    data/types/typefactory.h \
     data/types/labeltype.h \
     data/types/type.h \
+    data/types/typevisitor.h \
     data/types/userdefinedtype.h \
-    data/types/integertype.h \
-    data/types/realtype.h \
+    data/types/integer.h \
+    data/types/bitstring.h \
+    data/types/boolean.h \
+    data/types/choice.h \
+    data/types/enumerated.h \
+    data/types/ia5string.h \
+    data/types/null.h \
+    data/types/numericstring.h \
+    data/types/octetstring.h \
+    data/types/sequence.h \
+    data/types/sequenceof.h \
+    data/types/real.h \
     \
     astxmlparser.h \
     runparameters.h \

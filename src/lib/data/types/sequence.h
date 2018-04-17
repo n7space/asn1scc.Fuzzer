@@ -23,22 +23,24 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-#include "labeltype.h"
+#pragma once
 
-#include <data/types/typevisitor.h>
+#include <QString>
 
-using namespace MalTester::Data::Types;
+#include <data/types/type.h>
 
-LabelType::LabelType(const QString &name)
-    : m_name(name)
-{}
+namespace MalTester {
+namespace Data {
+namespace Types {
 
-QString LabelType::name() const
+class Sequence : public Type
 {
-    return m_name;
-}
+public:
+    QString name() const override { return QLatin1String("SEQUENCE"); }
 
-void LabelType::accept(TypeVisitor &visitor)
-{
-    visitor.visit(*this);
-}
+    void accept(TypeVisitor &visitor) override;
+};
+
+} // namespace Types
+} // namespace Data
+} // namespace MalTester

@@ -23,8 +23,9 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-
 #include "userdefinedtype.h"
+
+#include "typevisitor.h"
 
 using namespace MalTester::Data::Types;
 
@@ -38,12 +39,7 @@ QString UserdefinedType::name() const
     return m_name;
 }
 
-QString UserdefinedType::label() const
+void UserdefinedType::accept(TypeVisitor &visitor)
 {
-    return ": " + name() + "." + m_module;
-}
-
-QString UserdefinedType::baseIconFile() const
-{
-    return QStringLiteral(":/asn1acn/images/outline/userdefined.png");
+    visitor.visit(*this);
 }

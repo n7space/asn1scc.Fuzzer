@@ -23,22 +23,32 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-#include "labeltype.h"
+#include "real.h"
 
-#include <data/types/typevisitor.h>
+#include "typevisitor.h"
 
+using namespace MalTester::Data;
 using namespace MalTester::Data::Types;
 
-LabelType::LabelType(const QString &name)
-    : m_name(name)
-{}
-
-QString LabelType::name() const
+static Constraints::VariantPair toVariantPair(const Constraints::StringPair &range)
 {
-    return m_name;
+    return {range.first.toDouble(), range.second.toDouble()};
 }
 
-void LabelType::accept(TypeVisitor &visitor)
+Real::Real()
+    : Type(std::make_unique<Constraints>(toVariantPair))
+{}
+
+void Real::accept(TypeVisitor &visitor)
 {
     visitor.visit(*this);
+}
+
+RealEncoding Real::mapEncoding(const QStringRef &in)
+{
+    if (in == "IEEE754_1985_32")
+        return RealEncoding::IEEE754_1985_32;
+    if (in == "IEEE754_1985_64")
+        return RealEncoding::IEEE754_1985_64;
+    return RealEncoding::unspecified;
 }

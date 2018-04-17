@@ -23,22 +23,35 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-#include "labeltype.h"
+#pragma once
 
-#include <data/types/typevisitor.h>
+#include <functional>
 
-using namespace MalTester::Data::Types;
+#include <QPair>
+#include <QString>
+#include <QVariant>
 
-LabelType::LabelType(const QString &name)
-    : m_name(name)
-{}
+namespace MalTester {
+namespace Data {
 
-QString LabelType::name() const
+class Constraints
 {
-    return m_name;
-}
+public:
+    using VariantPair = QPair<QVariant, QVariant>;
+    using StringPair = QPair<QString, QString>;
+    using Ranges = QList<VariantPair>;
 
-void LabelType::accept(TypeVisitor &visitor)
-{
-    visitor.visit(*this);
-}
+    Constraints(std::function<VariantPair(StringPair)> convert)
+        : m_convertRange(convert)
+    {}
+
+    const Ranges &ranges() const { return m_ranges; }
+    void addRange(const StringPair &range) { m_ranges.push_back(m_convertRange(range)); }
+
+private:
+    Ranges m_ranges;
+    std::function<VariantPair(StringPair)> m_convertRange;
+};
+
+} // namespace Data
+} // namespace MalTester

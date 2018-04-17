@@ -23,22 +23,30 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-#include "labeltype.h"
+#pragma once
 
-#include <data/types/typevisitor.h>
+#include <QString>
 
-using namespace MalTester::Data::Types;
+#include <data/types/type.h>
 
-LabelType::LabelType(const QString &name)
-    : m_name(name)
-{}
+namespace MalTester {
+namespace Data {
+namespace Types {
 
-QString LabelType::name() const
+enum class RealEncoding { IEEE754_1985_32, IEEE754_1985_64, unspecified };
+
+class Real : public Type
 {
-    return m_name;
-}
+public:
+    Real();
 
-void LabelType::accept(TypeVisitor &visitor)
-{
-    visitor.visit(*this);
-}
+    QString name() const override { return QLatin1String("REAL"); }
+
+    void accept(TypeVisitor &visitor) override;
+
+    static RealEncoding mapEncoding(const QStringRef &ref);
+};
+
+} // namespace Types
+} // namespace Data
+} // namespace MalTester

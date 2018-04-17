@@ -23,15 +23,25 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
+#include "typefactory.h"
 
-#include "builtintypes.h"
-
-#include "integertype.h"
-#include "realtype.h"
+#include "bitstring.h"
+#include "boolean.h"
+#include "choice.h"
+#include "enumerated.h"
+#include "ia5string.h"
+#include "integer.h"
+#include "null.h"
+#include "numericstring.h"
+#include "octetstring.h"
+#include "real.h"
+#include "sequence.h"
+#include "sequenceof.h"
+#include "typevisitor.h"
 
 using namespace MalTester::Data::Types;
 
-std::unique_ptr<Type> BuiltinType::createBuiltinType(const QString &name)
+std::unique_ptr<Type> TypeFactory::createBuiltinType(const QString &name)
 {
     if (name == QStringLiteral("BOOLEAN"))
         return std::make_unique<Boolean>();
@@ -58,7 +68,7 @@ std::unique_ptr<Type> BuiltinType::createBuiltinType(const QString &name)
         return std::make_unique<NumericString>();
 
     if (name == QStringLiteral("Enumerated"))
-        return std::make_unique<Enumarated>();
+        return std::make_unique<Enumerated>();
 
     if (name == QStringLiteral("CHOICE"))
         return std::make_unique<Choice>();

@@ -40,11 +40,10 @@ public:
     UserdefinedType(const QString &name, const QString &module);
 
     QString name() const override;
-    QString label() const override;
+
+    void accept(TypeVisitor &visitor) override;
 
 private:
-    QString baseIconFile() const override;
-
     QString m_name;
     QString m_module;
 };

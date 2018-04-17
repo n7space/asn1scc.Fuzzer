@@ -23,22 +23,20 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-#include "labeltype.h"
-
-#include <data/types/typevisitor.h>
+#include "type.h"
 
 using namespace MalTester::Data::Types;
 
-LabelType::LabelType(const QString &name)
-    : m_name(name)
-{}
+Type::~Type() {}
 
-QString LabelType::name() const
+AlignToNext Type::mapAlignToNext(const QStringRef &in)
 {
-    return m_name;
-}
+    if (in == "byte")
+        return AlignToNext::byte;
+    if (in == "word")
+        return AlignToNext::word;
+    if (in == "dword")
+        return AlignToNext::dword;
 
-void LabelType::accept(TypeVisitor &visitor)
-{
-    visitor.visit(*this);
+    return AlignToNext::unspecified;
 }

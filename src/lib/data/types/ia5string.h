@@ -27,46 +27,20 @@
 
 #include <QString>
 
+#include <data/types/type.h>
+
 namespace MalTester {
 namespace Data {
+namespace Types {
 
-enum class Encoding {
-    pos_int,
-    twos_complement,
-    ASCII,
-    BCD,
-    IEEE754_1985_32,
-    IEEE754_1985_64,
-    undefined
-};
-
-enum class Endianness { big, little, undefined };
-
-enum class AlignToNext { byte, word, dword, undefined };
-
-class AcnParameters
+class IA5String : public Type
 {
 public:
-    virtual ~AcnParameters() = 0;
+    QString name() const override { return QLatin1String("IA5String"); }
 
-    virtual void setSize(const int size) { Q_UNUSED(size); }
-    virtual int size() const { return 0; }
-
-    virtual void setEncoding(const Encoding encoding) { Q_UNUSED(encoding); }
-    virtual Encoding encoding() const { return Encoding::undefined; }
-
-    virtual void setEndianness(const Endianness endianness) { Q_UNUSED(endianness); }
-    virtual Endianness endianness() const { return Endianness::undefined; }
-
-    virtual void setAlignToNext(const AlignToNext alignToNext) { Q_UNUSED(alignToNext); }
-    virtual AlignToNext alignToNext() const { return AlignToNext::undefined; }
-
-    static Encoding mapEncoding(const QStringRef &in);
-    static Endianness mapEndianess(const QStringRef &in);
-    static AlignToNext mapAlignToNext(const QStringRef &in);
+    void accept(TypeVisitor &visitor) override;
 };
 
-inline AcnParameters::~AcnParameters() {}
-
+} // namespace Types
 } // namespace Data
 } // namespace MalTester

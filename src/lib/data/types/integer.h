@@ -23,22 +23,53 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-#include "labeltype.h"
+#pragma once
 
-#include <data/types/typevisitor.h>
+#include <QString>
 
-using namespace MalTester::Data::Types;
+#include <data/types/type.h>
 
-LabelType::LabelType(const QString &name)
-    : m_name(name)
-{}
+namespace MalTester {
+namespace Data {
+namespace Types {
 
-QString LabelType::name() const
+enum class Endianness { big, little, unspecified };
+
+enum class IntegerEncoding {
+    pos_int,
+    twos_complement,
+    ASCII,
+    BCD,
+    unspecified,
+};
+
+class Integer : public Type
 {
-    return m_name;
-}
+public:
+    Integer();
 
-void LabelType::accept(TypeVisitor &visitor)
-{
-    visitor.visit(*this);
-}
+    QString name() const override;
+
+    void accept(TypeVisitor &visitor) override;
+
+    void setSize(const int size) { m_size = size; }
+    int size() const { return m_size; }
+
+    void setEncoding(const IntegerEncoding encoding) { m_encoding = encoding; }
+    IntegerEncoding encoding() const { return m_encoding; }
+
+    void setEndianness(const Endianness endianness) { m_endianness = endianness; }
+    Endianness endianness() const { return m_endianness; }
+
+    static IntegerEncoding mapEncoding(const QStringRef &in);
+    static Endianness mapEndianess(const QStringRef &in);
+
+private:
+    IntegerEncoding m_encoding;
+    Endianness m_endianness;
+    int m_size;
+};
+
+} // namespace Types
+} // namespace Data
+} // namespace MalTester

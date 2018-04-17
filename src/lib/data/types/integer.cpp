@@ -23,22 +23,53 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-#include "labeltype.h"
+#include "integer.h"
 
-#include <data/types/typevisitor.h>
+#include "typevisitor.h"
 
+using namespace MalTester::Data;
 using namespace MalTester::Data::Types;
 
-LabelType::LabelType(const QString &name)
-    : m_name(name)
-{}
-
-QString LabelType::name() const
+static Constraints::VariantPair toVariantPair(const Constraints::StringPair &range)
 {
-    return m_name;
+    return {range.first.toInt(), range.second.toInt()};
 }
 
-void LabelType::accept(TypeVisitor &visitor)
+Integer::Integer()
+    : Type(std::make_unique<Constraints>(toVariantPair))
+    , m_encoding(IntegerEncoding::unspecified)
+    , m_endianness(Endianness::unspecified)
+    , m_size(0) // TODO?
+{}
+
+QString Integer::name() const
+{
+    return QLatin1String("INTEGER");
+}
+
+void Integer::accept(TypeVisitor &visitor)
 {
     visitor.visit(*this);
+}
+
+IntegerEncoding Integer::mapEncoding(const QStringRef &in)
+{
+    if (in == "pos-int")
+        return IntegerEncoding::pos_int;
+    if (in == "twos-complement")
+        return IntegerEncoding::twos_complement;
+    if (in == "ASCII")
+        return IntegerEncoding::ASCII;
+    if (in == "BCD")
+        return IntegerEncoding::BCD;
+    return IntegerEncoding::unspecified;
+}
+
+Endianness Integer::mapEndianess(const QStringRef &in)
+{
+    if (in == "big")
+        return Endianness::big;
+    if (in == "little")
+        return Endianness::little;
+    return Endianness::unspecified;
 }

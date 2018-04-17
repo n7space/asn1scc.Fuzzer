@@ -60,6 +60,7 @@ private slots:
     void test_multipleModules();
     void test_multipleFiles();
     void test_parametrizedInstancesContentsAreIgnored();
+    void test_enumeratedItems();
 
     void test_singleIntegerTypeAssignmentWithSimpleConstraint();
     void test_singleIntegerTypeAssignmentWithRangedConstraints();

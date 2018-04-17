@@ -28,6 +28,7 @@
 
 #include <data/sourcelocation.h>
 
+#include <data/types/enumerated.h>
 #include <data/types/integer.h>
 #include <data/types/real.h>
 #include <data/types/typefactory.h>
@@ -533,6 +534,8 @@ void AstXmlParser::readTypeContents(const QStringRef &name, std::unique_ptr<Data
         readInteger(type);
     else if (name == QStringLiteral("REAL"))
         readReal(type);
+    else if (name == QStringLiteral("Enumerated"))
+        readEnumerated(type);
     else
         m_xmlReader.skipCurrentElement();
 }
@@ -567,6 +570,38 @@ void AstXmlParser::readInteger(std::unique_ptr<Data::Types::Type> &type)
 void AstXmlParser::readReal(std::unique_ptr<Data::Types::Type> &type)
 {
     readConstraints(type, "RealValue");
+}
+
+void AstXmlParser::readEnumerated(std::unique_ptr<Data::Types::Type> &type)
+{
+    while (m_xmlReader.readNextStartElement()) {
+        if (m_xmlReader.name() == QStringLiteral("Items"))
+            readEnumeratedItem(type);
+        else
+            m_xmlReader.skipCurrentElement();
+    }
+}
+
+void AstXmlParser::readEnumeratedItem(std::unique_ptr<Data::Types::Type> &type)
+{
+    auto enumType = dynamic_cast<Data::Types::Enumerated *>(type.get());
+    if (!enumType)
+        return;
+
+    while (m_xmlReader.readNextStartElement()) {
+        if (m_xmlReader.name() == QStringLiteral("Item")) {
+            const auto itemName = readNameAttribute();
+            enumType->addItem(itemName,
+                              {itemName, readValueFromAttributes(), readLocationFromAttributes()});
+        }
+
+        m_xmlReader.skipCurrentElement();
+    }
+}
+
+int AstXmlParser::readValueFromAttributes()
+{
+    return m_xmlReader.attributes().value("Value").toInt();
 }
 
 void AstXmlParser::readReferenceType(std::unique_ptr<Data::Types::Type> &type)

@@ -78,6 +78,7 @@ private:
     Data::SourceLocation readLocationFromAttributes();
     QStringRef readIsAlignedToNext();
 
+    std::unique_ptr<Data::Types::Type> findAndReadType();
     std::unique_ptr<Data::Types::Type> readType();
     std::unique_ptr<Data::Types::Type> readTypeDetails(const Data::SourceLocation &location,
                                                        const bool isParametrized,
@@ -86,26 +87,26 @@ private:
                                                          bool isParametrized);
     std::unique_ptr<Data::Types::Type> createReferenceType(const Data::SourceLocation &location);
 
-    void readTypeContents(const QStringRef &name, std::unique_ptr<Data::Types::Type> &type);
-    void readTypeAttributes(std::unique_ptr<Data::Types::Type> &type);
+    void readTypeContents(const QStringRef &name, Data::Types::Type &type);
+    void readTypeAttributes(Data::Types::Type &type);
 
     void readSequence();
-    void readSequenceOf();
+    void readSequenceOf(Data::Types::Type &type);
     void readChoice();
-    void readReferenceType(std::unique_ptr<Data::Types::Type> &type);
+    void readReferenceType();
 
-    void readInteger(std::unique_ptr<Data::Types::Type> &type);
-    void readReal(std::unique_ptr<Data::Types::Type> &type);
+    void readInteger(Data::Types::Type &type);
+    void readReal(Data::Types::Type &type);
 
-    void readEnumerated(std::unique_ptr<Data::Types::Type> &type);
-    void readEnumeratedItem(std::unique_ptr<Data::Types::Type> &type);
+    void readEnumerated(Data::Types::Type &type);
+    void readEnumeratedItem(Data::Types::Type &type);
     int readValueFromAttributes();
 
-    void readConstraints(std::unique_ptr<Data::Types::Type> &type, const QString &valName);
+    void readConstraints(Data::Types::Type &type, const QString &valName);
     void readConstraint(std::unique_ptr<Data::Types::Type> &type, const QString &valName);
 
-    void readRanges(std::unique_ptr<Data::Types::Type> &type, const QString &valName);
-    void readRange(std::unique_ptr<Data::Types::Type> &type, const QString &valName);
+    void readRanges(Data::Types::Type &type, const QString &valName);
+    void readRange(Data::Types::Type &type, const QString &valName);
     QString readValue(const QString &valName);
 
     QString readTypeAssignmentAttribute();

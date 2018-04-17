@@ -30,6 +30,7 @@
 #include <data/types/enumerated.h>
 #include <data/types/integer.h>
 #include <data/types/real.h>
+#include <data/types/sequenceof.h>
 
 using namespace MalTester::Tests;
 using namespace MalTester;
@@ -976,6 +977,168 @@ void AstXmlParserTests::test_singleRealTypeAssignmentWithRangedConstraints()
 
     QVERIFY(qFuzzyCompare(constraintRanges.at(1).first, 4.5));
     QVERIFY(qFuzzyCompare(constraintRanges.at(1).second, 5.5));
+}
+
+void AstXmlParserTests::test_sequenceOfAssignmentWithSimpleConstraint()
+{
+    parse(
+        R"(<?xml version="1.0" encoding="utf-8"?>)"
+        R"(<AstRoot>)"
+        R"(  <Asn1File FileName="Test2File.asn">)"
+        R"(    <Modules>)"
+        R"(      <Module Name="TestDefinitions" Line="13" CharPositionInLine="42">)"
+        R"(        <TypeAssignments>)"
+        R"(          <TypeAssignment Name="MySeq0" Line="6" CharPositionInLine="0">)"
+        R"(            <Asn1Type id="Test.MySeq0" Line="6" CharPositionInLine="11" ParameterizedTypeInstance="false">)"
+        R"(              <SEQUENCE_OF>)"
+        R"(                <Constraints>)"
+        R"(                  <SIZE>)"
+        R"(                    <IntegerValue>10</IntegerValue>)"
+        R"(                  </SIZE>)"
+        R"(               </Constraints>)"
+        R"(               <WithComponentConstraints />)"
+        R"(               <Asn1Type id="Test.MySeq0.#" Line="6" CharPositionInLine="34" ParameterizedTypeInstance="false">)"
+        R"(                 <INTEGER>)"
+        R"(                   <Constraints />)"
+        R"(                   <WithComponentConstraints />)"
+        R"(                 </INTEGER>)"
+        R"(               </Asn1Type>)"
+        R"(             </SEQUENCE_OF>)"
+        R"(           </Asn1Type>)"
+        R"(         </TypeAssignment>)"
+        R"(       </TypeAssignments>)"
+        R"(      </Module>)"
+        R"(    </Modules>)"
+        R"(  </Asn1File>)"
+        R"(</AstRoot>)");
+
+    const auto type = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MySeq0");
+    const auto realType = dynamic_cast<const Data::Types::SequenceOf *>(type->type());
+    const auto constraintRanges = realType->constraints().ranges();
+
+    QCOMPARE(constraintRanges.size(), 1);
+    QCOMPARE(constraintRanges.at(0).first, 10);
+    QCOMPARE(constraintRanges.at(0).second, 10);
+}
+
+void AstXmlParserTests::test_sequenceOfAssignmentWithMultipleRangeConstraints()
+{
+    parse(
+        R"(<?xml version="1.0" encoding="utf-8"?>)"
+        R"(<AstRoot>)"
+        R"(  <Asn1File FileName="Test2File.asn">)"
+        R"(    <Modules>)"
+        R"(      <Module Name="TestDefinitions" Line="13" CharPositionInLine="42">)"
+        R"(        <TypeAssignments>)"
+        R"(          <TypeAssignment Name="MySeq0" Line="6" CharPositionInLine="0">)"
+        R"(            <Asn1Type id="Test.MySeq0" Line="6" CharPositionInLine="11" ParameterizedTypeInstance="false">)"
+        R"(              <SEQUENCE_OF>)"
+        R"(                <Constraints>)"
+        R"(                  <OR>)"
+        R"(                    <SIZE>)"
+        R"(                      <Range>)"
+        R"(                        <a>)"
+        R"(                          <IntegerValue>0</IntegerValue>)"
+        R"(                        </a>)"
+        R"(                        <b>)"
+        R"(                          <IntegerValue>10</IntegerValue>)"
+        R"(                        </b>)"
+        R"(                     </Range>)"
+        R"(                   </SIZE>)"
+        R"(                   <SIZE>)"
+        R"(                     <Range>)"
+        R"(                       <a>)"
+        R"(                         <IntegerValue>20</IntegerValue>)"
+        R"(                       </a>)"
+        R"(                       <b>)"
+        R"(                         <IntegerValue>22</IntegerValue>)"
+        R"(                       </b>)"
+        R"(                     </Range>)"
+        R"(                   </SIZE>)"
+        R"(                 </OR>)"
+        R"(               </Constraints>)"
+        R"(               <WithComponentConstraints />)"
+        R"(               <Asn1Type id="Test.MySeq0.#" Line="6" CharPositionInLine="34" ParameterizedTypeInstance="false">)"
+        R"(                 <INTEGER>)"
+        R"(                   <Constraints />)"
+        R"(                   <WithComponentConstraints />)"
+        R"(                 </INTEGER>)"
+        R"(               </Asn1Type>)"
+        R"(             </SEQUENCE_OF>)"
+        R"(           </Asn1Type>)"
+        R"(         </TypeAssignment>)"
+        R"(       </TypeAssignments>)"
+        R"(      </Module>)"
+        R"(    </Modules>)"
+        R"(  </Asn1File>)"
+        R"(</AstRoot>)");
+
+    const auto type = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MySeq0");
+    const auto realType = dynamic_cast<const Data::Types::SequenceOf *>(type->type());
+    const auto constraintRanges = realType->constraints().ranges();
+
+    QCOMPARE(constraintRanges.size(), 2);
+    QVERIFY(constraintRanges.contains({0, 10}));
+    QVERIFY(constraintRanges.contains({20, 22}));
+}
+
+void AstXmlParserTests::test_sequenceOfAssignmentWithRangeConstraintInsideSizeConstraint()
+{
+    parse(
+        R"(<?xml version="1.0" encoding="utf-8"?>)"
+        R"(<AstRoot>)"
+        R"(  <Asn1File FileName="Test2File.asn">)"
+        R"(    <Modules>)"
+        R"(      <Module Name="TestDefinitions" Line="13" CharPositionInLine="42">)"
+        R"(        <TypeAssignments>)"
+        R"(          <TypeAssignment Name="MySeq0" Line="6" CharPositionInLine="0">)"
+        R"(            <Asn1Type id="Test.MySeq0" Line="6" CharPositionInLine="11" ParameterizedTypeInstance="false">)"
+        R"(              <SEQUENCE_OF>)"
+        R"(                <Constraints>)"
+        R"(                  <SIZE>)"
+        R"(                    <OR>)"
+        R"(                      <Range>)"
+        R"(                        <a>)"
+        R"(                          <IntegerValue>0</IntegerValue>)"
+        R"(                        </a>)"
+        R"(                        <b>)"
+        R"(                          <IntegerValue>10</IntegerValue>)"
+        R"(                        </b>)"
+        R"(                     </Range>)"
+        R"(                     <Range>)"
+        R"(                       <a>)"
+        R"(                         <IntegerValue>20</IntegerValue>)"
+        R"(                       </a>)"
+        R"(                       <b>)"
+        R"(                         <IntegerValue>22</IntegerValue>)"
+        R"(                       </b>)"
+        R"(                     </Range>)"
+        R"(                   </OR>)"
+        R"(                 </SIZE>)"
+        R"(               </Constraints>)"
+        R"(               <WithComponentConstraints />)"
+        R"(               <Asn1Type id="Test.MySeq0.#" Line="6" CharPositionInLine="34" ParameterizedTypeInstance="false">)"
+        R"(                 <INTEGER>)"
+        R"(                   <Constraints />)"
+        R"(                   <WithComponentConstraints />)"
+        R"(                 </INTEGER>)"
+        R"(               </Asn1Type>)"
+        R"(             </SEQUENCE_OF>)"
+        R"(           </Asn1Type>)"
+        R"(         </TypeAssignment>)"
+        R"(       </TypeAssignments>)"
+        R"(      </Module>)"
+        R"(    </Modules>)"
+        R"(  </Asn1File>)"
+        R"(</AstRoot>)");
+
+    const auto type = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MySeq0");
+    const auto realType = dynamic_cast<const Data::Types::SequenceOf *>(type->type());
+    const auto constraintRanges = realType->constraints().ranges();
+
+    QCOMPARE(constraintRanges.size(), 2);
+    QVERIFY(constraintRanges.contains({0, 10}));
+    QVERIFY(constraintRanges.contains({20, 22}));
 }
 
 void AstXmlParserTests::parsingFails(const QString &xmlData)

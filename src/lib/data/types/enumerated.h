@@ -31,6 +31,7 @@
 #include <data/sourcelocation.h>
 
 #include <data/types/constraints.h>
+#include <data/types/integeracnparams.h>
 #include <data/types/type.h>
 
 namespace MalTester {
@@ -60,10 +61,12 @@ private:
     SourceLocation m_location;
 };
 
-class Enumerated : public Type, public WithConstraints<EnumeratedConstraints>
+class Enumerated : public Type,
+                   public WithConstraints<EnumeratedConstraints>,
+                   public IntegerAcnParameters
 {
 public:
-    Enumerated() = default;
+    Enumerated();
     Enumerated(const Enumerated &other) = default;
 
     QString name() const override;
@@ -75,8 +78,12 @@ public:
     const Items &items() const { return m_items; }
     void addItem(const QString &key, const EnumeratedItem &item);
 
+    void setEncodeValues(bool encodeValues) { m_encodeValues = encodeValues; }
+    bool encodeValues() const { return m_encodeValues; }
+
 private:
     Items m_items;
+    bool m_encodeValues;
 };
 
 } // namespace Types

@@ -29,6 +29,10 @@
 
 using namespace MalTester::Data::Types;
 
+Enumerated::Enumerated()
+    : m_encodeValues(false)
+{}
+
 std::unique_ptr<Type> Enumerated::clone() const
 {
     return std::make_unique<Enumerated>(*this);

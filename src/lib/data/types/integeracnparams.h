@@ -23,24 +23,48 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-#include "integer.h"
+#pragma once
 
-#include "typevisitor.h"
+#include <QString>
 
-using namespace MalTester::Data;
-using namespace MalTester::Data::Types;
+namespace MalTester {
+namespace Data {
+namespace Types {
 
-std::unique_ptr<Type> Integer::clone() const
+enum class Endianness { big, little, unspecified };
+
+enum class IntegerEncoding {
+    pos_int,
+    twos_complement,
+    ASCII,
+    BCD,
+    unspecified,
+};
+
+class IntegerAcnParameters
 {
-    return std::make_unique<Integer>(*this);
-}
+public:
+    IntegerAcnParameters();
+    IntegerAcnParameters(const IntegerAcnParameters &other) = default;
 
-QString Integer::name() const
-{
-    return QLatin1String("INTEGER");
-}
+    void setSize(const int size) { m_size = size; }
+    int size() const { return m_size; }
 
-void Integer::accept(TypeVisitor &visitor)
-{
-    visitor.visit(*this);
-}
+    void setEncoding(const IntegerEncoding encoding) { m_encoding = encoding; }
+    IntegerEncoding encoding() const { return m_encoding; }
+
+    void setEndianness(const Endianness endianness) { m_endianness = endianness; }
+    Endianness endianness() const { return m_endianness; }
+
+    static IntegerEncoding mapEncoding(const QStringRef &in);
+    static Endianness mapEndianess(const QStringRef &in);
+
+private:
+    IntegerEncoding m_encoding;
+    Endianness m_endianness;
+    int m_size;
+};
+
+} // namespace Types
+} // namespace Data
+} // namespace MalTester

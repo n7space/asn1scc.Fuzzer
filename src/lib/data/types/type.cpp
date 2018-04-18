@@ -40,3 +40,12 @@ AlignToNext Type::mapAlignToNext(const QStringRef &in)
 
     return AlignToNext::unspecified;
 }
+
+Endianness Type::mapEndianess(const QStringRef &in)
+{
+    if (in == "big")
+        return Endianness::big;
+    if (in == "little")
+        return Endianness::little;
+    return Endianness::unspecified;
+}

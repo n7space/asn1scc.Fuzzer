@@ -71,6 +71,7 @@ private slots:
 
     void test_singleRealTypeAssignmentWithSimpleConstraint();
     void test_singleRealTypeAssignmentWithRangedConstraints();
+    void test_singleRealTypeAssignmentWithAcnParams();
 
     void test_sequenceOfAssignmentWithSimpleConstraint();
     void test_sequenceOfAssignmentWithMultipleRangeConstraints();

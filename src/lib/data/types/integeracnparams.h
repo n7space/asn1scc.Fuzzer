@@ -27,11 +27,11 @@
 
 #include <QString>
 
+#include "type.h"
+
 namespace MalTester {
 namespace Data {
 namespace Types {
-
-enum class Endianness { big, little, unspecified };
 
 enum class IntegerEncoding {
     pos_int,
@@ -57,7 +57,6 @@ public:
     Endianness endianness() const { return m_endianness; }
 
     static IntegerEncoding mapEncoding(const QStringRef &in);
-    static Endianness mapEndianess(const QStringRef &in);
 
 private:
     IntegerEncoding m_encoding;

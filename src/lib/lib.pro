@@ -23,6 +23,7 @@ SOURCES += \
     data/types/labeltype.cpp \
     data/types/userdefinedtype.cpp \
     data/types/integer.cpp \
+    data/types/integeracnparams.cpp \
     data/types/bitstring.cpp \
     data/types/boolean.cpp \
     data/types/choice.cpp \
@@ -62,6 +63,7 @@ HEADERS += \
     data/types/typevisitor.h \
     data/types/userdefinedtype.h \
     data/types/integer.h \
+    data/types/integeracnparams.h \
     data/types/bitstring.h \
     data/types/boolean.h \
     data/types/choice.h \

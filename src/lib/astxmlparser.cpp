@@ -30,6 +30,7 @@
 
 #include <data/types/enumerated.h>
 #include <data/types/integer.h>
+#include <data/types/integeracnparams.h>
 #include <data/types/real.h>
 #include <data/types/sequenceof.h>
 #include <data/types/typefactory.h>
@@ -86,8 +87,10 @@ public:
 
     void visit(Data::Types::Enumerated &type) override
     {
-        Q_UNUSED(type);
-        // TODO?
+        setIntegerAcnParameters(type);
+
+        bool encodeValues = true; // TODO: read encodeValues from ast when possible
+        type.setEncodeValues(encodeValues);
     }
 
     void visit(Data::Types::Choice &type) override
@@ -116,7 +119,12 @@ public:
 
     void visit(Data::Types::LabelType &type) override { Q_UNUSED(type); }
 
-    void visit(Data::Types::Integer &type) override
+    void visit(Data::Types::Integer &type) override { setIntegerAcnParameters(type); }
+
+    void visit(Data::Types::UserdefinedType &type) override { Q_UNUSED(type); }
+
+private:
+    void setIntegerAcnParameters(Data::Types::IntegerAcnParameters &type)
     {
         using namespace Data::Types;
 
@@ -125,9 +133,6 @@ public:
         type.setEncoding(Integer::mapEncoding(m_attributes.value(QLatin1String("encoding"))));
     }
 
-    void visit(Data::Types::UserdefinedType &type) override { Q_UNUSED(type); }
-
-private:
     const QXmlStreamAttributes &m_attributes;
 };
 

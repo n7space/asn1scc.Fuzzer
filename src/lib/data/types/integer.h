@@ -25,51 +25,23 @@
 ****************************************************************************/
 #pragma once
 
-#include <QString>
-
 #include "constraints.h"
+#include "integeracnparams.h"
 #include "type.h"
 
 namespace MalTester {
 namespace Data {
 namespace Types {
 
-enum class Endianness { big, little, unspecified };
-
-enum class IntegerEncoding {
-    pos_int,
-    twos_complement,
-    ASCII,
-    BCD,
-    unspecified,
-};
-
-class Integer : public Type, public WithConstraints<IntegerConstraints>
+class Integer : public Type, public WithConstraints<IntegerConstraints>, public IntegerAcnParameters
 {
 public:
-    Integer();
+    Integer() = default;
     Integer(const Integer &other) = default;
 
     QString name() const override;
     void accept(TypeVisitor &visitor) override;
     std::unique_ptr<Type> clone() const override;
-
-    void setSize(const int size) { m_size = size; }
-    int size() const { return m_size; }
-
-    void setEncoding(const IntegerEncoding encoding) { m_encoding = encoding; }
-    IntegerEncoding encoding() const { return m_encoding; }
-
-    void setEndianness(const Endianness endianness) { m_endianness = endianness; }
-    Endianness endianness() const { return m_endianness; }
-
-    static IntegerEncoding mapEncoding(const QStringRef &in);
-    static Endianness mapEndianess(const QStringRef &in);
-
-private:
-    IntegerEncoding m_encoding;
-    Endianness m_endianness;
-    int m_size;
 };
 
 } // namespace Types

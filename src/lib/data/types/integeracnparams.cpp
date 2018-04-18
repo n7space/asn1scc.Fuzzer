@@ -23,24 +23,35 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-#include "integer.h"
-
-#include "typevisitor.h"
+#include "integeracnparams.h"
 
 using namespace MalTester::Data;
 using namespace MalTester::Data::Types;
 
-std::unique_ptr<Type> Integer::clone() const
+IntegerAcnParameters::IntegerAcnParameters()
+    : m_encoding(IntegerEncoding::unspecified)
+    , m_endianness(Endianness::unspecified)
+    , m_size(0) // TODO?
+{}
+
+IntegerEncoding IntegerAcnParameters::mapEncoding(const QStringRef &in)
 {
-    return std::make_unique<Integer>(*this);
+    if (in == "pos-int")
+        return IntegerEncoding::pos_int;
+    if (in == "twos-complement")
+        return IntegerEncoding::twos_complement;
+    if (in == "ASCII")
+        return IntegerEncoding::ASCII;
+    if (in == "BCD")
+        return IntegerEncoding::BCD;
+    return IntegerEncoding::unspecified;
 }
 
-QString Integer::name() const
+Endianness IntegerAcnParameters::mapEndianess(const QStringRef &in)
 {
-    return QLatin1String("INTEGER");
-}
-
-void Integer::accept(TypeVisitor &visitor)
-{
-    visitor.visit(*this);
+    if (in == "big")
+        return Endianness::big;
+    if (in == "little")
+        return Endianness::little;
+    return Endianness::unspecified;
 }

@@ -748,6 +748,46 @@ void AstXmlParserTests::test_enumeratedConstraints()
     QVERIFY(constraintRanges.contains({2, 2}));
 }
 
+void AstXmlParserTests::test_enumeratedWithAcnParams()
+{
+    parse(
+        R"(<?xml version="1.0" encoding="utf-8"?>)"
+        R"(<AstRoot>)"
+        R"(  <Asn1File FileName="Test2File.asn">)"
+        R"(    <Modules>)"
+        R"(      <Module Name="TestDefinitions" Line="13" CharPositionInLine="42">)"
+        R"(        <TypeAssignments>"
+        R"(          <TypeAssignment Name="MyEnum" Line="9" CharPositionInLine="0">"
+        R"(            <Asn1Type id="Constrained.MyEnum" Line="9" CharPositionInLine="21" ParameterizedTypeInstance="false" align-to-next="dword">"
+        R"(              <Enumerated endianness="big" size="8" encoding="BCD">"
+        R"(                <Items>"
+        R"(                  <Item Name="ldev1" Value="0" Line="11" CharPositionInLine="4" />"
+        R"(                  <Item Name="ldev2" Value="1" Line="12" CharPositionInLine="4" />"
+        R"(                  <Item Name="ldev3" Value="2" Line="13" CharPositionInLine="4" />"
+        R"(                </Items>"
+        R"(                <Constraints />"
+        R"(                <WithComponentConstraints />"
+        R"(              </Enumerated>"
+        R"(            </Asn1Type>"
+        R"(          </TypeAssignment>"
+        R"(        </TypeAssignments>"
+        R"(      </Module>)"
+        R"(    </Modules>)"
+        R"(  </Asn1File>)"
+        R"(</AstRoot>)");
+
+    const auto myEnum = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyEnum");
+    const auto type = dynamic_cast<const Data::Types::Enumerated *>(myEnum->type());
+
+    QVERIFY(type != nullptr);
+
+    QCOMPARE(type->size(), 8);
+    QCOMPARE(type->encoding(), Data::Types::IntegerEncoding::BCD);
+    QCOMPARE(type->endianness(), Data::Types::Endianness::big);
+    QCOMPARE(type->alignToNext(), Data::Types::AlignToNext::dword);
+    QCOMPARE(type->encodeValues(), true);
+}
+
 void AstXmlParserTests::test_singleIntegerTypeAssignmentWithSimpleConstraint()
 {
     parse(
@@ -855,7 +895,7 @@ void AstXmlParserTests::test_singleIntegerTypeAssignmentWithRangedConstraints()
     QVERIFY(constraintRanges.contains({50, 80}));
 }
 
-void AstXmlParserTests::test_singleIntegerTypeAssignmentWitAcnData()
+void AstXmlParserTests::test_singleIntegerTypeAssignmentWithAcnParams()
 {
     parse(
         R"(<?xml version="1.0" encoding="utf-8"?>)"

@@ -63,10 +63,11 @@ private slots:
 
     void test_enumeratedItems();
     void test_enumeratedConstraints();
+    void test_enumeratedWithAcnParams();
 
     void test_singleIntegerTypeAssignmentWithSimpleConstraint();
     void test_singleIntegerTypeAssignmentWithRangedConstraints();
-    void test_singleIntegerTypeAssignmentWitAcnData();
+    void test_singleIntegerTypeAssignmentWithAcnParams();
 
     void test_singleRealTypeAssignmentWithSimpleConstraint();
     void test_singleRealTypeAssignmentWithRangedConstraints();

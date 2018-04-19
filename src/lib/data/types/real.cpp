@@ -30,6 +30,11 @@
 using namespace MalTester::Data;
 using namespace MalTester::Data::Types;
 
+Real::Real()
+    : m_encoding(RealEncoding::unspecified)
+    , m_endianness(Endianness::unspecified)
+{}
+
 void Real::accept(TypeVisitor &visitor)
 {
     visitor.visit(*this);
@@ -42,9 +47,9 @@ std::unique_ptr<Type> Real::clone() const
 
 RealEncoding Real::mapEncoding(const QStringRef &in)
 {
-    if (in == "IEEE754_1985_32")
+    if (in == "IEEE754-1985-32")
         return RealEncoding::IEEE754_1985_32;
-    if (in == "IEEE754_1985_64")
+    if (in == "IEEE754-1985-64")
         return RealEncoding::IEEE754_1985_64;
     return RealEncoding::unspecified;
 }

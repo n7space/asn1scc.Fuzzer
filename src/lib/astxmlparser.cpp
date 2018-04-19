@@ -113,8 +113,10 @@ public:
 
     void visit(Data::Types::Real &type) override
     {
-        Q_UNUSED(type);
-        // TODO?
+        using namespace Data::Types;
+
+        type.setEndianness(Type::mapEndianess(m_attributes.value(QLatin1String("endianness"))));
+        type.setEncoding(Real::mapEncoding(m_attributes.value(QLatin1String("encoding"))));
     }
 
     void visit(Data::Types::LabelType &type) override { Q_UNUSED(type); }
@@ -129,7 +131,7 @@ private:
         using namespace Data::Types;
 
         type.setSize(m_attributes.value(QLatin1String("size")).toInt());
-        type.setEndianness(Integer::mapEndianess(m_attributes.value(QLatin1String("endianness"))));
+        type.setEndianness(Type::mapEndianess(m_attributes.value(QLatin1String("endianness"))));
         type.setEncoding(Integer::mapEncoding(m_attributes.value(QLatin1String("encoding"))));
     }
 

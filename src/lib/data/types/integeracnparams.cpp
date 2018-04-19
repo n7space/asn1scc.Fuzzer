@@ -46,12 +46,3 @@ IntegerEncoding IntegerAcnParameters::mapEncoding(const QStringRef &in)
         return IntegerEncoding::BCD;
     return IntegerEncoding::unspecified;
 }
-
-Endianness IntegerAcnParameters::mapEndianess(const QStringRef &in)
-{
-    if (in == "big")
-        return Endianness::big;
-    if (in == "little")
-        return Endianness::little;
-    return Endianness::unspecified;
-}

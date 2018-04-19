@@ -39,14 +39,24 @@ enum class RealEncoding { IEEE754_1985_32, IEEE754_1985_64, unspecified };
 class Real : public Type, public WithConstraints<RealConstraints>
 {
 public:
-    Real() = default;
+    Real();
     Real(const Real &other) = default;
 
     QString name() const override { return QLatin1String("REAL"); }
     void accept(TypeVisitor &visitor) override;
     std::unique_ptr<Type> clone() const override;
 
+    void setEncoding(const RealEncoding encoding) { m_encoding = encoding; }
+    RealEncoding encoding() const { return m_encoding; }
+
+    void setEndianness(const Endianness endianness) { m_endianness = endianness; }
+    Endianness endianness() const { return m_endianness; }
+
     static RealEncoding mapEncoding(const QStringRef &ref);
+
+private:
+    RealEncoding m_encoding;
+    Endianness m_endianness;
 };
 
 } // namespace Types

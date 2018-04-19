@@ -36,6 +36,7 @@ namespace Types {
 class TypeVisitor;
 
 enum class AlignToNext { byte, word, dword, unspecified };
+enum class Endianness { big, little, unspecified };
 
 class Type
 {
@@ -57,6 +58,7 @@ public:
     AlignToNext alignToNext() const { return m_alignment; }
 
     static AlignToNext mapAlignToNext(const QStringRef &in);
+    static Endianness mapEndianess(const QStringRef &in);
 
 private:
     AlignToNext m_alignment;

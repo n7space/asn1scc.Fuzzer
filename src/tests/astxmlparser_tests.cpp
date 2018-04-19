@@ -1019,6 +1019,39 @@ void AstXmlParserTests::test_singleRealTypeAssignmentWithRangedConstraints()
     QVERIFY(qFuzzyCompare(constraintRanges.at(1).second, 5.5));
 }
 
+void AstXmlParserTests::test_singleRealTypeAssignmentWithAcnParams()
+{
+    parse(
+        R"(<?xml version="1.0" encoding="utf-8"?>)"
+        R"(<AstRoot>)"
+        R"(  <Asn1File FileName="Test2File.asn">)"
+        R"(    <Modules>)"
+        R"(      <Module Name="TestDefinitions" Line="13" CharPositionInLine="42">)"
+        R"(        <TypeAssignments>"
+        R"(          <TypeAssignment Name="MyReal" Line="4" CharPositionInLine="10">)"
+        R"(            <Asn1Type id="Constrained.MyReal" Line="20" CharPositionInLine="11" ParameterizedTypeInstance="false" align-to-next="dword">
+        R"(              <REAL endianness="little" encoding="IEEE754-1985-32">
+        R"(                <Constraints />
+        R"(                <WithComponentConstraints />
+        R"(              </REAL>
+        R"(            </Asn1Type>
+        R"(          </TypeAssignment>"
+        R"(        </TypeAssignments>"
+        R"(      </Module>)"
+        R"(    </Modules>)"
+        R"(  </Asn1File>)"
+        R"(</AstRoot>)");
+
+    const auto myReal = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyReal");
+    const auto type = dynamic_cast<const Data::Types::Real *>(myReal->type());
+
+    QVERIFY(type != nullptr);
+
+    QCOMPARE(type->encoding(), Data::Types::RealEncoding::IEEE754_1985_32);
+    QCOMPARE(type->endianness(), Data::Types::Endianness::little);
+    QCOMPARE(type->alignToNext(), Data::Types::AlignToNext::dword);
+}
+
 void AstXmlParserTests::test_sequenceOfAssignmentWithSimpleConstraint()
 {
     parse(

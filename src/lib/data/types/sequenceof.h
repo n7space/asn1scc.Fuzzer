@@ -43,6 +43,12 @@ public:
     QString name() const override { return QLatin1String("SEQUENCE OF"); }
     void accept(TypeVisitor &visitor) override;
     std::unique_ptr<Type> clone() const override;
+
+    QString size() const { return m_size; }
+    void setSize(const QString &size) { m_size = size; }
+
+private:
+    QString m_size;
 };
 
 } // namespace Types

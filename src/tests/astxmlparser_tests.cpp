@@ -1214,6 +1214,46 @@ void AstXmlParserTests::test_sequenceOfAssignmentWithRangeConstraintInsideSizeCo
     QVERIFY(constraintRanges.contains({20, 22}));
 }
 
+void AstXmlParserTests::test_sequenceOfAssignmentWithAcnParams()
+{
+    parse(
+        R"(<?xml version="1.0" encoding="utf-8"?>)"
+        R"(<AstRoot>)"
+        R"(  <Asn1File FileName="Test2File.asn">)"
+        R"(    <Modules>)"
+        R"(      <Module Name="TestDefinitions" Line="13" CharPositionInLine="42">)"
+        R"(        <TypeAssignments>)"
+        R"(          <TypeAssignment Name="MySeq0" Line="6" CharPositionInLine="0">)"
+        R"(            <Asn1Type id="Test.MySeq0" Line="6" CharPositionInLine="11" ParameterizedTypeInstance="false">)"
+        R"(              <SEQUENCE_OF size="n">)"
+        R"(                <Constraints>)"
+        R"(                  <SIZE>)"
+        R"(                    <IntegerValue>10</IntegerValue>)"
+        R"(                  </SIZE>)"
+        R"(               </Constraints>)"
+        R"(               <WithComponentConstraints />)"
+        R"(               <Asn1Type id="Test.MySeq0.#" Line="6" CharPositionInLine="34" ParameterizedTypeInstance="false">)"
+        R"(                 <INTEGER>)"
+        R"(                   <Constraints />)"
+        R"(                   <WithComponentConstraints />)"
+        R"(                 </INTEGER>)"
+        R"(               </Asn1Type>)"
+        R"(             </SEQUENCE_OF>)"
+        R"(           </Asn1Type>)"
+        R"(         </TypeAssignment>)"
+        R"(       </TypeAssignments>)"
+        R"(      </Module>)"
+        R"(    </Modules>)"
+        R"(  </Asn1File>)"
+        R"(</AstRoot>)");
+
+    const auto type = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MySeq0");
+    const auto sequenceOfType = dynamic_cast<const Data::Types::SequenceOf *>(type->type());
+
+    QVERIFY(sequenceOfType != nullptr);
+    QCOMPARE(sequenceOfType->size(), QString("n"));
+}
+
 void AstXmlParserTests::parsingFails(const QString &xmlData)
 {
     setXmlData(xmlData);

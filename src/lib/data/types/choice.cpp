@@ -27,6 +27,7 @@
 
 #include "typevisitor.h"
 
+using namespace MalTester::Data;
 using namespace MalTester::Data::Types;
 
 ChoiceAlternative::ChoiceAlternative(const QString &name,

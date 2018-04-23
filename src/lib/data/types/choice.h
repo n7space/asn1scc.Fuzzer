@@ -83,7 +83,11 @@ public:
     const Alternatives &alternatives() const { return m_alternatives; }
     void addAlternative(const QString &key, const ChoiceAlternative &alt);
 
+    void setDeterminant(const QString &determinant) { m_determinant = determinant; }
+    const QString &determinant() const { return m_determinant; }
+
 private:
+    QString m_determinant;
     Alternatives m_alternatives;
 };
 

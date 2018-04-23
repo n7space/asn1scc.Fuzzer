@@ -67,6 +67,7 @@ private:
     QString readNameAttribute();
     int readLineAttribute();
     int readCharPossitionInLineAttribute();
+    QString readDeterminantAttribute();
     QString readPresentWhenNameAttribute();
     QString readAdaNameAttribute();
     QString readCNameAttribute();

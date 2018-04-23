@@ -389,6 +389,11 @@ int AstXmlParser::readCharPossitionInLineAttribute()
     return m_xmlReader.attributes().value(QStringLiteral("CharPositionInLine")).toInt();
 }
 
+QString AstXmlParser::readDeterminantAttribute()
+{
+    return m_xmlReader.attributes().value("determinant").toString();
+}
+
 QString AstXmlParser::readPresentWhenNameAttribute()
 {
     return m_xmlReader.attributes().value("PresentWhenName").toString();
@@ -601,17 +606,23 @@ void AstXmlParser::readSequenceOf(Data::Types::Type &type)
 void AstXmlParser::readChoice(Data::Types::Type &type)
 {
     auto &choiceType = dynamic_cast<Data::Types::Choice &>(type);
+    choiceType.setDeterminant(readDeterminantAttribute());
 
     while (skipToChildElement(QStringLiteral("CHOICE_ALTERNATIVE"))) {
-        const QString name = readNameAttribute();
+        const auto name = readNameAttribute();
+        const auto presentWhenName = readPresentWhenNameAttribute();
+        const auto adaNameAttribute = readAdaNameAttribute();
+        const auto cNameAttribute = readCNameAttribute();
+        const auto presentWhen = readPresentWhenAttribute();
+        const auto location = readLocationFromAttributes();
 
         choiceType.addAlternative(name,
                                   {name,
-                                   readPresentWhenNameAttribute(),
-                                   readAdaNameAttribute(),
-                                   readCNameAttribute(),
-                                   readPresentWhenAttribute(),
-                                   readLocationFromAttributes(),
+                                   presentWhenName,
+                                   adaNameAttribute,
+                                   cNameAttribute,
+                                   presentWhen,
+                                   location,
                                    findAndReadType()});
 
         m_xmlReader.skipCurrentElement();

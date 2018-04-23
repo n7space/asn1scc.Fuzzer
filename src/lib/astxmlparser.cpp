@@ -107,8 +107,7 @@ public:
 
     void visit(Data::Types::SequenceOf &type) override
     {
-        Q_UNUSED(type);
-        // TODO?
+        type.setSize(m_attributes.value(QLatin1String("size")).toString());
     }
 
     void visit(Data::Types::Real &type) override

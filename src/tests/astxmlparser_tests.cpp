@@ -30,6 +30,7 @@
 #include <data/types/enumerated.h>
 #include <data/types/integer.h>
 #include <data/types/real.h>
+#include <data/types/sequence.h>
 #include <data/types/sequenceof.h>
 
 using namespace MalTester::Tests;
@@ -316,35 +317,37 @@ void AstXmlParserTests::test_assignmentsAreTypeReferences()
 
 void AstXmlParserTests::test_sequenceTypeAssingment()
 {
-    parse(R"(<?xml version="1.0" encoding="utf-8"?>)"
-          R"(<AstRoot>)"
-          R"(  <Asn1File FileName="Test2File.asn">)"
-          R"(    <Modules>)"
-          R"(      <Module Name="Defs" Line="13" CharPositionInLine="42">)"
-          R"(        <TypeAssignments>)"
-          R"(          <TypeAssignment Name="MySeq" Line="11" CharPositionInLine="9">)"
-          R"(            <Asn1Type Line="12" CharPositionInLine="19">)"
-          R"(              <SEQUENCE>)"
-          R"(                <Constraints/>)"
-          R"(                <WithComponentConstraints/>)"
-          R"(                <SEQUENCE_COMPONENT Name="a" Line="13" CharPositionInLine="3">)"
-          R"(                  <Asn1Type Line="13" CharPositionInLine="8">)"
-          R"(                    <INTEGER/>)"
-          R"(                  </Asn1Type>)"
-          R"(                </SEQUENCE_COMPONENT>)"
-          R"(                <SEQUENCE_COMPONENT Name="b" Line="14" CharPositionInLine="2">)"
-          R"(                  <Asn1Type Line="14" CharPositionInLine="4">)"
-          R"(                    <REFERENCE_TYPE Module="Other" TypeAssignment="MyInt"/>")
-          R"(                  </Asn1Type>)"
-          R"(                </SEQUENCE_COMPONENT>)"
-          R"(              </SEQUENCE>"
-          R"(            </Asn1Type>)"
-          R"(          </TypeAssignment>)"
-          R"(        </TypeAssignments>)"
-          R"(      </Module>)"
-          R"(    </Modules>)"
-          R"(  </Asn1File>)"
-          R"(</AstRoot>)");
+    parse(
+        R"(<?xml version="1.0" encoding="utf-8"?>)"
+        R"(<AstRoot>)"
+        R"(  <Asn1File FileName="Test2File.asn">)"
+        R"(    <Modules>)"
+        R"(      <Module Name="Defs" Line="13" CharPositionInLine="42">)"
+        R"(        <TypeAssignments>)"
+        R"(          <TypeAssignment Name="MySeq" Line="11" CharPositionInLine="9">)"
+        R"(            <Asn1Type Line="12" CharPositionInLine="19">)"
+        R"(              <SEQUENCE>)"
+        R"(                <Constraints/>)"
+        R"(                <WithComponentConstraints/>)"
+        R"(                <ACN_COMPONENT Id="MySequenceWithAcn.MySeq.n" Name="n" Type="INTEGER" size="8" encoding="BCD" />"
+        R"(                <SEQUENCE_COMPONENT Name="a" Line="13" CharPositionInLine="3">)"
+        R"(                  <Asn1Type Line="13" CharPositionInLine="8">)"
+        R"(                    <INTEGER/>)"
+        R"(                  </Asn1Type>)"
+        R"(                </SEQUENCE_COMPONENT>)"
+        R"(                <SEQUENCE_COMPONENT Name="b" Line="14" CharPositionInLine="2">)"
+        R"(                  <Asn1Type Line="14" CharPositionInLine="4">)"
+        R"(                    <REFERENCE_TYPE Module="Other" TypeAssignment="MyInt"/>")
+        R"(                  </Asn1Type>)"
+        R"(                </SEQUENCE_COMPONENT>)"
+        R"(              </SEQUENCE>"
+        R"(            </Asn1Type>)"
+        R"(          </TypeAssignment>)"
+        R"(        </TypeAssignments>)"
+        R"(      </Module>)"
+        R"(    </Modules>)"
+        R"(  </Asn1File>)"
+        R"(</AstRoot>)");
 
     const auto seq = m_parsedData["Test2File.asn"]->definitions("Defs")->type("MySeq");
     QCOMPARE(seq->type()->name(), QStringLiteral("SEQUENCE"));
@@ -1212,6 +1215,46 @@ void AstXmlParserTests::test_sequenceOfAssignmentWithRangeConstraintInsideSizeCo
     QCOMPARE(constraintRanges.size(), 2);
     QVERIFY(constraintRanges.contains({0, 10}));
     QVERIFY(constraintRanges.contains({20, 22}));
+}
+
+void AstXmlParserTests::test_sequenceOfAssignmentWithAcnParams()
+{
+    parse(
+        R"(<?xml version="1.0" encoding="utf-8"?>)"
+        R"(<AstRoot>)"
+        R"(  <Asn1File FileName="Test2File.asn">)"
+        R"(    <Modules>)"
+        R"(      <Module Name="TestDefinitions" Line="13" CharPositionInLine="42">)"
+        R"(        <TypeAssignments>)"
+        R"(          <TypeAssignment Name="MySeq0" Line="6" CharPositionInLine="0">)"
+        R"(            <Asn1Type id="Test.MySeq0" Line="6" CharPositionInLine="11" ParameterizedTypeInstance="false">)"
+        R"(              <SEQUENCE_OF size="n">)"
+        R"(                <Constraints>)"
+        R"(                  <SIZE>)"
+        R"(                    <IntegerValue>10</IntegerValue>)"
+        R"(                  </SIZE>)"
+        R"(               </Constraints>)"
+        R"(               <WithComponentConstraints />)"
+        R"(               <Asn1Type id="Test.MySeq0.#" Line="6" CharPositionInLine="34" ParameterizedTypeInstance="false">)"
+        R"(                 <INTEGER>)"
+        R"(                   <Constraints />)"
+        R"(                   <WithComponentConstraints />)"
+        R"(                 </INTEGER>)"
+        R"(               </Asn1Type>)"
+        R"(             </SEQUENCE_OF>)"
+        R"(           </Asn1Type>)"
+        R"(         </TypeAssignment>)"
+        R"(       </TypeAssignments>)"
+        R"(      </Module>)"
+        R"(    </Modules>)"
+        R"(  </Asn1File>)"
+        R"(</AstRoot>)");
+
+    const auto type = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MySeq0");
+    const auto sequenceOfType = dynamic_cast<const Data::Types::SequenceOf *>(type->type());
+
+    QVERIFY(sequenceOfType != nullptr);
+    QCOMPARE(sequenceOfType->size(), QString("n"));
 }
 
 void AstXmlParserTests::parsingFails(const QString &xmlData)

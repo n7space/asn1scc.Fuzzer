@@ -76,6 +76,7 @@ private slots:
     void test_sequenceOfAssignmentWithSimpleConstraint();
     void test_sequenceOfAssignmentWithMultipleRangeConstraints();
     void test_sequenceOfAssignmentWithRangeConstraintInsideSizeConstraint();
+    void test_sequenceOfAssignmentWithAcnParams();
 
 private:
     void setXmlData(const QString &str);

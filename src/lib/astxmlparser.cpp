@@ -28,6 +28,7 @@
 
 #include <data/sourcelocation.h>
 
+#include <data/types/choice.h>
 #include <data/types/enumerated.h>
 #include <data/types/integer.h>
 #include <data/types/integeracnparams.h>
@@ -388,6 +389,26 @@ int AstXmlParser::readCharPossitionInLineAttribute()
     return m_xmlReader.attributes().value(QStringLiteral("CharPositionInLine")).toInt();
 }
 
+QString AstXmlParser::readPresentWhenNameAttribute()
+{
+    return m_xmlReader.attributes().value("PresentWhenName").toString();
+}
+
+QString AstXmlParser::readAdaNameAttribute()
+{
+    return m_xmlReader.attributes().value("AdaName").toString();
+}
+
+QString AstXmlParser::readCNameAttribute()
+{
+    return m_xmlReader.attributes().value("CName").toString();
+}
+
+QString AstXmlParser::readPresentWhenAttribute()
+{
+    return m_xmlReader.attributes().value("present-when").toString();
+}
+
 void AstXmlParser::readImportedModules()
 {
     while (nextRequiredElementIs(QStringLiteral("ImportedModule")))
@@ -544,7 +565,7 @@ void AstXmlParser::readTypeContents(const QStringRef &name, Data::Types::Type &t
     else if (name == QStringLiteral("SEQUENCE_OF"))
         readSequenceOf(type);
     else if (name == QStringLiteral("CHOICE"))
-        readChoice();
+        readChoice(type);
     else if (name == QStringLiteral("REFERENCE_TYPE"))
         readReferenceType();
     else if (name == QStringLiteral("INTEGER"))
@@ -577,10 +598,22 @@ void AstXmlParser::readSequenceOf(Data::Types::Type &type)
     }
 }
 
-void AstXmlParser::readChoice()
+void AstXmlParser::readChoice(Data::Types::Type &type)
 {
+    auto &choiceType = dynamic_cast<Data::Types::Choice &>(type);
+
     while (skipToChildElement(QStringLiteral("CHOICE_ALTERNATIVE"))) {
-        findAndReadType();
+        const QString name = readNameAttribute();
+
+        choiceType.addAlternative(name,
+                                  {name,
+                                   readPresentWhenNameAttribute(),
+                                   readAdaNameAttribute(),
+                                   readCNameAttribute(),
+                                   readPresentWhenAttribute(),
+                                   readLocationFromAttributes(),
+                                   findAndReadType()});
+
         m_xmlReader.skipCurrentElement();
     }
 }

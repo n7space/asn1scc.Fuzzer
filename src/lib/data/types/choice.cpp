@@ -29,6 +29,32 @@
 
 using namespace MalTester::Data::Types;
 
+ChoiceAlternative::ChoiceAlternative(const QString &name,
+                                     const QString &presentWhenName,
+                                     const QString &adaName,
+                                     const QString &cName,
+                                     const QString &presentWhen,
+                                     const SourceLocation &location,
+                                     std::unique_ptr<Type> type)
+    : m_name(name)
+    , m_presentWhenName(presentWhenName)
+    , m_adaName(adaName)
+    , m_cName(cName)
+    , m_presentWhen(presentWhen)
+    , m_location(location)
+    , m_type(std::move(type))
+{}
+
+ChoiceAlternative::ChoiceAlternative(const ChoiceAlternative &other)
+    : m_name(other.m_name)
+    , m_presentWhenName(other.m_presentWhenName)
+    , m_adaName(other.m_adaName)
+    , m_cName(other.m_cName)
+    , m_presentWhen(other.m_presentWhen)
+    , m_location(other.m_location)
+    , m_type(other.m_type->clone())
+{}
+
 std::unique_ptr<Type> Choice::clone() const
 {
     return std::make_unique<Choice>(*this);
@@ -37,4 +63,9 @@ std::unique_ptr<Type> Choice::clone() const
 void Choice::accept(TypeVisitor &visitor)
 {
     visitor.visit(*this);
+}
+
+void Choice::addAlternative(const QString &key, const ChoiceAlternative &alt)
+{
+    m_alternatives.insert(std::pair<QString, ChoiceAlternative>(key, alt));
 }

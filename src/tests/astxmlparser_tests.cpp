@@ -27,6 +27,7 @@
 
 #include <QtTest>
 
+#include <data/types/choice.h>
 #include <data/types/enumerated.h>
 #include <data/types/integer.h>
 #include <data/types/real.h>
@@ -1255,6 +1256,58 @@ void AstXmlParserTests::test_sequenceOfAssignmentWithAcnParams()
 
     QVERIFY(sequenceOfType != nullptr);
     QCOMPARE(sequenceOfType->size(), QString("n"));
+}
+
+void AstXmlParserTests::test_choiceAlternatives()
+{
+    parse(R"(<?xml version="1.0" encoding="utf-8"?>)"
+          R"(<AstRoot>)"
+          R"(  <Asn1File FileName="Test2File.asn">)"
+          R"(    <Modules>)"
+          R"(      <Module Name="Defs" Line="13" CharPositionInLine="42">)"
+          R"(        <TypeAssignments>)"
+          R"(          <TypeAssignment Name="MyChoice" Line="5" CharPositionInLine="0">"
+          R"(            <Asn1Type id="MyChoiceModel.MyChoice" Line="5" CharPositionInLine="13" ParameterizedTypeInstance="false">"
+          R"(              <CHOICE>"
+          R"(                <CHOICE_ALTERNATIVE Name="i1" Line="7" CharPositionInLine="4" PresentWhenName="i1" AdaName="i1" CName="i1">"
+          R"(                  <Asn1Type id="MyChoiceModel.MyChoice.i1" Line="7" CharPositionInLine="7" ParameterizedTypeInstance="false">"
+          R"(                    <INTEGER>"
+          R"(                      <Constraints />"
+          R"(                      <WithComponentConstraints />"
+          R"(                    </INTEGER>"
+          R"(                  </Asn1Type>"
+          R"(                </CHOICE_ALTERNATIVE>"
+          R"(                <Constraints />"
+          R"(                <WithComponentConstraints />"
+          R"(              </CHOICE>"
+          R"(            </Asn1Type>"
+          R"(          </TypeAssignment>"
+          R"(        </TypeAssignments>)"
+          R"(      </Module>)"
+          R"(    </Modules>)"
+          R"(  </Asn1File>)"
+          R"(</AstRoot>)");
+
+    const auto type = m_parsedData["Test2File.asn"]->definitions("Defs")->type("MyChoice");
+    const auto choiceType = dynamic_cast<const Data::Types::Choice *>(type->type());
+
+    QVERIFY(choiceType != nullptr);
+    auto alternatives = choiceType->alternatives();
+
+    QCOMPARE(alternatives.size(), static_cast<unsigned int>(1));
+    auto alternative = alternatives.find(QString("i1"));
+
+    QVERIFY(alternative != alternatives.end());
+    QCOMPARE(alternative->second.presentWhenName(), QStringLiteral("i1"));
+    QCOMPARE(alternative->second.adaName(), QStringLiteral("i1"));
+    QCOMPARE(alternative->second.cName(), QStringLiteral("i1"));
+
+    const auto &location = alternative->second.location();
+    QCOMPARE(location.path(), QStringLiteral("Test2File.asn"));
+    QCOMPARE(location.line(), 7);
+    QCOMPARE(location.column(), 4);
+
+    QCOMPARE(alternative->second.type().name(), QStringLiteral("INTEGER"));
 }
 
 void AstXmlParserTests::parsingFails(const QString &xmlData)

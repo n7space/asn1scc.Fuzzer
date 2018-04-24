@@ -67,11 +67,6 @@ private:
     QString readNameAttribute();
     int readLineAttribute();
     int readCharPossitionInLineAttribute();
-    QString readDeterminantAttribute();
-    QString readPresentWhenNameAttribute();
-    QString readAdaNameAttribute();
-    QString readCNameAttribute();
-    QString readPresentWhenAttribute();
     bool isParametrizedTypeInstance() const;
 
     void readImportedModule();
@@ -105,7 +100,6 @@ private:
 
     void readEnumerated(Data::Types::Type &type);
     void readEnumeratedItem(Data::Types::Type &type);
-    int readValueFromAttributes();
 
     void readConstraints(Data::Types::Type &type, const QString &valName);
     void readConstraint(std::unique_ptr<Data::Types::Type> &type, const QString &valName);

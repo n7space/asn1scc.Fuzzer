@@ -52,7 +52,8 @@ private slots:
     void test_multipleImportedType();
     void test_assignmentsAreTypeReferences();
     void test_sequenceTypeAssingment();
-    void test_sequenceOfTypeAssingment();
+    void test_sequenceOfTypeAssingmentOfReferencedType();
+    void test_sequenceOfTypeAssingmentOfBuiltinType();
     void test_choiceTypeAssignment();
     void test_valueAssignment();
     void test_importedValues();

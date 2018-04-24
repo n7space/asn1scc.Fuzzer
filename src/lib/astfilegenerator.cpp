@@ -114,7 +114,9 @@ AstFileGenerator::Result AstFileGenerator::handleTimeout() const
 void AstFileGenerator::writeMessage(const QString &message) const
 {
     auto fullMsg = m_params.m_asn1SccCommand + ": " + message;
+    qCritical("asn1scc.MalTester: %s", qPrintable(fullMsg));
 
-    qCritical(m_process->readAll());
-    qCritical(qPrintable(fullMsg));
+    auto processMsg = m_process->readAll();
+    if (!processMsg.isEmpty())
+        qCritical("asn1scc.MalTester: %s", qPrintable(processMsg));
 }

@@ -27,11 +27,46 @@
 
 #include <QString>
 
+#include <data/sourcelocation.h>
+
 #include <data/types/type.h>
 
 namespace MalTester {
 namespace Data {
 namespace Types {
+
+class ChoiceAlternative
+{
+public:
+    ChoiceAlternative() = default;
+    ChoiceAlternative(const QString &name,
+                      const QString &presentWhenName,
+                      const QString &adaName,
+                      const QString &cName,
+                      const QString &presentWhen,
+                      const SourceLocation &location,
+                      std::unique_ptr<Type> type);
+
+    ChoiceAlternative(const ChoiceAlternative &other);
+
+    const QString &name() const { return m_name; }
+    const QString &presentWhenName() const { return m_presentWhenName; }
+    const QString &adaName() const { return m_adaName; }
+    const QString &cName() const { return m_cName; }
+    const QString &presentWhen() const { return m_presentWhen; }
+    const SourceLocation &location() const { return m_location; }
+    const Type &type() const { return *m_type; }
+
+private:
+    QString m_name;
+    QString m_presentWhenName;
+    QString m_adaName;
+    QString m_cName;
+    QString m_presentWhen;
+
+    SourceLocation m_location;
+    std::unique_ptr<Type> m_type;
+};
 
 class Choice : public Type
 {
@@ -42,6 +77,18 @@ public:
     QString name() const override { return QLatin1String("CHOICE"); }
     void accept(TypeVisitor &visitor) override;
     std::unique_ptr<Type> clone() const override;
+
+    using Alternatives = std::map<QString, ChoiceAlternative>;
+
+    const Alternatives &alternatives() const { return m_alternatives; }
+    void addAlternative(const QString &key, const ChoiceAlternative &alt);
+
+    void setDeterminant(const QString &determinant) { m_determinant = determinant; }
+    const QString &determinant() const { return m_determinant; }
+
+private:
+    QString m_determinant;
+    Alternatives m_alternatives;
 };
 
 } // namespace Types

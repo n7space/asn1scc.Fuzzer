@@ -78,6 +78,9 @@ private slots:
     void test_sequenceOfAssignmentWithRangeConstraintInsideSizeConstraint();
     void test_sequenceOfAssignmentWithAcnParams();
 
+    void test_choiceAlternatives();
+    void test_choiceAlternativesWithAcnParams();
+
 private:
     void setXmlData(const QString &str);
     void parsingFails(const QString &xmlData);

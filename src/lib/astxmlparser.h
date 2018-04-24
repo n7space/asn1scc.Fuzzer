@@ -67,6 +67,11 @@ private:
     QString readNameAttribute();
     int readLineAttribute();
     int readCharPossitionInLineAttribute();
+    QString readDeterminantAttribute();
+    QString readPresentWhenNameAttribute();
+    QString readAdaNameAttribute();
+    QString readCNameAttribute();
+    QString readPresentWhenAttribute();
     bool isParametrizedTypeInstance() const;
 
     void readImportedModule();
@@ -92,7 +97,7 @@ private:
 
     void readSequence();
     void readSequenceOf(Data::Types::Type &type);
-    void readChoice();
+    void readChoice(Data::Types::Type &type);
     void readReferenceType();
 
     void readInteger(Data::Types::Type &type);

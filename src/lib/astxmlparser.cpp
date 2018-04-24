@@ -96,8 +96,7 @@ public:
 
     void visit(Data::Types::Choice &type) override
     {
-        Q_UNUSED(type);
-        // TODO?
+        type.setDeterminant(m_attributes.value(QLatin1String("determinant")).toString());
     }
 
     void visit(Data::Types::Sequence &type) override
@@ -248,6 +247,86 @@ private:
     const QString m_begin;
     const QString m_end;
 };
+
+class ChildItemAddingVisitor : public Data::Types::TypeVisitor
+{
+public:
+    ChildItemAddingVisitor(const QXmlStreamAttributes &attributes,
+                           const QString &currentFile,
+                           std::unique_ptr<Data::Types::Type> childType = nullptr)
+        : m_attributes(attributes)
+        , m_currentFile(currentFile)
+        , m_childType(std::move(childType))
+    {}
+
+    ~ChildItemAddingVisitor() override {}
+
+    void visit(Data::Types::Boolean &type) override { Q_UNUSED(type); }
+    void visit(Data::Types::Null &type) override { Q_UNUSED(type); }
+    void visit(Data::Types::BitString &type) override { Q_UNUSED(type); }
+    void visit(Data::Types::OctetString &type) override { Q_UNUSED(type); }
+    void visit(Data::Types::IA5String &type) override { Q_UNUSED(type); }
+    void visit(Data::Types::NumericString &type) override { Q_UNUSED(type); }
+
+    void visit(Data::Types::Enumerated &type) override
+    {
+        const auto itemName = readStringAttribute(QStringLiteral("Name"));
+        const auto value = readIntegerAttribute(QStringLiteral("Value"));
+        Data::SourceLocation location(m_currentFile,
+                                      readIntegerAttribute(QStringLiteral("Line")),
+                                      readIntegerAttribute(QStringLiteral("CharPositionInLine")));
+        type.addItem(itemName, {itemName, value, location});
+    }
+
+    void visit(Data::Types::Choice &type) override
+    {
+        const auto name = readStringAttribute(QStringLiteral("Name"));
+        const auto presentWhenName = readStringAttribute(QStringLiteral("PresentWhenName"));
+        const auto adaNameAttribute = readStringAttribute(QStringLiteral("AdaName"));
+        const auto cNameAttribute = readStringAttribute(QStringLiteral("CName"));
+        const auto presentWhen = readStringAttribute(QStringLiteral("present-when"));
+
+        Data::SourceLocation location(m_currentFile,
+                                      readIntegerAttribute(QStringLiteral("Line")),
+                                      readIntegerAttribute(QStringLiteral("CharPositionInLine")));
+
+        type.addAlternative(name,
+                            {name,
+                             presentWhenName,
+                             adaNameAttribute,
+                             cNameAttribute,
+                             presentWhen,
+                             location,
+                             std::move(m_childType)});
+    }
+
+    void visit(Data::Types::Sequence &type) override
+    {
+        Q_UNUSED(type);
+        // TODO
+    }
+
+    void visit(Data::Types::SequenceOf &type) override
+    {
+        type.setItemsType(std::move(m_childType));
+    }
+
+    void visit(Data::Types::Real &type) override { Q_UNUSED(type); }
+    void visit(Data::Types::LabelType &type) override { Q_UNUSED(type); }
+    void visit(Data::Types::Integer &type) override { Q_UNUSED(type); }
+    void visit(Data::Types::UserdefinedType &type) override { Q_UNUSED(type); }
+
+private:
+    int readIntegerAttribute(const QString &key) const { return m_attributes.value(key).toInt(); }
+    QString readStringAttribute(const QString &key) const
+    {
+        return m_attributes.value(key).toString();
+    }
+
+    const QXmlStreamAttributes &m_attributes;
+    const QString &m_currentFile;
+    std::unique_ptr<Data::Types::Type> m_childType;
+};
 } // namespace
 
 AstXmlParser::AstXmlParser(QXmlStreamReader &xmlReader)
@@ -387,31 +466,6 @@ int AstXmlParser::readLineAttribute()
 int AstXmlParser::readCharPossitionInLineAttribute()
 {
     return m_xmlReader.attributes().value(QStringLiteral("CharPositionInLine")).toInt();
-}
-
-QString AstXmlParser::readDeterminantAttribute()
-{
-    return m_xmlReader.attributes().value("determinant").toString();
-}
-
-QString AstXmlParser::readPresentWhenNameAttribute()
-{
-    return m_xmlReader.attributes().value("PresentWhenName").toString();
-}
-
-QString AstXmlParser::readAdaNameAttribute()
-{
-    return m_xmlReader.attributes().value("AdaName").toString();
-}
-
-QString AstXmlParser::readCNameAttribute()
-{
-    return m_xmlReader.attributes().value("CName").toString();
-}
-
-QString AstXmlParser::readPresentWhenAttribute()
-{
-    return m_xmlReader.attributes().value("present-when").toString();
 }
 
 void AstXmlParser::readImportedModules()
@@ -597,8 +651,11 @@ void AstXmlParser::readSequenceOf(Data::Types::Type &type)
         if (m_xmlReader.name() == QStringLiteral("Constraints")) {
             readRanges(type, "IntegerValue");
         } else if (m_xmlReader.name() == QStringLiteral("Asn1Type")) {
-            auto &sequenceOf = dynamic_cast<Data::Types::SequenceOf &>(type);
-            sequenceOf.setItemsType(readType());
+            auto attributes = m_xmlReader.attributes();
+            auto childType = readType();
+
+            ChildItemAddingVisitor visitor(attributes, m_currentFile, std::move(childType));
+            type.accept(visitor);
         } else {
             m_xmlReader.skipCurrentElement();
         }
@@ -607,25 +664,12 @@ void AstXmlParser::readSequenceOf(Data::Types::Type &type)
 
 void AstXmlParser::readChoice(Data::Types::Type &type)
 {
-    auto &choiceType = dynamic_cast<Data::Types::Choice &>(type);
-    choiceType.setDeterminant(readDeterminantAttribute());
-
     while (skipToChildElement(QStringLiteral("CHOICE_ALTERNATIVE"))) {
-        const auto name = readNameAttribute();
-        const auto presentWhenName = readPresentWhenNameAttribute();
-        const auto adaNameAttribute = readAdaNameAttribute();
-        const auto cNameAttribute = readCNameAttribute();
-        const auto presentWhen = readPresentWhenAttribute();
-        const auto location = readLocationFromAttributes();
+        auto attributes = m_xmlReader.attributes();
+        auto childType = findAndReadType();
 
-        choiceType.addAlternative(name,
-                                  {name,
-                                   presentWhenName,
-                                   adaNameAttribute,
-                                   cNameAttribute,
-                                   presentWhen,
-                                   location,
-                                   findAndReadType()});
+        ChildItemAddingVisitor visitor(attributes, m_currentFile, std::move(childType));
+        type.accept(visitor);
 
         m_xmlReader.skipCurrentElement();
     }
@@ -655,22 +699,14 @@ void AstXmlParser::readEnumerated(Data::Types::Type &type)
 
 void AstXmlParser::readEnumeratedItem(Data::Types::Type &type)
 {
-    auto &enumType = dynamic_cast<Data::Types::Enumerated &>(type);
-
     while (m_xmlReader.readNextStartElement()) {
         if (m_xmlReader.name() == QStringLiteral("Item")) {
-            const auto itemName = readNameAttribute();
-            enumType.addItem(itemName,
-                             {itemName, readValueFromAttributes(), readLocationFromAttributes()});
+            ChildItemAddingVisitor visitor(m_xmlReader.attributes(), m_currentFile);
+            type.accept(visitor);
         }
 
         m_xmlReader.skipCurrentElement();
     }
-}
-
-int AstXmlParser::readValueFromAttributes()
-{
-    return m_xmlReader.attributes().value("Value").toInt();
 }
 
 void AstXmlParser::readReferenceType()

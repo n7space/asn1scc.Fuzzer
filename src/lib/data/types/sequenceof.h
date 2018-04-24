@@ -38,7 +38,7 @@ class SequenceOf : public Type, public WithConstraints<IntegerConstraints>
 {
 public:
     SequenceOf() = default;
-    SequenceOf(const SequenceOf &other) = default;
+    SequenceOf(const SequenceOf &other);
 
     QString name() const override { return QLatin1String("SEQUENCE OF"); }
     void accept(TypeVisitor &visitor) override;
@@ -47,8 +47,12 @@ public:
     QString size() const { return m_size; }
     void setSize(const QString &size) { m_size = size; }
 
+    const Type &itemsType() const { return *m_itemsType; }
+    void setItemsType(std::unique_ptr<Type> itemsType) { m_itemsType = std::move(itemsType); }
+
 private:
     QString m_size;
+    std::unique_ptr<Type> m_itemsType;
 };
 
 } // namespace Types

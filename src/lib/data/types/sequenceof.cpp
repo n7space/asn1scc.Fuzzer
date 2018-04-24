@@ -34,6 +34,13 @@ void SequenceOf::accept(TypeVisitor &visitor)
     visitor.visit(*this);
 }
 
+SequenceOf::SequenceOf(const SequenceOf &other)
+    : Type(other)
+    , WithConstraints<IntegerConstraints>(other)
+    , m_size(other.m_size)
+    , m_itemsType(other.m_itemsType->clone())
+{}
+
 std::unique_ptr<Type> SequenceOf::clone() const
 {
     return std::make_unique<SequenceOf>(*this);

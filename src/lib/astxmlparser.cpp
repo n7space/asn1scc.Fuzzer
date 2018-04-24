@@ -594,12 +594,14 @@ void AstXmlParser::readSequence()
 void AstXmlParser::readSequenceOf(Data::Types::Type &type)
 {
     while (m_xmlReader.readNextStartElement()) {
-        if (m_xmlReader.name() == QStringLiteral("Constraints"))
+        if (m_xmlReader.name() == QStringLiteral("Constraints")) {
             readRanges(type, "IntegerValue");
-        else if (m_xmlReader.name() == QStringLiteral("Asn1Type"))
-            readType();
-        else
+        } else if (m_xmlReader.name() == QStringLiteral("Asn1Type")) {
+            auto &sequenceOf = dynamic_cast<Data::Types::SequenceOf &>(type);
+            sequenceOf.setItemsType(readType());
+        } else {
             m_xmlReader.skipCurrentElement();
+        }
     }
 }
 

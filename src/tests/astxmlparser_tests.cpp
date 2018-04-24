@@ -420,7 +420,7 @@ void AstXmlParserTests::test_choiceTypeAssignment()
     QCOMPARE(ref->second->module(), QStringLiteral("Other"));
 }
 
-void AstXmlParserTests::test_sequenceOfTypeAssingment()
+void AstXmlParserTests::test_sequenceOfTypeAssingmentOfReferencedType()
 {
     parse(R"(<?xml version="1.0" encoding="utf-8"?>)"
           R"(<AstRoot>)"
@@ -462,6 +462,42 @@ void AstXmlParserTests::test_sequenceOfTypeAssingment()
 
     QCOMPARE(ref->second->name(), QStringLiteral("MyInt"));
     QCOMPARE(ref->second->module(), QStringLiteral("Other"));
+}
+
+void AstXmlParserTests::test_sequenceOfTypeAssingmentOfBuiltinType()
+{
+    parse(
+        R"(<?xml version="1.0" encoding="utf-8"?>)"
+        R"(<AstRoot>)"
+        R"(  <Asn1File FileName="Test2File.asn">)"
+        R"(    <Modules>)"
+        R"(      <Module Name="Defs" Line="13" CharPositionInLine="42">)"
+        R"(        <TypeAssignments>)"
+        R"(          <TypeAssignment Name="MySeqOf" Line="11" CharPositionInLine="9">)"
+        R"(            <Asn1Type Line="12" CharPositionInLine="19">)"
+        R"(              <SEQUENCE_OF>)"
+        R"(                <Constraints/>)"
+        R"(                <WithComponentConstraints/>)"
+        R"(                <Asn1Type id="MyOtherSeqModel.SeqOf.#" Line="27" CharPositionInLine="40" ParameterizedTypeInstance="false">
+        R"(                  <INTEGER>
+        R"(                    <Constraints />
+        R"(                    <WithComponentConstraints />
+        R"(                  </INTEGER>
+        R"(                </Asn1Type>
+        R"(              </SEQUENCE_OF>"
+        R"(            </Asn1Type>)"
+        R"(          </TypeAssignment>)"
+        R"(        </TypeAssignments>)"
+        R"(      </Module>)"
+        R"(    </Modules>)"
+        R"(  </Asn1File>)"
+        R"(</AstRoot>)");
+
+    const auto type = m_parsedData["Test2File.asn"]->definitions("Defs")->type("MySeqOf");
+    const auto seqOfType = dynamic_cast<const Data::Types::SequenceOf *>(type->type());
+
+    const auto &itemsType = seqOfType->itemsType();
+    QCOMPARE(itemsType.name(), QStringLiteral("INTEGER"));
 }
 
 void AstXmlParserTests::test_valueAssignment()

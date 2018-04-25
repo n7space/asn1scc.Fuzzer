@@ -42,6 +42,16 @@ public:
     QString name() const override { return QLatin1String("BOOLEAN"); }
     void accept(TypeVisitor &visitor) override;
     std::unique_ptr<Type> clone() const override;
+
+    void setTrueValue(const QString &trueValue) { m_trueValue = trueValue; }
+    const QString &trueValue() const { return m_trueValue; }
+
+    void setFalseValue(const QString &falseValue) { m_falseValue = falseValue; }
+    const QString &falseValue() const { return m_falseValue; }
+
+private:
+    QString m_trueValue;
+    QString m_falseValue;
 };
 
 } // namespace Types

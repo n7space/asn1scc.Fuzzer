@@ -27,6 +27,7 @@
 
 #include <QtTest>
 
+#include <data/types/boolean.h>
 #include <data/types/choice.h>
 #include <data/types/enumerated.h>
 #include <data/types/integer.h>
@@ -1384,6 +1385,47 @@ void AstXmlParserTests::test_choiceAlternativesWithAcnParams()
     auto alternatives = choiceType->alternatives();
     auto alternative = alternatives.find(QStringLiteral("i1"));
     QCOMPARE(alternative->second.presentWhen(), QStringLiteral("type = 1"));
+}
+
+void AstXmlParserTests::test_booleanWithAcnParams()
+{
+    parse(R"(<?xml version="1.0" encoding="utf-8"?>)"
+          R"(<AstRoot>)"
+          R"(  <Asn1File FileName="Test2File.asn">)"
+          R"(    <Modules>)"
+          R"(      <Module Name="Defs" Line="13" CharPositionInLine="42">)"
+          R"(        <TypeAssignments>"
+          R"(          <TypeAssignment Name="SomeBool" Line="3" CharPositionInLine="0">"
+          R"(            <Asn1Type id="MyBoolModel.SomeBool" Line="3" CharPositionInLine="13" ParameterizedTypeInstance="false">"
+          R"(              <BOOLEAN true-value="1010">"
+          R"(                <Constraints />"
+          R"(                <WithComponentConstraints />"
+          R"(              </BOOLEAN>"
+          R"(            </Asn1Type>"
+          R"(          </TypeAssignment>"
+          R"(          <TypeAssignment Name="OtherBool" Line="4" CharPositionInLine="0">"
+          R"(            <Asn1Type id="MyBoolModel.OtherBool" Line="4" CharPositionInLine="14" ParameterizedTypeInstance="false">"
+          R"(              <BOOLEAN false-value="0101">"
+          R"(                <Constraints />"
+          R"(                <WithComponentConstraints />"
+          R"(              </BOOLEAN>"
+          R"(            </Asn1Type>"
+          R"(          </TypeAssignment>"
+          R"(        </TypeAssignments>"
+          R"(      </Module>)"
+          R"(    </Modules>)"
+          R"(  </Asn1File>)"
+          R"(</AstRoot>)");
+
+    auto type = m_parsedData["Test2File.asn"]->definitions("Defs")->type("SomeBool");
+    auto boolType = dynamic_cast<const Data::Types::Boolean *>(type->type());
+    QCOMPARE(boolType->trueValue(), QStringLiteral("1010"));
+    QCOMPARE(boolType->falseValue(), QStringLiteral(""));
+
+    type = m_parsedData["Test2File.asn"]->definitions("Defs")->type("OtherBool");
+    boolType = dynamic_cast<const Data::Types::Boolean *>(type->type());
+    QCOMPARE(boolType->trueValue(), QStringLiteral(""));
+    QCOMPARE(boolType->falseValue(), QStringLiteral("0101"));
 }
 
 void AstXmlParserTests::parsingFails(const QString &xmlData)

@@ -28,6 +28,7 @@
 
 #include <data/sourcelocation.h>
 
+#include <data/types/boolean.h>
 #include <data/types/choice.h>
 #include <data/types/enumerated.h>
 #include <data/types/integer.h>
@@ -52,8 +53,8 @@ public:
 
     void visit(Data::Types::Boolean &type) override
     {
-        Q_UNUSED(type);
-        // TODO?
+        type.setTrueValue(m_attributes.value(QLatin1String("true-value")).toString());
+        type.setFalseValue(m_attributes.value(QLatin1String("false-value")).toString());
     }
 
     void visit(Data::Types::Null &type) override

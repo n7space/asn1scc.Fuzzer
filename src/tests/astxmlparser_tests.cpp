@@ -31,6 +31,7 @@
 #include <data/types/choice.h>
 #include <data/types/enumerated.h>
 #include <data/types/integer.h>
+#include <data/types/null.h>
 #include <data/types/real.h>
 #include <data/types/sequence.h>
 #include <data/types/sequenceof.h>
@@ -1426,6 +1427,31 @@ void AstXmlParserTests::test_booleanWithAcnParams()
     boolType = dynamic_cast<const Data::Types::Boolean *>(type->type());
     QCOMPARE(boolType->trueValue(), QStringLiteral(""));
     QCOMPARE(boolType->falseValue(), QStringLiteral("0101"));
+}
+
+void AstXmlParserTests::test_nullWithAcnParams()
+{
+    parse(R"(<?xml version="1.0" encoding="utf-8"?>)"
+          R"(<AstRoot>)"
+          R"(  <Asn1File FileName="Test2File.asn">)"
+          R"(    <Modules>)"
+          R"(      <Module Name="Defs" Line="13" CharPositionInLine="42">)"
+          R"(        <TypeAssignments>"
+          R"(          <TypeAssignment Name="MyNull" Line="3" CharPositionInLine="0">"
+          R"(            <Asn1Type id="NullTestingModel.MyNull" Line="3" CharPositionInLine="11" ParameterizedTypeInstance="false">"
+          R"(              <NULL pattern="1001" />"
+          R"(            </Asn1Type>"
+          R"(          </TypeAssignment>"
+          R"(        </TypeAssignments>"
+          R"(      </Module>)"
+          R"(    </Modules>)"
+          R"(  </Asn1File>)"
+          R"(</AstRoot>)");
+
+    auto type = m_parsedData["Test2File.asn"]->definitions("Defs")->type("MyNull");
+    auto nullType = dynamic_cast<const Data::Types::Null *>(type->type());
+
+    QCOMPARE(nullType->pattern(), QStringLiteral("1001"));
 }
 
 void AstXmlParserTests::parsingFails(const QString &xmlData)

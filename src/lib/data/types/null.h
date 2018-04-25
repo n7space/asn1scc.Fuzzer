@@ -42,6 +42,12 @@ public:
     QString name() const override { return QLatin1String("NULL"); }
     void accept(TypeVisitor &visitor) override;
     std::unique_ptr<Type> clone() const override;
+
+    void setPattern(const QString &pattern) { m_pattern = pattern; }
+    const QString &pattern() const { return m_pattern; }
+
+private:
+    QString m_pattern;
 };
 
 } // namespace Types

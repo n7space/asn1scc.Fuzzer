@@ -33,6 +33,7 @@
 #include <data/types/enumerated.h>
 #include <data/types/integer.h>
 #include <data/types/integeracnparams.h>
+#include <data/types/null.h>
 #include <data/types/real.h>
 #include <data/types/sequenceof.h>
 #include <data/types/typefactory.h>
@@ -59,8 +60,7 @@ public:
 
     void visit(Data::Types::Null &type) override
     {
-        Q_UNUSED(type);
-        // TODO?
+        type.setPattern(m_attributes.value(QLatin1String("pattern")).toString());
     }
 
     void visit(Data::Types::BitString &type) override

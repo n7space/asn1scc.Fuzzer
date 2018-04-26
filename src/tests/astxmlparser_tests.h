@@ -83,6 +83,7 @@ private slots:
     void test_choiceAlternativesWithAcnParams();
 
     void test_booleanWithAcnParams();
+    void test_nullWithAcnParams();
 
 private:
     void setXmlData(const QString &str);

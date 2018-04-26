@@ -40,6 +40,7 @@ class SequenceComponent
 public:
     SequenceComponent() = default;
     SequenceComponent(const QString &name,
+                      const QString &presentWhen,
                       const SourceLocation &location,
                       std::unique_ptr<Type> type);
 
@@ -48,9 +49,11 @@ public:
     const QString &name() const { return m_name; }
     const SourceLocation &location() const { return m_location; }
     const Type &type() const { return *m_type; }
+    const QString &presentWhen() const { return m_presentWhen; }
 
 private:
     QString m_name;
+    QString m_presentWhen;
     SourceLocation m_location;
     std::unique_ptr<Type> m_type;
 };

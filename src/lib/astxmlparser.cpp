@@ -305,11 +305,12 @@ public:
     void visit(Data::Types::Sequence &type) override
     {
         const auto name = readStringAttribute(QStringLiteral("Name"));
+        const auto presentWhen = readStringAttribute(QStringLiteral("present-when"));
         Data::SourceLocation location(m_currentFile,
                                       readIntegerAttribute(QStringLiteral("Line")),
                                       readIntegerAttribute(QStringLiteral("CharPositionInLine")));
 
-        type.addComponent(name, {name, location, std::move(m_childType)});
+        type.addComponent(name, {name, presentWhen, location, std::move(m_childType)});
     }
 
     void visit(Data::Types::SequenceOf &type) override

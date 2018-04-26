@@ -31,15 +31,18 @@ using namespace MalTester::Data;
 using namespace MalTester::Data::Types;
 
 SequenceComponent::SequenceComponent(const QString &name,
+                                     const QString &presentWhen,
                                      const SourceLocation &location,
                                      std::unique_ptr<Type> type)
     : m_name(name)
+    , m_presentWhen(presentWhen)
     , m_location(location)
     , m_type(std::move(type))
 {}
 
 SequenceComponent::SequenceComponent(const SequenceComponent &other)
     : m_name(other.m_name)
+    , m_presentWhen(other.m_presentWhen)
     , m_location(other.m_location)
     , m_type(other.m_type->clone())
 {}

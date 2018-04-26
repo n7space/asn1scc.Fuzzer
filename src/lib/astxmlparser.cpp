@@ -35,6 +35,7 @@
 #include <data/types/integeracnparams.h>
 #include <data/types/null.h>
 #include <data/types/real.h>
+#include <data/types/sequence.h>
 #include <data/types/sequenceof.h>
 #include <data/types/typefactory.h>
 #include <data/types/typevisitor.h>
@@ -303,8 +304,12 @@ public:
 
     void visit(Data::Types::Sequence &type) override
     {
-        Q_UNUSED(type);
-        // TODO
+        const auto name = readStringAttribute(QStringLiteral("Name"));
+        Data::SourceLocation location(m_currentFile,
+                                      readIntegerAttribute(QStringLiteral("Line")),
+                                      readIntegerAttribute(QStringLiteral("CharPositionInLine")));
+
+        type.addComponent(name, {name, location, std::move(m_childType)});
     }
 
     void visit(Data::Types::SequenceOf &type) override
@@ -621,7 +626,7 @@ std::unique_ptr<Data::Types::Type> AstXmlParser::createReferenceType(
 void AstXmlParser::readTypeContents(const QStringRef &name, Data::Types::Type &type)
 {
     if (name == QStringLiteral("SEQUENCE"))
-        readSequence();
+        readSequence(type);
     else if (name == QStringLiteral("SEQUENCE_OF"))
         readSequenceOf(type);
     else if (name == QStringLiteral("CHOICE"))
@@ -638,10 +643,14 @@ void AstXmlParser::readTypeContents(const QStringRef &name, Data::Types::Type &t
         m_xmlReader.skipCurrentElement();
 }
 
-void AstXmlParser::readSequence()
+void AstXmlParser::readSequence(Data::Types::Type &type)
 {
     while (skipToChildElement(QStringLiteral("SEQUENCE_COMPONENT"))) {
-        findAndReadType();
+        auto attributes = m_xmlReader.attributes();
+        auto childType = findAndReadType();
+
+        ChildItemAddingVisitor visitor(attributes, m_currentFile, std::move(childType));
+        type.accept(visitor);
         m_xmlReader.skipCurrentElement();
     }
 }

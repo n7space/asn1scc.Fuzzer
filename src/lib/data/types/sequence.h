@@ -27,11 +27,33 @@
 
 #include <QString>
 
+#include <data/sourcelocation.h>
+
 #include <data/types/type.h>
 
 namespace MalTester {
 namespace Data {
 namespace Types {
+
+class SequenceComponent
+{
+public:
+    SequenceComponent() = default;
+    SequenceComponent(const QString &name,
+                      const SourceLocation &location,
+                      std::unique_ptr<Type> type);
+
+    SequenceComponent(const SequenceComponent &other);
+
+    const QString &name() const { return m_name; }
+    const SourceLocation &location() const { return m_location; }
+    const Type &type() const { return *m_type; }
+
+private:
+    QString m_name;
+    SourceLocation m_location;
+    std::unique_ptr<Type> m_type;
+};
 
 class Sequence : public Type
 {
@@ -42,6 +64,14 @@ public:
     QString name() const override { return QLatin1String("SEQUENCE"); }
     void accept(TypeVisitor &visitor) override;
     std::unique_ptr<Type> clone() const override;
+
+    using Components = std::map<QString, SequenceComponent>;
+
+    const Components &components() const { return m_components; }
+    void addComponent(const QString &key, const SequenceComponent &component);
+
+private:
+    Components m_components;
 };
 
 } // namespace Types

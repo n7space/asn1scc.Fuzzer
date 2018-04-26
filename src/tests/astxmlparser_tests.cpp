@@ -1454,6 +1454,74 @@ void AstXmlParserTests::test_nullWithAcnParams()
     QCOMPARE(nullType->pattern(), QStringLiteral("1001"));
 }
 
+void AstXmlParserTests::test_sequenceComponents()
+{
+    parse(R"(<?xml version="1.0" encoding="utf-8"?>)"
+          R"(<AstRoot>)"
+          R"(  <Asn1File FileName="Test2File.asn">)"
+          R"(    <Modules>)"
+          R"(      <Module Name="Defs" Line="13" CharPositionInLine="42">)"
+          R"(        <TypeAssignments>
+          R"(          <TypeAssignment Name="MySeq" Line="3" CharPositionInLine="0">
+          R"(            <Asn1Type id="MyModelWithSequence.MySeq" Line="3" CharPositionInLine="10" ParameterizedTypeInstance="false">
+          R"(              <SEQUENCE>
+          R"(                <SEQUENCE_COMPONENT Name="a1" Line="5" CharPositionInLine="4">
+          R"(                  <Asn1Type id="MyModelWithSequence.MySeq.a1" Line="5" CharPositionInLine="7" ParameterizedTypeInstance="false">
+          R"(                    <INTEGER>"
+          R"(                      <Constraints>"
+          R"(                        <Range>"
+          R"(                          <a>"
+          R"(                            <IntegerValue>1</IntegerValue>"
+          R"(                          </a>"
+          R"(                          <b>"
+          R"(                            <IntegerValue>10</IntegerValue>"
+          R"(                          </b>"
+          R"(                        </Range>"
+          R"(                      </Constraints>"
+          R"(                      <WithComponentConstraints />"
+          R"(                    </INTEGER>"
+          R"(                  </Asn1Type>"
+          R"(                </SEQUENCE_COMPONENT>"
+          R"(                <SEQUENCE_COMPONENT Name="b1" Line="6" CharPositionInLine="4">"
+          R"(                  <Asn1Type id="MyModelWithSequence.MySeq.b1" Line="6" CharPositionInLine="7" ParameterizedTypeInstance="false">"
+          R"(                    <BOOLEAN>"
+          R"(                      <Constraints />"
+          R"(                      <WithComponentConstraints />"
+          R"(                    </BOOLEAN>"
+          R"(                  </Asn1Type>"
+          R"(                </SEQUENCE_COMPONENT>"
+          R"(                <Constraints />"
+          R"(                <WithComponentConstraints />"
+          R"(              </SEQUENCE>"
+          R"(            </Asn1Type>"
+          R"(          </TypeAssignment>"
+          R"(        </TypeAssignments>"
+          R"(      </Module>)"
+          R"(    </Modules>)"
+          R"(  </Asn1File>)"
+          R"(</AstRoot>)");
+
+    auto type = m_parsedData["Test2File.asn"]->definitions("Defs")->type("MySeq");
+    const auto seqType = dynamic_cast<const Data::Types::Sequence *>(type->type());
+
+    const auto &components = seqType->components();
+    QCOMPARE(components.size(), static_cast<size_t>(2));
+
+    QCOMPARE(components.count("a1"), static_cast<size_t>(1));
+    const auto intComponent = dynamic_cast<const Data::Types::Integer *>(
+        &components.at(QStringLiteral("a1")).type());
+    QVERIFY(intComponent);
+
+    const auto ranges = intComponent->constraints().ranges();
+    QCOMPARE(ranges.size(), 1);
+    QVERIFY(ranges.contains({1, 10}));
+
+    QCOMPARE(components.count("b1"), static_cast<size_t>(1));
+    const auto boolComponent = dynamic_cast<const Data::Types::Boolean *>(
+        &components.at(QStringLiteral("b1")).type());
+    QVERIFY(boolComponent);
+}
+
 void AstXmlParserTests::parsingFails(const QString &xmlData)
 {
     setXmlData(xmlData);

@@ -90,7 +90,7 @@ private:
     void readTypeContents(const QStringRef &name, Data::Types::Type &type);
     void readTypeAttributes(Data::Types::Type &type);
 
-    void readSequence();
+    void readSequence(Data::Types::Type &type);
     void readSequenceOf(Data::Types::Type &type);
     void readChoice(Data::Types::Type &type);
     void readReferenceType();

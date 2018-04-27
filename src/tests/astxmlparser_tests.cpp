@@ -1522,6 +1522,47 @@ void AstXmlParserTests::test_sequenceComponents()
     QVERIFY(boolComponent);
 }
 
+void AstXmlParserTests::test_sequenceComponentsWithAcnParams()
+{
+    parse(R"(<?xml version="1.0" encoding="utf-8"?>)"
+          R"(<AstRoot>)"
+          R"(  <Asn1File FileName="Test2File.asn">)"
+          R"(    <Modules>)"
+          R"(      <Module Name="Defs" Line="13" CharPositionInLine="42">)"
+          R"(        <TypeAssignments>
+          R"(          <TypeAssignment Name="MySeq" Line="31" CharPositionInLine="0">
+          R"(            <Asn1Type id="MyModel.MySeq" Line="31" CharPositionInLine="18" ParameterizedTypeInstance="false">
+          R"(              <SEQUENCE>
+          R"(                <ACN_COMPONENT Id="MyModel.MySeq.beta" Name="beta" Type="BOOLEAN" />
+          R"(                <SEQUENCE_COMPONENT Name="i1" Line="33" CharPositionInLine="4" present-when="beta">
+          R"(                  <Asn1Type id="MyModel.MySeq.i1" Line="33" CharPositionInLine="7" ParameterizedTypeInstance="false">
+          R"(                    <INTEGER>
+          R"(                      <Constraints />
+          R"(                      <WithComponentConstraints />
+          R"(                    </INTEGER>
+          R"(                  </Asn1Type>
+          R"(                </SEQUENCE_COMPONENT>
+          R"(                <Constraints />
+          R"(                <WithComponentConstraints />
+          R"(              </SEQUENCE>
+          R"(            </Asn1Type>
+          R"(          </TypeAssignment>
+          R"(        </TypeAssignments>"
+          R"(      </Module>)"
+          R"(    </Modules>)"
+          R"(  </Asn1File>)"
+          R"(</AstRoot>)");
+
+    auto type = m_parsedData["Test2File.asn"]->definitions("Defs")->type("MySeq");
+    const auto seqType = dynamic_cast<const Data::Types::Sequence *>(type->type());
+
+    const auto &components = seqType->components();
+    QCOMPARE(components.size(), static_cast<size_t>(1));
+
+    const auto comp = components.at(QStringLiteral("i1"));
+    QCOMPARE(comp.presentWhen(), QStringLiteral("beta"));
+}
+
 void AstXmlParserTests::parsingFails(const QString &xmlData)
 {
     setXmlData(xmlData);

@@ -1460,7 +1460,7 @@ void AstXmlParserTests::test_sequnceWithAcnParameters()
           R"(<AstRoot>)"
           R"(  <Asn1File FileName="Test2File.asn">)"
           R"(    <Modules>)"
-          R"(      <Module Name="Defs" Line="13" CharPositionInLine="42">)"
+          R"(      <Module Name="MyModel" Line="13" CharPositionInLine="42">)"
           R"(        <TypeAssignments>"
           R"(          <TypeAssignment Name="MySeq" Line="3" CharPositionInLine="0">"
           R"(            <Asn1Type id="MyModel.MySeq" Line="3" CharPositionInLine="10" ParameterizedTypeInstance="false">"
@@ -1537,6 +1537,15 @@ void AstXmlParserTests::test_sequnceWithAcnParameters()
           R"(    </Modules>)"
           R"(  </Asn1File>)"
           R"(</AstRoot>)");
+
+    auto type = m_parsedData["Test2File.asn"]->definitions("MyModel")->type("MySeq");
+    auto seqType = dynamic_cast<const Data::Types::Sequence *>(type->type());
+    auto param = seqType->acnParameter();
+
+    QVERIFY(param);
+    QCOMPARE(param->id(), QStringLiteral("MyModel.MySeq.type"));
+    QCOMPARE(param->name(), QStringLiteral("type"));
+    QCOMPARE(param->type(), QStringLiteral("INTEGER"));
 }
 
 void AstXmlParserTests::test_sequenceComponents()

@@ -56,6 +56,7 @@ HEADERS += \
     data/valueassignment.h \
     data/visitor.h \
     data/visitorwithvalue.h \
+    data/acnparameter.h \
     \
     data/types/typefactory.h \
     data/types/labeltype.h \

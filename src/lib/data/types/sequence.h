@@ -27,6 +27,7 @@
 
 #include <QString>
 
+#include <data/acnparameter.h>
 #include <data/sourcelocation.h>
 
 #include <data/types/type.h>
@@ -61,8 +62,10 @@ private:
 class Sequence : public Type
 {
 public:
-    Sequence() = default;
-    Sequence(const Sequence &other) = default;
+    Sequence()
+        : m_parameter(nullptr)
+    {}
+    Sequence(const Sequence &other);
 
     QString name() const override { return QLatin1String("SEQUENCE"); }
     void accept(TypeVisitor &visitor) override;
@@ -73,8 +76,12 @@ public:
     const Components &components() const { return m_components; }
     void addComponent(const QString &key, const SequenceComponent &component);
 
+    const Data::AcnParameter *acnParameter() const { return m_parameter.get(); }
+    void addParameter(std::unique_ptr<Data::AcnParameter> parameter);
+
 private:
     Components m_components;
+    std::unique_ptr<AcnParameter> m_parameter;
 };
 
 } // namespace Types

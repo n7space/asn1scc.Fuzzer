@@ -31,6 +31,7 @@
 
 #include <QXmlStreamReader>
 
+#include <data/acnparameter.h>
 #include <data/definitions.h>
 #include <data/file.h>
 
@@ -89,8 +90,8 @@ private:
                                                          bool isParametrized);
     std::unique_ptr<Data::Types::Type> createReferenceType(const Data::SourceLocation &location);
 
-    void readAcnParameters();
-    void readAcnParameter();
+    std::unique_ptr<MalTester::Data::AcnParameter> readAcnParameters();
+    std::unique_ptr<MalTester::Data::AcnParameter> readAcnParameter();
 
     void readTypeContents(const QStringRef &name, Data::Types::Type &type);
     void readTypeAttributes(Data::Types::Type &type);

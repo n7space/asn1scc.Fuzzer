@@ -47,6 +47,11 @@ SequenceComponent::SequenceComponent(const SequenceComponent &other)
     , m_type(other.m_type->clone())
 {}
 
+Sequence::Sequence(const Sequence &other)
+    : Type()
+    , m_parameter(std::make_unique<Data::AcnParameter>(*other.m_parameter))
+{}
+
 void Sequence::accept(TypeVisitor &visitor)
 {
     visitor.visit(*this);
@@ -60,4 +65,9 @@ std::unique_ptr<Type> Sequence::clone() const
 void Sequence::addComponent(const QString &key, const SequenceComponent &component)
 {
     m_components.insert(std::pair<QString, SequenceComponent>(key, component));
+}
+
+void Sequence::addParameter(std::unique_ptr<AcnParameter> parameter)
+{
+    m_parameter = std::move(parameter);
 }

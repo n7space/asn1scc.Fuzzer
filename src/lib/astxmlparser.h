@@ -80,12 +80,17 @@ private:
 
     std::unique_ptr<Data::Types::Type> findAndReadType();
     std::unique_ptr<Data::Types::Type> readType();
-    std::unique_ptr<Data::Types::Type> readTypeDetails(const Data::SourceLocation &location,
+    std::unique_ptr<Data::Types::Type> readTypeDetails(const QStringRef &name,
+                                                       const Data::SourceLocation &location,
                                                        const bool isParametrized,
                                                        const QStringRef &typeAlignment);
-    std::unique_ptr<Data::Types::Type> buildTypeFromName(const Data::SourceLocation &location,
+    std::unique_ptr<Data::Types::Type> buildTypeFromName(const QStringRef &name,
+                                                         const Data::SourceLocation &location,
                                                          bool isParametrized);
     std::unique_ptr<Data::Types::Type> createReferenceType(const Data::SourceLocation &location);
+
+    void readAcnParameters();
+    void readAcnParameter();
 
     void readTypeContents(const QStringRef &name, Data::Types::Type &type);
     void readTypeAttributes(Data::Types::Type &type);

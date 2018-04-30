@@ -555,17 +555,58 @@ std::unique_ptr<Data::Types::Type> AstXmlParser::findAndReadType()
     return readType();
 }
 
+static bool isTypeName(const QStringRef &name)
+{
+    // clang-format off
+    return name == QStringLiteral("BIT_STRING")
+           || name == QStringLiteral("BOOLEAN")
+           || name == QStringLiteral("CHOICE")
+           || name == QStringLiteral("Enumerated")
+           || name == QStringLiteral("NumericString")
+           || name == QStringLiteral("IA5String")
+           || name == QStringLiteral("INTEGER")
+           || name == QStringLiteral("NULL")
+           || name == QStringLiteral("NumericString")
+           || name == QStringLiteral("OCTET_STRING")
+           || name == QStringLiteral("REAL")
+           || name == QStringLiteral("SEQUENCE")
+           || name == QStringLiteral("SEQUENCE_OF")
+           || name == QStringLiteral("REFERENCE_TYPE");
+    // clang-format on
+}
+
 std::unique_ptr<Data::Types::Type> AstXmlParser::readType()
 {
     const auto location = readLocationFromAttributes();
     const auto isParametrized = isParametrizedTypeInstance();
     const auto alignToNext = readIsAlignedToNext();
+    std::unique_ptr<Data::Types::Type> type = nullptr;
 
-    auto type = readTypeDetails(location, isParametrized, alignToNext);
-
-    m_xmlReader.skipCurrentElement();
+    while (m_xmlReader.readNextStartElement()) {
+        const auto name = m_xmlReader.name();
+        if (name == QStringLiteral("AcnParameters"))
+            readAcnParameters();
+        else if (isTypeName(name))
+            type = std::move(readTypeDetails(name, location, isParametrized, alignToNext));
+        else {
+            m_xmlReader.skipCurrentElement();
+        }
+    }
 
     return type;
+}
+
+void AstXmlParser::readAcnParameters()
+{
+    if (skipToChildElement(QStringLiteral("AcnParameter")))
+        readAcnParameter();
+
+    m_xmlReader.skipCurrentElement();
+}
+
+void AstXmlParser::readAcnParameter()
+{
+    m_xmlReader.skipCurrentElement();
 }
 
 bool AstXmlParser::isParametrizedTypeInstance() const
@@ -574,22 +615,20 @@ bool AstXmlParser::isParametrizedTypeInstance() const
     return !value.isNull() && value == QStringLiteral("true");
 }
 
-std::unique_ptr<Data::Types::Type> AstXmlParser::readTypeDetails(
-    const Data::SourceLocation &location, const bool isParametrized, const QStringRef &typeAlignment)
+std::unique_ptr<Data::Types::Type> AstXmlParser::readTypeDetails(const QStringRef &name,
+                                                                 const Data::SourceLocation &location,
+                                                                 const bool isParametrized,
+                                                                 const QStringRef &typeAlignment)
 {
-    auto type = buildTypeFromName(location, isParametrized);
+    auto type = buildTypeFromName(name, location, isParametrized);
     type->setAlignToNext(Data::Types::Type::mapAlignToNext(typeAlignment));
 
     return type;
 }
 
 std::unique_ptr<Data::Types::Type> AstXmlParser::buildTypeFromName(
-    const Data::SourceLocation &location, bool isParametrized)
+    const QStringRef &name, const Data::SourceLocation &location, bool isParametrized)
 {
-    if (!m_xmlReader.readNextStartElement())
-        return nullptr;
-
-    auto name = m_xmlReader.name();
     auto type = (name == QStringLiteral("REFERENCE_TYPE"))
                     ? createReferenceType(location)
                     : Data::Types::TypeFactory::createBuiltinType(name.toString());

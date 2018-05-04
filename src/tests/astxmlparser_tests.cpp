@@ -27,6 +27,9 @@
 
 #include <QtTest>
 
+#include <data/acnargument.h>
+#include <data/acnparameter.h>
+
 #include <data/types/boolean.h>
 #include <data/types/choice.h>
 #include <data/types/enumerated.h>
@@ -35,6 +38,7 @@
 #include <data/types/real.h>
 #include <data/types/sequence.h>
 #include <data/types/sequenceof.h>
+#include <data/types/userdefinedtype.h>
 
 using namespace MalTester::Tests;
 using namespace MalTester;
@@ -1454,6 +1458,16 @@ void AstXmlParserTests::test_nullWithAcnParams()
     QCOMPARE(nullType->pattern(), QStringLiteral("1001"));
 }
 
+template<typename Collection>
+auto AstXmlParserTests::itemFromCollection(const Collection &col, const QString &id)
+{
+    auto item = find_if(col.begin(), col.end(), [id](const typename Collection::value_type &item) {
+        return item->id() == id;
+    });
+
+    return item == col.end() ? nullptr : item->get();
+}
+
 void AstXmlParserTests::test_sequnceWithAcnParameters()
 {
     parse(R"(<?xml version="1.0" encoding="utf-8"?>)"
@@ -1466,6 +1480,7 @@ void AstXmlParserTests::test_sequnceWithAcnParameters()
           R"(            <Asn1Type id="MyModel.MySeq" Line="3" CharPositionInLine="10" ParameterizedTypeInstance="false">"
           R"(              <AcnParameters>"
           R"(                <AcnParameter Id="MyModel.MySeq.type" Name="type" Type="INTEGER" />"
+          R"(                <AcnParameter Id="MyModel.MySeq.other" Name="other" Type="INTEGER" />"
           R"(              </AcnParameters>"
           R"(              <SEQUENCE>"
           R"(                <SEQUENCE_COMPONENT Name="chp1" Line="5" CharPositionInLine="4">"
@@ -1492,16 +1507,19 @@ void AstXmlParserTests::test_sequnceWithAcnParameters()
           R"(          <TypeAssignment Name="ParamSeq" Line="9" CharPositionInLine="0">"
           R"(            <Asn1Type id="MyModel.ParamSeq" Line="9" CharPositionInLine="13" ParameterizedTypeInstance="false">"
           R"(              <SEQUENCE>"
-          R"(                <ACN_COMPONENT Id="MyModel.ParamSeq.num" Name="num" Type="INTEGER" size="8" encoding="BCD" />"
+          R"(                <ACN_COMPONENT Id="MyModel.ParamSeq.firstNum" Name="firstNum" Type="INTEGER" size="8" encoding="BCD" />"
+          R"(                <ACN_COMPONENT Id="MyModel.ParamSeq.secondNum" Name="secondNum" Type="INTEGER" size="8" encoding="BCD" />"
           R"(                <SEQUENCE_COMPONENT Name="internal" Line="11" CharPositionInLine="4">"
           R"(                  <Asn1Type id="MyModel.ParamSeq.internal" Line="11" CharPositionInLine="13" ParameterizedTypeInstance="false">"
           R"(                    <REFERENCE_TYPE Module="MyModel" TypeAssignment="MySeq">"
           R"(                      <AcnArguments>"
-          R"(                        <argument>num</argument>"
+          R"(                        <argument>firstNum</argument>"
+          R"(                        <argument>secondNum</argument>"
           R"(                      </AcnArguments>"
           R"(                      <Asn1Type id="MyModel.ParamSeq.internal" Line="3" CharPositionInLine="10" ParameterizedTypeInstance="false" tasInfoModule="MyModel" tasInfoName="MySeq">"
           R"(                        <AcnParameters>"
           R"(                          <AcnParameter Id="MyModel.ParamSeq.internal.type" Name="type" Type="INTEGER" />"
+          R"(                          <AcnParameter Id="MyModel.ParamSeq.internal.other" Name="other" Type="INTEGER" />"
           R"(                        </AcnParameters>"
           R"(                        <SEQUENCE>"
           R"(                          <SEQUENCE_COMPONENT Name="chp1" Line="5" CharPositionInLine="4">"
@@ -1527,7 +1545,7 @@ void AstXmlParserTests::test_sequnceWithAcnParameters()
           R"(                    </REFERENCE_TYPE>"
           R"(                  </Asn1Type>"
           R"(                </SEQUENCE_COMPONENT>"
-          R"(                <Constraintsssss />"
+          R"(                <Constraints />"
           R"(                <WithComponentConstraints />"
           R"(              </SEQUENCE>"
           R"(            </Asn1Type>"
@@ -1540,12 +1558,65 @@ void AstXmlParserTests::test_sequnceWithAcnParameters()
 
     auto type = m_parsedData["Test2File.asn"]->definitions("MyModel")->type("MySeq");
     auto seqType = dynamic_cast<const Data::Types::Sequence *>(type->type());
-    auto param = seqType->acnParameter();
+    const auto &seqComponents = seqType->components();
+    QCOMPARE(seqComponents.size(), static_cast<size_t>(2));
+    QCOMPARE(seqComponents.count("chp1"), static_cast<size_t>(1));
+    QCOMPARE(seqComponents.count("chp2"), static_cast<size_t>(1));
 
-    QVERIFY(param);
+    auto &seqTypeParams = seqType->acnParameters();
+    QCOMPARE(seqTypeParams.size(), static_cast<size_t>(2));
+
+    auto param = itemFromCollection(seqTypeParams, QStringLiteral("MyModel.MySeq.type"));
+    QVERIFY(param != nullptr);
     QCOMPARE(param->id(), QStringLiteral("MyModel.MySeq.type"));
     QCOMPARE(param->name(), QStringLiteral("type"));
     QCOMPARE(param->type(), QStringLiteral("INTEGER"));
+
+    param = itemFromCollection(seqTypeParams, QStringLiteral("MyModel.MySeq.other"));
+    QVERIFY(param != nullptr);
+    QCOMPARE(param->id(), QStringLiteral("MyModel.MySeq.other"));
+    QCOMPARE(param->name(), QStringLiteral("other"));
+    QCOMPARE(param->type(), QStringLiteral("INTEGER"));
+
+    type = m_parsedData["Test2File.asn"]->definitions("MyModel")->type("ParamSeq");
+    seqType = dynamic_cast<const Data::Types::Sequence *>(type->type());
+    const auto &components = seqType->components();
+    QCOMPARE(components.size(), static_cast<size_t>(1));
+    QCOMPARE(components.count("internal"), static_cast<size_t>(1));
+
+    const auto userDefinedComponent = dynamic_cast<const Data::Types::UserdefinedType *>(
+        &components.at(QStringLiteral("internal")).type());
+
+    QVERIFY(userDefinedComponent);
+
+    auto internalSeqType = dynamic_cast<const Data::Types::Sequence *>(
+        &userDefinedComponent->type());
+    auto &internalSeqTypeParam = internalSeqType->acnParameters();
+
+    QCOMPARE(internalSeqTypeParam.size(), static_cast<size_t>(2));
+
+    param = itemFromCollection(internalSeqTypeParam,
+                               QStringLiteral("MyModel.ParamSeq.internal.type"));
+    QVERIFY(param != nullptr);
+    QCOMPARE(param->id(), QStringLiteral("MyModel.ParamSeq.internal.type"));
+    QCOMPARE(param->name(), QStringLiteral("type"));
+    QCOMPARE(param->type(), QStringLiteral("INTEGER"));
+
+    param = itemFromCollection(internalSeqTypeParam,
+                               QStringLiteral("MyModel.ParamSeq.internal.other"));
+    QVERIFY(param != nullptr);
+    QCOMPARE(param->id(), QStringLiteral("MyModel.ParamSeq.internal.other"));
+    QCOMPARE(param->name(), QStringLiteral("other"));
+    QCOMPARE(param->type(), QStringLiteral("INTEGER"));
+
+    const auto &acnArguments = userDefinedComponent->acnArguments();
+    QCOMPARE(acnArguments.size(), static_cast<size_t>(2));
+
+    auto argument = itemFromCollection(acnArguments, QStringLiteral("firstNum"));
+    QVERIFY(argument != nullptr);
+
+    argument = itemFromCollection(acnArguments, QStringLiteral("secondNum"));
+    QVERIFY(argument != nullptr);
 }
 
 void AstXmlParserTests::test_sequenceComponents()

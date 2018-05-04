@@ -31,6 +31,7 @@
 
 #include <QXmlStreamReader>
 
+#include <data/acnargument.h>
 #include <data/acnparameter.h>
 #include <data/definitions.h>
 #include <data/file.h>
@@ -88,10 +89,13 @@ private:
     std::unique_ptr<Data::Types::Type> buildTypeFromName(const QStringRef &name,
                                                          const Data::SourceLocation &location,
                                                          bool isParametrized);
-    std::unique_ptr<Data::Types::Type> createReferenceType(const Data::SourceLocation &location);
 
-    std::unique_ptr<MalTester::Data::AcnParameter> readAcnParameters();
-    std::unique_ptr<MalTester::Data::AcnParameter> readAcnParameter();
+    std::unique_ptr<Data::Types::Type> createReferenceType(const Data::SourceLocation &location);
+    void readReferredTypeDetails(Data::Types::Type &type);
+    void readAcnArguments(Data::Types::Type &type);
+
+    Data::AcnParameter::AcnParameterPtrs readAcnParameters();
+    Data::AcnParameter::AcnParameterPtr readAcnParameter();
 
     void readTypeContents(const QStringRef &name, Data::Types::Type &type);
     void readTypeAttributes(Data::Types::Type &type);
@@ -99,7 +103,7 @@ private:
     void readSequence(Data::Types::Type &type);
     void readSequenceOf(Data::Types::Type &type);
     void readChoice(Data::Types::Type &type);
-    void readReferenceType();
+    void readReferenceType(Data::Types::Type &type);
 
     void readInteger(Data::Types::Type &type);
     void readReal(Data::Types::Type &type);

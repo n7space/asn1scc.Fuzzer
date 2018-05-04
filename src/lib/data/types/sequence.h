@@ -62,9 +62,7 @@ private:
 class Sequence : public Type
 {
 public:
-    Sequence()
-        : m_parameter(nullptr)
-    {}
+    Sequence() = default;
     Sequence(const Sequence &other);
 
     QString name() const override { return QLatin1String("SEQUENCE"); }
@@ -76,12 +74,12 @@ public:
     const Components &components() const { return m_components; }
     void addComponent(const QString &key, const SequenceComponent &component);
 
-    const Data::AcnParameter *acnParameter() const { return m_parameter.get(); }
-    void addParameter(std::unique_ptr<Data::AcnParameter> parameter);
+    const AcnParameter::AcnParameterPtrs &acnParameters() const { return m_parameters; }
+    void addParameter(std::unique_ptr<AcnParameter> parameter);
 
 private:
     Components m_components;
-    std::unique_ptr<AcnParameter> m_parameter;
+    AcnParameter::AcnParameterPtrs m_parameters;
 };
 
 } // namespace Types

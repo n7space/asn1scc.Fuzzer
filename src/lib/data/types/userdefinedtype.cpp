@@ -27,12 +27,23 @@
 
 #include "typevisitor.h"
 
+using namespace MalTester::Data;
 using namespace MalTester::Data::Types;
 
 UserdefinedType::UserdefinedType(const QString &name, const QString &module)
     : m_name(name)
     , m_module(module)
+    , m_type(nullptr)
 {}
+
+UserdefinedType::UserdefinedType(const UserdefinedType &other)
+    : Type()
+{
+    m_type = other.m_type != nullptr ? other.m_type->clone() : nullptr;
+
+    for (const auto &item : other.m_arguments)
+        addArgument(std::make_unique<AcnArgument>(*item));
+}
 
 QString UserdefinedType::name() const
 {
@@ -47,4 +58,14 @@ void UserdefinedType::accept(TypeVisitor &visitor)
 std::unique_ptr<Type> UserdefinedType::clone() const
 {
     return std::make_unique<UserdefinedType>(*this);
+}
+
+void UserdefinedType::setType(std::unique_ptr<Type> type)
+{
+    m_type = std::move(type);
+}
+
+void UserdefinedType::addArgument(AcnArgument::AcnArgumentPtr argument)
+{
+    m_arguments.push_back(std::move(argument));
 }

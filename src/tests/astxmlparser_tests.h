@@ -90,12 +90,15 @@ private slots:
     void test_nullWithAcnParams();
 
 private:
+    template<typename Collection>
+    auto itemFromCollection(const Collection &col, const QString &id);
+
     void setXmlData(const QString &str);
     void parsingFails(const QString &xmlData);
     void parse(const QString &xmlData);
 
     QXmlStreamReader m_xmlReader;
-    std::map<QString, std::unique_ptr<MalTester::Data::File>> m_parsedData;
+    std::map<QString, std::unique_ptr<Data::File>> m_parsedData;
 };
 
 } // namespace Tests

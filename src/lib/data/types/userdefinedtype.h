@@ -26,7 +26,11 @@
 
 #pragma once
 
+#include <vector>
+
 #include <QString>
+
+#include <data/acnargument.h>
 
 #include "type.h"
 
@@ -38,7 +42,7 @@ class UserdefinedType : public Type
 {
 public:
     UserdefinedType(const QString &name, const QString &module);
-    UserdefinedType(const UserdefinedType &other) = default;
+    UserdefinedType(const UserdefinedType &other);
 
     QString name() const override;
     void accept(TypeVisitor &visitor) override;
@@ -46,9 +50,18 @@ public:
 
     const QString &module() const { return m_module; }
 
+    const Type &type() const { return *m_type; }
+    void setType(std::unique_ptr<Type> type);
+
+    const AcnArgument::AcnArgumentPtrs &acnArguments() const { return m_arguments; }
+    void addArgument(AcnArgument::AcnArgumentPtr arguments);
+
 private:
     QString m_name;
     QString m_module;
+
+    std::unique_ptr<Type> m_type;
+    AcnArgument::AcnArgumentPtrs m_arguments;
 };
 
 } // namespace Types

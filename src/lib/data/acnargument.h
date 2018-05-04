@@ -33,29 +33,23 @@
 namespace MalTester {
 namespace Data {
 
-class AcnParameter
+class AcnArgument
 {
 public:
-    using AcnParameterPtr = std::unique_ptr<AcnParameter>;
-    using AcnParameterPtrs = std::vector<AcnParameterPtr>;
+    using AcnArgumentPtr = std::unique_ptr<AcnArgument>;
+    using AcnArgumentPtrs = std::vector<AcnArgumentPtr>;
 
-    AcnParameter();
-    AcnParameter(const QString &id, const QString &name, const QString &type)
-        : m_id(id)
-        , m_name(name)
-        , m_type(type)
+    AcnArgument();
+    AcnArgument(const QString &argument)
+        : m_argument(argument)
     {}
 
-    AcnParameter(const AcnParameter &other) = default;
+    AcnArgument(const AcnArgument &other) = default;
 
-    const QString &id() const { return m_id; }
-    const QString &name() const { return m_name; }
-    const QString &type() const { return m_type; }
+    const QString &id() const { return m_argument; }
 
 private:
-    QString m_id;
-    QString m_name;
-    QString m_type;
+    QString m_argument;
 };
 
 } // namespace Data

@@ -79,6 +79,7 @@ HEADERS += \
     data/types/sequenceof.h \
     data/types/real.h \
     data/types/constraints.h \
+    data/types/acnparameterizablecollection.h \
     \
     astxmlparser.h \
     runparameters.h \

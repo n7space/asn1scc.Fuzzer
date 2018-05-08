@@ -28,9 +28,9 @@
 #include <QString>
 
 #include <data/acncomponent.h>
-#include <data/acnparameter.h>
 #include <data/sourcelocation.h>
 
+#include <data/types/acnparameterizablecollection.h>
 #include <data/types/type.h>
 
 namespace MalTester {
@@ -60,7 +60,7 @@ private:
     std::unique_ptr<Type> m_type;
 };
 
-class Sequence : public Type
+class Sequence : public Type, public AcnParametrizableCollection<SequenceComponent>
 {
 public:
     Sequence() = default;
@@ -70,20 +70,10 @@ public:
     void accept(TypeVisitor &visitor) override;
     std::unique_ptr<Type> clone() const override;
 
-    using Components = std::map<QString, SequenceComponent>;
-
-    const Components &components() const { return m_components; }
-    void addComponent(const QString &key, const SequenceComponent &component);
-
-    const AcnParameterPtrs &acnParameters() const { return m_parameters; }
-    void addParameter(AcnParameterPtr parameter);
-
     const AcnComponentPtrs &acnComponents() const { return m_acnComponents; }
     void addAcnComponent(AcnComponentPtr component);
 
 private:
-    Components m_components;
-    AcnParameterPtrs m_parameters;
     AcnComponentPtrs m_acnComponents;
 };
 

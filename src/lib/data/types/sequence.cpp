@@ -49,10 +49,8 @@ SequenceComponent::SequenceComponent(const SequenceComponent &other)
 
 Sequence::Sequence(const Sequence &other)
     : Type(other)
+    , AcnParametrizableCollection<SequenceComponent>(other)
 {
-    for (const auto &parameter : other.m_parameters)
-        addParameter(std::make_unique<AcnParameter>(*parameter));
-
     for (const auto &component : other.m_acnComponents)
         addAcnComponent(std::make_unique<AcnComponent>(*component));
 }
@@ -65,16 +63,6 @@ void Sequence::accept(TypeVisitor &visitor)
 std::unique_ptr<Type> Sequence::clone() const
 {
     return std::make_unique<Sequence>(*this);
-}
-
-void Sequence::addComponent(const QString &key, const SequenceComponent &component)
-{
-    m_components.insert(std::pair<QString, SequenceComponent>(key, component));
-}
-
-void Sequence::addParameter(AcnParameterPtr parameter)
-{
-    m_parameters.push_back(std::move(parameter));
 }
 
 void Sequence::addAcnComponent(AcnComponentPtr component)

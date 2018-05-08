@@ -56,6 +56,14 @@ ChoiceAlternative::ChoiceAlternative(const ChoiceAlternative &other)
     , m_type(other.m_type->clone())
 {}
 
+Choice::Choice(const Choice &other)
+    : Type(other)
+    , AcnParametrizableCollection<ChoiceAlternative>(other)
+{
+    for (const auto &parameter : other.m_parameters)
+        addParameter(std::make_unique<AcnParameter>(*parameter));
+}
+
 std::unique_ptr<Type> Choice::clone() const
 {
     return std::make_unique<Choice>(*this);
@@ -64,9 +72,4 @@ std::unique_ptr<Type> Choice::clone() const
 void Choice::accept(TypeVisitor &visitor)
 {
     visitor.visit(*this);
-}
-
-void Choice::addAlternative(const QString &key, const ChoiceAlternative &alt)
-{
-    m_alternatives.insert(std::pair<QString, ChoiceAlternative>(key, alt));
 }

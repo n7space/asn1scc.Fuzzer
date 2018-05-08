@@ -28,6 +28,7 @@
 
 #include <data/sourcelocation.h>
 
+#include <data/types/acnparameterizablecollection.h>
 #include <data/types/boolean.h>
 #include <data/types/choice.h>
 #include <data/types/enumerated.h>
@@ -292,14 +293,14 @@ public:
                                       readIntegerAttribute(QStringLiteral("Line")),
                                       readIntegerAttribute(QStringLiteral("CharPositionInLine")));
 
-        type.addAlternative(name,
-                            {name,
-                             presentWhenName,
-                             adaNameAttribute,
-                             cNameAttribute,
-                             presentWhen,
-                             location,
-                             std::move(m_childType)});
+        type.addComponent(name,
+                          {name,
+                           presentWhenName,
+                           adaNameAttribute,
+                           cNameAttribute,
+                           presentWhen,
+                           location,
+                           std::move(m_childType)});
     }
 
     void visit(Data::Types::Sequence &type) override
@@ -362,7 +363,12 @@ public:
     void visit(Data::Types::IA5String &type) override { Q_UNUSED(type); }
     void visit(Data::Types::NumericString &type) override { Q_UNUSED(type); }
     void visit(Data::Types::Enumerated &type) override { Q_UNUSED(type); }
-    void visit(Data::Types::Choice &type) override { Q_UNUSED(type); }
+    void visit(Data::Types::Choice &type) override
+    {
+        for (auto &param : m_acnParameters)
+            type.addParameter(std::move(param));
+    }
+
     void visit(Data::Types::Sequence &type) override
     {
         for (auto &param : m_acnParameters)

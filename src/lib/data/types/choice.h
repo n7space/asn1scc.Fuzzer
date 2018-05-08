@@ -27,8 +27,10 @@
 
 #include <QString>
 
+#include <data/acnparameter.h>
 #include <data/sourcelocation.h>
 
+#include <data/types/acnparameterizablecollection.h>
 #include <data/types/type.h>
 
 namespace MalTester {
@@ -68,27 +70,21 @@ private:
     std::unique_ptr<Type> m_type;
 };
 
-class Choice : public Type
+class Choice : public Type, public AcnParametrizableCollection<ChoiceAlternative>
 {
 public:
     Choice() = default;
-    Choice(const Choice &other) = default;
+    Choice(const Choice &other);
 
     QString name() const override { return QLatin1String("CHOICE"); }
     void accept(TypeVisitor &visitor) override;
     std::unique_ptr<Type> clone() const override;
-
-    using Alternatives = std::map<QString, ChoiceAlternative>;
-
-    const Alternatives &alternatives() const { return m_alternatives; }
-    void addAlternative(const QString &key, const ChoiceAlternative &alt);
 
     void setDeterminant(const QString &determinant) { m_determinant = determinant; }
     const QString &determinant() const { return m_determinant; }
 
 private:
     QString m_determinant;
-    Alternatives m_alternatives;
 };
 
 } // namespace Types

@@ -466,9 +466,9 @@ void AstXmlParser::readModule()
     readModuleChildren();
 }
 
-QString AstXmlParser::readIdAttribute()
+QString AstXmlParser::readIdAttribute(const QString &id)
 {
-    return m_xmlReader.attributes().value("ID").toString();
+    return m_xmlReader.attributes().value(id).toString();
 }
 
 void AstXmlParser::readValueAssignments()
@@ -524,6 +524,11 @@ QString AstXmlParser::readNameAttribute()
     return m_xmlReader.attributes().value(QStringLiteral("Name")).toString();
 }
 
+QString AstXmlParser::readTypeAttribute()
+{
+    return m_xmlReader.attributes().value(QStringLiteral("Type")).toString();
+}
+
 int AstXmlParser::readLineAttribute()
 {
     return m_xmlReader.attributes().value(QStringLiteral("Line")).toInt();
@@ -542,7 +547,7 @@ void AstXmlParser::readImportedModules()
 
 void AstXmlParser::readImportedModule()
 {
-    const auto moduleName = readIdAttribute();
+    const auto moduleName = readIdAttribute(QStringLiteral("ID"));
     while (m_xmlReader.readNextStartElement()) {
         if (m_xmlReader.name() == QStringLiteral("ImportedTypes"))
             readImportedTypes(moduleName);
@@ -614,7 +619,7 @@ std::unique_ptr<Data::Types::Type> AstXmlParser::findAndReadType()
     return readType();
 }
 
-static bool isTypeName(const QStringRef &name)
+static bool isTypeName(const QString &name)
 {
     // clang-format off
     return name == QStringLiteral("BIT_STRING")
@@ -643,15 +648,14 @@ std::unique_ptr<Data::Types::Type> AstXmlParser::readType()
     Data::AcnParameterPtrs acnParameters;
 
     while (m_xmlReader.readNextStartElement()) {
-        const auto name = m_xmlReader.name();
+        const auto name = m_xmlReader.name().toString();
 
         if (name == QStringLiteral("AcnParameters"))
             acnParameters = readAcnParameters();
         else if (isTypeName(name))
             type = readTypeDetails(name, location, isParametrized, alignToNext);
-        else {
+        else
             m_xmlReader.skipCurrentElement();
-        }
     }
 
     AcnDefinedItemsAddingVisitor visitor(std::move(acnParameters));
@@ -672,10 +676,9 @@ Data::AcnParameterPtrs AstXmlParser::readAcnParameters()
 
 Data::AcnParameterPtr AstXmlParser::readAcnParameter()
 {
-    // TODO: use already implemented functions
-    const auto id = m_xmlReader.attributes().value(QLatin1String("Id")).toString();
-    const auto name = m_xmlReader.attributes().value(QLatin1String("Name")).toString();
-    const auto type = m_xmlReader.attributes().value(QLatin1String("Type")).toString();
+    const auto id = readIdAttribute(QStringLiteral("Id"));
+    const auto name = readNameAttribute();
+    const auto type = readTypeAttribute();
 
     m_xmlReader.skipCurrentElement();
 
@@ -684,11 +687,11 @@ Data::AcnParameterPtr AstXmlParser::readAcnParameter()
 
 bool AstXmlParser::isParametrizedTypeInstance() const
 {
-    const auto value = m_xmlReader.attributes().value(QLatin1String("ParameterizedTypeInstance"));
+    const auto value = m_xmlReader.attributes().value(QStringLiteral("ParameterizedTypeInstance"));
     return !value.isNull() && value == QStringLiteral("true");
 }
 
-std::unique_ptr<Data::Types::Type> AstXmlParser::readTypeDetails(const QStringRef &name,
+std::unique_ptr<Data::Types::Type> AstXmlParser::readTypeDetails(const QString &name,
                                                                  const Data::SourceLocation &location,
                                                                  const bool isParametrized,
                                                                  const QStringRef &typeAlignment)
@@ -700,11 +703,11 @@ std::unique_ptr<Data::Types::Type> AstXmlParser::readTypeDetails(const QStringRe
 }
 
 std::unique_ptr<Data::Types::Type> AstXmlParser::buildTypeFromName(
-    const QStringRef &name, const Data::SourceLocation &location, bool isParametrized)
+    const QString &name, const Data::SourceLocation &location, bool isParametrized)
 {
     auto type = (name == QStringLiteral("REFERENCE_TYPE"))
                     ? createReferenceType(location)
-                    : Data::Types::TypeFactory::createBuiltinType(name.toString());
+                    : Data::Types::TypeFactory::createBuiltinType(name);
 
     if (isParametrized) {
         m_xmlReader.skipCurrentElement();
@@ -755,7 +758,7 @@ void AstXmlParser::readAcnArguments(Data::Types::Type &type)
     type.accept(visitor);
 }
 
-void AstXmlParser::readTypeContents(const QStringRef &name, Data::Types::Type &type)
+void AstXmlParser::readTypeContents(const QString &name, Data::Types::Type &type)
 {
     if (name == QStringLiteral("SEQUENCE"))
         readSequence(type);
@@ -781,9 +784,9 @@ void AstXmlParser::readSequence(Data::Types::Type &type)
     while (m_xmlReader.readNextStartElement()) {
         if (m_xmlReader.name() == QStringLiteral("SEQUENCE_COMPONENT"))
             readSequenceComponent(type);
-        else if (m_xmlReader.name() == QStringLiteral("ACN_COMPONENT")) {
+        else if (m_xmlReader.name() == QStringLiteral("ACN_COMPONENT"))
             components.push_back(std::move(readAcnComponent()));
-        } else
+        else
             m_xmlReader.skipCurrentElement();
     }
 
@@ -805,12 +808,9 @@ Data::AcnComponentPtr AstXmlParser::readAcnComponent()
 {
     auto alignToNext = readIsAlignedToNext();
     auto name = readNameAttribute();
-    auto id = m_xmlReader.attributes().value("Id").toString();
+    auto id = readIdAttribute(QStringLiteral("Id"));
 
-    auto type = readTypeDetails(m_xmlReader.attributes().value(QLatin1String("Type")),
-                                {},
-                                false,
-                                alignToNext);
+    auto type = readTypeDetails(readTypeAttribute(), {}, false, alignToNext);
 
     return std::make_unique<Data::AcnComponent>(id, name, std::move(type));
 }
@@ -882,13 +882,12 @@ void AstXmlParser::readEnumeratedItem(Data::Types::Type &type)
 void AstXmlParser::readReferenceType(Data::Types::Type &type)
 {
     while (m_xmlReader.readNextStartElement()) {
-        if (m_xmlReader.name() == QStringLiteral("AcnArguments")) {
+        if (m_xmlReader.name() == QStringLiteral("AcnArguments"))
             readAcnArguments(type);
-        } else if (m_xmlReader.name() == QStringLiteral("Asn1Type")) {
+        else if (m_xmlReader.name() == QStringLiteral("Asn1Type"))
             readReferredTypeDetails(type);
-        } else {
+        else
             m_xmlReader.skipCurrentElement();
-        }
     }
 }
 

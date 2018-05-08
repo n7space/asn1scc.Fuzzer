@@ -66,8 +66,9 @@ private:
 
     void updateCurrentFile();
     void createNewModule();
-    QString readIdAttribute();
+    QString readIdAttribute(const QString &id);
     QString readNameAttribute();
+    QString readTypeAttribute();
     int readLineAttribute();
     int readCharPossitionInLineAttribute();
     bool isParametrizedTypeInstance() const;
@@ -83,11 +84,11 @@ private:
 
     std::unique_ptr<Data::Types::Type> findAndReadType();
     std::unique_ptr<Data::Types::Type> readType();
-    std::unique_ptr<Data::Types::Type> readTypeDetails(const QStringRef &name,
+    std::unique_ptr<Data::Types::Type> readTypeDetails(const QString &name,
                                                        const Data::SourceLocation &location,
                                                        const bool isParametrized,
                                                        const QStringRef &typeAlignment);
-    std::unique_ptr<Data::Types::Type> buildTypeFromName(const QStringRef &name,
+    std::unique_ptr<Data::Types::Type> buildTypeFromName(const QString &name,
                                                          const Data::SourceLocation &location,
                                                          bool isParametrized);
 
@@ -98,7 +99,7 @@ private:
     Data::AcnParameterPtrs readAcnParameters();
     Data::AcnParameterPtr readAcnParameter();
 
-    void readTypeContents(const QStringRef &name, Data::Types::Type &type);
+    void readTypeContents(const QString &name, Data::Types::Type &type);
     void readTypeAttributes(Data::Types::Type &type);
 
     void readSequence(Data::Types::Type &type);

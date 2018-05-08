@@ -48,9 +48,13 @@ SequenceComponent::SequenceComponent(const SequenceComponent &other)
 {}
 
 Sequence::Sequence(const Sequence &other)
+    : Type(other)
 {
     for (const auto &parameter : other.m_parameters)
         addParameter(std::make_unique<AcnParameter>(*parameter));
+
+    for (const auto &component : other.m_acnComponents)
+        addAcnComponent(std::make_unique<AcnComponent>(*component));
 }
 
 void Sequence::accept(TypeVisitor &visitor)
@@ -68,7 +72,12 @@ void Sequence::addComponent(const QString &key, const SequenceComponent &compone
     m_components.insert(std::pair<QString, SequenceComponent>(key, component));
 }
 
-void Sequence::addParameter(std::unique_ptr<AcnParameter> parameter)
+void Sequence::addParameter(AcnParameterPtr parameter)
 {
     m_parameters.push_back(std::move(parameter));
+}
+
+void Sequence::addAcnComponent(AcnComponentPtr component)
+{
+    m_acnComponents.push_back(std::move(component));
 }

@@ -39,7 +39,7 @@ UserdefinedType::UserdefinedType(const QString &name, const QString &module)
 UserdefinedType::UserdefinedType(const UserdefinedType &other)
     : Type()
 {
-    m_type = other.m_type != nullptr ? other.m_type->clone() : nullptr;
+    m_type = (other.m_type != nullptr) ? other.m_type->clone() : nullptr;
 
     for (const auto &item : other.m_arguments)
         addArgument(std::make_unique<AcnArgument>(*item));
@@ -65,7 +65,7 @@ void UserdefinedType::setType(std::unique_ptr<Type> type)
     m_type = std::move(type);
 }
 
-void UserdefinedType::addArgument(AcnArgument::AcnArgumentPtr argument)
+void UserdefinedType::addArgument(AcnArgumentPtr argument)
 {
     m_arguments.push_back(std::move(argument));
 }

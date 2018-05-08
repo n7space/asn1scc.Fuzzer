@@ -82,9 +82,10 @@ private slots:
     void test_choiceAlternatives();
     void test_choiceAlternativesWithAcnParams();
 
-    void test_sequnceWithAcnParameters();
+    void test_sequnceWithAcnParams();
     void test_sequenceComponents();
     void test_sequenceComponentsWithAcnParams();
+    void test_sequenceAcnComponents();
 
     void test_booleanWithAcnParams();
     void test_nullWithAcnParams();

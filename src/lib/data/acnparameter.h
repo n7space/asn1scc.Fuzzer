@@ -36,9 +36,6 @@ namespace Data {
 class AcnParameter
 {
 public:
-    using AcnParameterPtr = std::unique_ptr<AcnParameter>;
-    using AcnParameterPtrs = std::vector<AcnParameterPtr>;
-
     AcnParameter();
     AcnParameter(const QString &id, const QString &name, const QString &type)
         : m_id(id)
@@ -57,6 +54,9 @@ private:
     QString m_name;
     QString m_type;
 };
+
+using AcnParameterPtr = std::unique_ptr<AcnParameter>;
+using AcnParameterPtrs = std::vector<AcnParameterPtr>;
 
 } // namespace Data
 } // namespace MalTester

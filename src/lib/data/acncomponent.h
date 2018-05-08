@@ -23,47 +23,46 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-
 #pragma once
 
+#include <memory>
 #include <vector>
 
 #include <QString>
 
-#include <data/acnargument.h>
-
-#include "type.h"
+#include <data/types/type.h>
 
 namespace MalTester {
 namespace Data {
-namespace Types {
 
-class UserdefinedType : public Type
+class AcnComponent
 {
 public:
-    UserdefinedType(const QString &name, const QString &module);
-    UserdefinedType(const UserdefinedType &other);
+    AcnComponent() = default;
+    AcnComponent(const QString &id, const QString &name, std::unique_ptr<Types::Type> type)
+        : m_id(id)
+        , m_name(name)
+        , m_type(std::move(type))
+    {}
 
-    QString name() const override;
-    void accept(TypeVisitor &visitor) override;
-    std::unique_ptr<Type> clone() const override;
+    AcnComponent(const AcnComponent &other)
+        : m_id(other.id())
+        , m_name(other.name())
+        , m_type(other.m_type->clone())
+    {}
 
-    const QString &module() const { return m_module; }
-
-    const Type &type() const { return *m_type; }
-    void setType(std::unique_ptr<Type> type);
-
-    const AcnArgumentPtrs &acnArguments() const { return m_arguments; }
-    void addArgument(AcnArgumentPtr argument);
+    const QString &id() const { return m_id; }
+    const QString &name() const { return m_name; }
+    const Types::Type &type() const { return *m_type; }
 
 private:
+    QString m_id;
     QString m_name;
-    QString m_module;
-
-    std::unique_ptr<Type> m_type;
-    AcnArgumentPtrs m_arguments;
+    std::unique_ptr<Types::Type> m_type;
 };
 
-} // namespace Types
+using AcnComponentPtr = std::unique_ptr<AcnComponent>;
+using AcnComponentPtrs = std::vector<AcnComponentPtr>;
+
 } // namespace Data
 } // namespace MalTester

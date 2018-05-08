@@ -36,9 +36,6 @@ namespace Data {
 class AcnArgument
 {
 public:
-    using AcnArgumentPtr = std::unique_ptr<AcnArgument>;
-    using AcnArgumentPtrs = std::vector<AcnArgumentPtr>;
-
     AcnArgument();
     AcnArgument(const QString &argument)
         : m_argument(argument)
@@ -51,6 +48,9 @@ public:
 private:
     QString m_argument;
 };
+
+using AcnArgumentPtr = std::unique_ptr<AcnArgument>;
+using AcnArgumentPtrs = std::vector<AcnArgumentPtr>;
 
 } // namespace Data
 } // namespace MalTester

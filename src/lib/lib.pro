@@ -57,6 +57,7 @@ HEADERS += \
     data/visitor.h \
     data/visitorwithvalue.h \
     data/acnparameter.h \
+    data/acncomponent.h \
     data/acnargument.h \
     \
     data/types/typefactory.h \

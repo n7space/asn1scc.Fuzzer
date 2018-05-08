@@ -28,6 +28,7 @@
 #include <QtTest>
 
 #include <data/acnargument.h>
+#include <data/acncomponent.h>
 #include <data/acnparameter.h>
 
 #include <data/types/boolean.h>
@@ -1468,7 +1469,7 @@ auto AstXmlParserTests::itemFromCollection(const Collection &col, const QString 
     return item == col.end() ? nullptr : item->get();
 }
 
-void AstXmlParserTests::test_sequnceWithAcnParameters()
+void AstXmlParserTests::test_sequnceWithAcnParams()
 {
     parse(R"(<?xml version="1.0" encoding="utf-8"?>)"
           R"(<AstRoot>)"
@@ -1729,6 +1730,152 @@ void AstXmlParserTests::test_sequenceComponentsWithAcnParams()
 
     const auto comp = components.at(QStringLiteral("i1"));
     QCOMPARE(comp.presentWhen(), QStringLiteral("beta"));
+}
+
+void AstXmlParserTests::test_sequenceAcnComponents()
+{
+    parse(R"(<?xml version="1.0" encoding="utf-8"?>)"
+          R"(<AstRoot>)"
+          R"(  <Asn1File FileName="Test2File.asn">)"
+          R"(    <Modules>)"
+          R"(      <Module Name="Defs" Line="13" CharPositionInLine="42">)"
+          R"(        <TypeAssignments>"
+          R"(          <TypeAssignment Name="MyEnum" Line="3" CharPositionInLine="0">"
+          R"(            <Asn1Type id="MyModel.MyEnum" Line="3" CharPositionInLine="11" ParameterizedTypeInstance="false">"
+          R"(              <Enumerated>"
+          R"(                <Items>"
+          R"(                  <Item Name="i1" Value="0" Line="3" CharPositionInLine="24" />"
+          R"(                  <Item Name="i2" Value="1" Line="3" CharPositionInLine="28" />"
+          R"(                </Items>"
+          R"(                <Constraints>"
+          R"(                  <OR>"
+          R"(                    <EnumValue>i1</EnumValue>"
+          R"(                    <EnumValue>i2</EnumValue>"
+          R"(                  </OR>"
+          R"(                </Constraints>"
+          R"(                <WithComponentConstraints />"
+          R"(              </Enumerated>"
+          R"(            </Asn1Type>"
+          R"(          </TypeAssignment>"
+          R"(          <TypeAssignment Name="MyChoice" Line="5" CharPositionInLine="0">"
+          R"(            <Asn1Type id="MyModel.MyChoice" Line="5" CharPositionInLine="13" ParameterizedTypeInstance="false">"
+          R"(              <CHOICE>"
+          R"(                <CHOICE_ALTERNATIVE Name="i1" Line="7" CharPositionInLine="4" PresentWhenName="i1" AdaName="i1" CName="i1">"
+          R"(                  <Asn1Type id="MyModel.MyChoice.i1" Line="7" CharPositionInLine="7" ParameterizedTypeInstance="false">"
+          R"(                    <INTEGER>"
+          R"(                      <Constraints />"
+          R"(                      <WithComponentConstraints />"
+          R"(                    </INTEGER>"
+          R"(                  </Asn1Type>"
+          R"(                </CHOICE_ALTERNATIVE>"
+          R"(                <CHOICE_ALTERNATIVE Name="i2" Line="8" CharPositionInLine="4" PresentWhenName="i2" AdaName="i2" CName="i2">"
+          R"(                  <Asn1Type id="MyModel.MyChoice.i2" Line="8" CharPositionInLine="7" ParameterizedTypeInstance="false">"
+          R"(                    <INTEGER>"
+          R"(                      <Constraints />"
+          R"(                      <WithComponentConstraints />"
+          R"(                    </INTEGER>"
+          R"(                  </Asn1Type>"
+          R"(                </CHOICE_ALTERNATIVE>"
+          R"(                <Constraints />"
+          R"(                <WithComponentConstraints />"
+          R"(              </CHOICE>"
+          R"(            </Asn1Type>"
+          R"(          </TypeAssignment>"
+          R"(          <TypeAssignment Name="MySeq" Line="11" CharPositionInLine="0">"
+          R"(            <Asn1Type id="MyModel.MySeq" Line="11" CharPositionInLine="10" ParameterizedTypeInstance="false">"
+          R"(              <SEQUENCE>"
+          R"(                <ACN_COMPONENT Id="MyModel.MySeq.beta" Name="beta" Type="BOOLEAN" true-value="0101" />"
+          R"(                <ACN_COMPONENT Id="MyModel.MySeq.firstDeter" Name="firstDeter" Type="Enumerated" size="12" encoding="BCD">"
+          R"(                  <Items>"
+          R"(                    <Item Name="i1" Value="0" />"
+          R"(                    <Item Name="i2" Value="1" />"
+          R"(                  </Items>"
+          R"(                  <Constraints>"
+          R"(                    <OR>"
+          R"(                      <EnumValue>i1</EnumValue>"
+          R"(                      <EnumValue>i2</EnumValue>"
+          R"(                    </OR>"
+          R"(                  </Constraints>"
+          R"(                  <WithComponentConstraints />"
+          R"(                </ACN_COMPONENT>"
+          R"(                <SEQUENCE_COMPONENT Name="ch1" Line="13" CharPositionInLine="4">"
+          R"(                  <Asn1Type id="MyModel.MySeq.ch1" Line="13" CharPositionInLine="8" ParameterizedTypeInstance="false">"
+          R"(                    <REFERENCE_TYPE Module="MyModel" TypeAssignment="MyChoice">"
+          R"(                      <Asn1Type id="MyModel.MySeq.ch1" Line="5" CharPositionInLine="13" ParameterizedTypeInstance="false" tasInfoModule="MyModel" tasInfoName="MyChoice">"
+          R"(                        <CHOICE determinant="firstDeter">"
+          R"(                          <CHOICE_ALTERNATIVE Name="i1" Line="7" CharPositionInLine="4" PresentWhenName="i1" AdaName="i1" CName="i1">"
+          R"(                            <Asn1Type id="MyModel.MySeq.ch1.i1" Line="7" CharPositionInLine="7" ParameterizedTypeInstance="false">"
+          R"(                              <INTEGER>"
+          R"(                                <Constraints />"
+          R"(                                <WithComponentConstraints />"
+          R"(                              </INTEGER>"
+          R"(                            </Asn1Type>"
+          R"(                          </CHOICE_ALTERNATIVE>"
+          R"(                          <CHOICE_ALTERNATIVE Name="i2" Line="8" CharPositionInLine="4" PresentWhenName="i2" AdaName="i2" CName="i2">"
+          R"(                            <Asn1Type id="MyModel.MySeq.ch1.i2" Line="8" CharPositionInLine="7" ParameterizedTypeInstance="false">"
+          R"(                              <INTEGER>"
+          R"(                                <Constraints />"
+          R"(                                <WithComponentConstraints />"
+          R"(                              </INTEGER>"
+          R"(                            </Asn1Type>"
+          R"(                          </CHOICE_ALTERNATIVE>"
+          R"(                          <Constraints />"
+          R"(                          <WithComponentConstraints />"
+          R"(                        </CHOICE>"
+          R"(                      </Asn1Type>"
+          R"(                    </REFERENCE_TYPE>"
+          R"(                  </Asn1Type>"
+          R"(                </SEQUENCE_COMPONENT>"
+          R"(                <ACN_COMPONENT Id="MyModel.MySeq.int" Name="int" Type="INTEGER" size="16" encoding="BCD" align-to-next="dword" />"
+          R"(                <Constraints />"
+          R"(                <WithComponentConstraints />"
+          R"(              </SEQUENCE>"
+          R"(            </Asn1Type>"
+          R"(          </TypeAssignment>"
+          R"(        </TypeAssignments>"
+          R"(      </Module>)"
+          R"(    </Modules>)"
+          R"(  </Asn1File>)"
+          R"(</AstRoot>)");
+
+    auto type = m_parsedData["Test2File.asn"]->definitions("Defs")->type("MySeq");
+    const auto seqType = dynamic_cast<const Data::Types::Sequence *>(type->type());
+
+    const auto &components = seqType->components();
+    QCOMPARE(components.size(), static_cast<size_t>(1));
+
+    const auto &acnComponents = seqType->acnComponents();
+    QCOMPARE(acnComponents.size(), static_cast<size_t>(3));
+
+    const auto enumComponent = itemFromCollection(acnComponents,
+                                                  QStringLiteral("MyModel.MySeq.firstDeter"));
+    QVERIFY(enumComponent != nullptr);
+    const auto enumType = dynamic_cast<const Data::Types::Enumerated *>(&enumComponent->type());
+    QCOMPARE(enumType->size(), 12);
+    QCOMPARE(enumType->encoding(), Data::Types::IntegerEncoding::BCD);
+
+    const auto enumItems = enumType->items();
+    QCOMPARE(enumItems.size(), 2);
+    QVERIFY(enumItems.contains("i1"));
+    auto item = enumItems.value("i1");
+    QCOMPARE(item.value(), 0);
+
+    QVERIFY(enumItems.contains("i2"));
+    item = enumItems.value("i2");
+    QCOMPARE(item.value(), 1);
+
+    const auto boolComponent = itemFromCollection(acnComponents,
+                                                  QStringLiteral("MyModel.MySeq.beta"));
+    QVERIFY(boolComponent != nullptr);
+    const auto boolType = dynamic_cast<const Data::Types::Boolean *>(&boolComponent->type());
+    QCOMPARE(boolType->trueValue(), QStringLiteral("0101"));
+
+    const auto intComponent = itemFromCollection(acnComponents, QStringLiteral("MyModel.MySeq.int"));
+    QVERIFY(intComponent != nullptr);
+    const auto intType = dynamic_cast<const Data::Types::Integer *>(&intComponent->type());
+    QCOMPARE(intType->size(), 16);
+    QCOMPARE(intType->encoding(), Data::Types::IntegerEncoding::BCD);
+    QCOMPARE(intType->alignToNext(), Data::Types::AlignToNext::dword);
 }
 
 void AstXmlParserTests::parsingFails(const QString &xmlData)

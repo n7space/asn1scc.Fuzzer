@@ -27,6 +27,7 @@
 
 #include <QString>
 
+#include <data/acncomponent.h>
 #include <data/acnparameter.h>
 #include <data/sourcelocation.h>
 
@@ -74,12 +75,16 @@ public:
     const Components &components() const { return m_components; }
     void addComponent(const QString &key, const SequenceComponent &component);
 
-    const AcnParameter::AcnParameterPtrs &acnParameters() const { return m_parameters; }
-    void addParameter(std::unique_ptr<AcnParameter> parameter);
+    const AcnParameterPtrs &acnParameters() const { return m_parameters; }
+    void addParameter(AcnParameterPtr parameter);
+
+    const AcnComponentPtrs &acnComponents() const { return m_acnComponents; }
+    void addAcnComponent(AcnComponentPtr component);
 
 private:
     Components m_components;
-    AcnParameter::AcnParameterPtrs m_parameters;
+    AcnParameterPtrs m_parameters;
+    AcnComponentPtrs m_acnComponents;
 };
 
 } // namespace Types

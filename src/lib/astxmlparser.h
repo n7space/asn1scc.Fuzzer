@@ -32,6 +32,7 @@
 #include <QXmlStreamReader>
 
 #include <data/acnargument.h>
+#include <data/acncomponent.h>
 #include <data/acnparameter.h>
 #include <data/definitions.h>
 #include <data/file.h>
@@ -94,13 +95,16 @@ private:
     void readReferredTypeDetails(Data::Types::Type &type);
     void readAcnArguments(Data::Types::Type &type);
 
-    Data::AcnParameter::AcnParameterPtrs readAcnParameters();
-    Data::AcnParameter::AcnParameterPtr readAcnParameter();
+    Data::AcnParameterPtrs readAcnParameters();
+    Data::AcnParameterPtr readAcnParameter();
 
     void readTypeContents(const QStringRef &name, Data::Types::Type &type);
     void readTypeAttributes(Data::Types::Type &type);
 
     void readSequence(Data::Types::Type &type);
+    void readSequenceComponent(Data::Types::Type &type);
+    Data::AcnComponentPtr readAcnComponent();
+
     void readSequenceOf(Data::Types::Type &type);
     void readChoice(Data::Types::Type &type);
     void readReferenceType(Data::Types::Type &type);

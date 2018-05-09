@@ -30,7 +30,7 @@
 #include <data/acnparameter.h>
 #include <data/sourcelocation.h>
 
-#include <data/types/acnparameterizablecollection.h>
+#include <data/types/acnparameterizablecomposite.h>
 #include <data/types/type.h>
 
 namespace MalTester {
@@ -70,7 +70,7 @@ private:
     std::unique_ptr<Type> m_type;
 };
 
-class Choice : public Type, public AcnParametrizableCollection<ChoiceAlternative>
+class Choice : public Type, public AcnParameterizableCollection<ChoiceAlternative>
 {
 public:
     Choice() = default;

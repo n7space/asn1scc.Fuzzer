@@ -58,7 +58,7 @@ ChoiceAlternative::ChoiceAlternative(const ChoiceAlternative &other)
 
 Choice::Choice(const Choice &other)
     : Type(other)
-    , AcnParametrizableCollection<ChoiceAlternative>(other)
+    , AcnParameterizableCollection<ChoiceAlternative>(other)
 {
     for (const auto &parameter : other.m_parameters)
         addParameter(std::make_unique<AcnParameter>(*parameter));

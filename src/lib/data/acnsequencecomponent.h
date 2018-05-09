@@ -23,19 +23,44 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-#include "sequence.h"
+#pragma once
 
-#include "typevisitor.h"
+#include <memory>
+#include <vector>
 
-using namespace MalTester::Data;
-using namespace MalTester::Data::Types;
+#include <QString>
 
-void Sequence::accept(TypeVisitor &visitor)
+#include <data/sequencecomponent.h>
+
+#include <data/types/type.h>
+
+namespace MalTester {
+namespace Data {
+
+class AcnSequenceComponent : public SequenceComponent
 {
-    visitor.visit(*this);
-}
+public:
+    AcnSequenceComponent() = default;
+    ~AcnSequenceComponent() override = default;
 
-std::unique_ptr<Type> Sequence::clone() const
-{
-    return std::make_unique<Sequence>(*this);
-}
+    AcnSequenceComponent(const QString &id, const QString &name, std::unique_ptr<Types::Type> type)
+        : SequenceComponent(name, std::move(type))
+        , m_id(id)
+    {}
+
+    AcnSequenceComponent(const AcnSequenceComponent &other)
+        : SequenceComponent(other)
+        , m_id(other.id())
+    {}
+
+    const QString &id() const { return m_id; }
+
+private:
+    QString m_id;
+};
+
+using AcnSequenceComponentPtr = std::unique_ptr<AcnSequenceComponent>;
+using AcnSequenceComponentPtrs = std::vector<AcnSequenceComponentPtr>;
+
+} // namespace Data
+} // namespace MalTester

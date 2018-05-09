@@ -57,7 +57,9 @@ HEADERS += \
     data/visitor.h \
     data/visitorwithvalue.h \
     data/acnparameter.h \
-    data/acncomponent.h \
+    data/asnsequencecomponent.h \
+    data/acnsequencecomponent.h \
+    data/sequencecomponent.h \
     data/acnargument.h \
     \
     data/types/typefactory.h \
@@ -79,7 +81,7 @@ HEADERS += \
     data/types/sequenceof.h \
     data/types/real.h \
     data/types/constraints.h \
-    data/types/acnparameterizablecollection.h \
+    data/types/acnparameterizablecomposite.h \
     \
     astxmlparser.h \
     runparameters.h \

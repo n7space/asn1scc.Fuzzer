@@ -32,8 +32,8 @@
 #include <QXmlStreamReader>
 
 #include <data/acnargument.h>
-#include <data/acncomponent.h>
 #include <data/acnparameter.h>
+#include <data/acnsequencecomponent.h>
 #include <data/definitions.h>
 #include <data/file.h>
 
@@ -104,7 +104,7 @@ private:
 
     void readSequence(Data::Types::Type &type);
     void readSequenceComponent(Data::Types::Type &type);
-    Data::AcnComponentPtr readAcnComponent();
+    void readAcnComponent(Data::Types::Type &type);
 
     void readSequenceOf(Data::Types::Type &type);
     void readChoice(Data::Types::Type &type);

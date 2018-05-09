@@ -26,43 +26,38 @@
 #pragma once
 
 #include <memory>
-#include <vector>
 
 #include <QString>
 
+#include <data/sourcelocation.h>
 #include <data/types/type.h>
 
 namespace MalTester {
 namespace Data {
 
-class AcnComponent
+class SequenceComponent
 {
 public:
-    AcnComponent() = default;
-    AcnComponent(const QString &id, const QString &name, std::unique_ptr<Types::Type> type)
-        : m_id(id)
-        , m_name(name)
+    SequenceComponent() = default;
+    SequenceComponent(const QString &name, std::unique_ptr<Types::Type> type)
+        : m_name(name)
         , m_type(std::move(type))
     {}
 
-    AcnComponent(const AcnComponent &other)
-        : m_id(other.id())
-        , m_name(other.name())
+    SequenceComponent(const SequenceComponent &other)
+        : m_name(other.m_name)
         , m_type(other.m_type->clone())
     {}
 
-    const QString &id() const { return m_id; }
+    virtual ~SequenceComponent() = default;
+
     const QString &name() const { return m_name; }
     const Types::Type &type() const { return *m_type; }
 
 private:
-    QString m_id;
     QString m_name;
     std::unique_ptr<Types::Type> m_type;
 };
-
-using AcnComponentPtr = std::unique_ptr<AcnComponent>;
-using AcnComponentPtrs = std::vector<AcnComponentPtr>;
 
 } // namespace Data
 } // namespace MalTester

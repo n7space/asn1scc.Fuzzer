@@ -30,23 +30,6 @@
 using namespace MalTester::Data;
 using namespace MalTester::Data::Types;
 
-SequenceComponent::SequenceComponent(const QString &name,
-                                     const QString &presentWhen,
-                                     const SourceLocation &location,
-                                     std::unique_ptr<Type> type)
-    : m_name(name)
-    , m_presentWhen(presentWhen)
-    , m_location(location)
-    , m_type(std::move(type))
-{}
-
-SequenceComponent::SequenceComponent(const SequenceComponent &other)
-    : m_name(other.m_name)
-    , m_presentWhen(other.m_presentWhen)
-    , m_location(other.m_location)
-    , m_type(other.m_type->clone())
-{}
-
 void Sequence::accept(TypeVisitor &visitor)
 {
     visitor.visit(*this);
@@ -55,9 +38,4 @@ void Sequence::accept(TypeVisitor &visitor)
 std::unique_ptr<Type> Sequence::clone() const
 {
     return std::make_unique<Sequence>(*this);
-}
-
-void Sequence::addComponent(const QString &key, const SequenceComponent &component)
-{
-    m_components.insert(std::pair<QString, SequenceComponent>(key, component));
 }

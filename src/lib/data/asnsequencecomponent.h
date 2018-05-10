@@ -23,47 +23,38 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-
 #pragma once
 
-#include <vector>
-
-#include <QString>
-
-#include <data/acnargument.h>
-
-#include "type.h"
+#include <data/sequencecomponent.h>
 
 namespace MalTester {
 namespace Data {
-namespace Types {
 
-class UserdefinedType : public Type
+class AsnSequenceComponent : public SequenceComponent
 {
 public:
-    UserdefinedType(const QString &name, const QString &module);
-    UserdefinedType(const UserdefinedType &other);
+    AsnSequenceComponent() = default;
+    ~AsnSequenceComponent() override = default;
 
-    QString name() const override;
-    void accept(TypeVisitor &visitor) override;
-    std::unique_ptr<Type> clone() const override;
+    AsnSequenceComponent(const QString &name, const QString &presentWhen, const SourceLocation &location, std::unique_ptr<Types::Type> type)
+        : SequenceComponent(name, std::move(type))
+        , m_presentWhen(presentWhen)
+        , m_location(location)
+    {}
 
-    const QString &module() const { return m_module; }
+    AsnSequenceComponent(const AsnSequenceComponent &other)
+        : SequenceComponent(other)
+        , m_presentWhen(other.m_presentWhen)
+        , m_location(other.m_location)
+    {}
 
-    const Type &type() const { return *m_type; }
-    void setType(std::unique_ptr<Type> type);
-
-    const AcnArgumentPtrs &acnArguments() const { return m_arguments; }
-    void addArgument(AcnArgumentPtr argument);
+    const SourceLocation &location() const { return m_location; }
+    const QString &presentWhen() const { return m_presentWhen; }
 
 private:
-    QString m_name;
-    QString m_module;
-
-    std::unique_ptr<Type> m_type;
-    AcnArgumentPtrs m_arguments;
+    QString m_presentWhen;
+    SourceLocation m_location;
 };
 
-} // namespace Types
 } // namespace Data
 } // namespace MalTester

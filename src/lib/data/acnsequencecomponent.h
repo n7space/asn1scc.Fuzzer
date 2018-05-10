@@ -23,47 +23,44 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-
 #pragma once
 
+#include <memory>
 #include <vector>
 
 #include <QString>
 
-#include <data/acnargument.h>
+#include <data/sequencecomponent.h>
 
-#include "type.h"
+#include <data/types/type.h>
 
 namespace MalTester {
 namespace Data {
-namespace Types {
 
-class UserdefinedType : public Type
+class AcnSequenceComponent : public SequenceComponent
 {
 public:
-    UserdefinedType(const QString &name, const QString &module);
-    UserdefinedType(const UserdefinedType &other);
+    AcnSequenceComponent() = default;
+    ~AcnSequenceComponent() override = default;
 
-    QString name() const override;
-    void accept(TypeVisitor &visitor) override;
-    std::unique_ptr<Type> clone() const override;
+    AcnSequenceComponent(const QString &id, const QString &name, std::unique_ptr<Types::Type> type)
+        : SequenceComponent(name, std::move(type))
+        , m_id(id)
+    {}
 
-    const QString &module() const { return m_module; }
+    AcnSequenceComponent(const AcnSequenceComponent &other)
+        : SequenceComponent(other)
+        , m_id(other.id())
+    {}
 
-    const Type &type() const { return *m_type; }
-    void setType(std::unique_ptr<Type> type);
-
-    const AcnArgumentPtrs &acnArguments() const { return m_arguments; }
-    void addArgument(AcnArgumentPtr argument);
+    const QString &id() const { return m_id; }
 
 private:
-    QString m_name;
-    QString m_module;
-
-    std::unique_ptr<Type> m_type;
-    AcnArgumentPtrs m_arguments;
+    QString m_id;
 };
 
-} // namespace Types
+using AcnSequenceComponentPtr = std::unique_ptr<AcnSequenceComponent>;
+using AcnSequenceComponentPtrs = std::vector<AcnSequenceComponentPtr>;
+
 } // namespace Data
 } // namespace MalTester

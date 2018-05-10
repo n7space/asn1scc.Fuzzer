@@ -27,6 +27,11 @@
 
 #include <QtTest>
 
+#include <data/acnargument.h>
+#include <data/acnparameter.h>
+#include <data/acnsequencecomponent.h>
+#include <data/asnsequencecomponent.h>
+
 #include <data/types/boolean.h>
 #include <data/types/choice.h>
 #include <data/types/enumerated.h>
@@ -35,6 +40,7 @@
 #include <data/types/real.h>
 #include <data/types/sequence.h>
 #include <data/types/sequenceof.h>
+#include <data/types/userdefinedtype.h>
 
 using namespace MalTester::Tests;
 using namespace MalTester;
@@ -1296,6 +1302,118 @@ void AstXmlParserTests::test_sequenceOfAssignmentWithAcnParams()
     QCOMPARE(sequenceOfType->size(), QStringLiteral("n"));
 }
 
+template<typename Collection>
+auto AstXmlParserTests::itemFromCollection(const Collection &col, const QString &id)
+{
+    auto item = find_if(col.begin(), col.end(), [id](const typename Collection::value_type &item) {
+        return item->id() == id;
+    });
+
+    return item == col.end() ? nullptr : item->get();
+}
+
+void AstXmlParserTests::test_choiceWithAcnParams()
+{
+    parse(R"(<?xml version="1.0" encoding="utf-8"?>)"
+          R"(<AstRoot>)"
+          R"(  <Asn1File FileName="Test2File.asn">)"
+          R"(    <Modules>)"
+          R"(      <Module Name="MyModel" Line="13" CharPositionInLine="42">)"
+          R"(        <TypeAssignments>"
+          R"(          <TypeAssignment Name="MyChoice" Line="20" CharPositionInLine="0">"
+          R"(            <Asn1Type id="MyModel.MyChoice" Line="20" CharPositionInLine="13" ParameterizedTypeInstance="false">"
+          R"(              <AcnParameters>"
+          R"(                <AcnParameter Id="MyModel.MyChoice.type" Name="type" Type="INTEGER" />"
+          R"(              </AcnParameters>"
+          R"(              <CHOICE>"
+          R"(                <CHOICE_ALTERNATIVE Name="chp1" Line="22" CharPositionInLine="4" PresentWhenName="chp1" AdaName="chp1" CName="chp1" present-when="type = 1">"
+          R"(                  <Asn1Type id="MyModel.MyChoice.chp1" Line="22" CharPositionInLine="9" ParameterizedTypeInstance="false">"
+          R"(                    <INTEGER>"
+          R"(                      <Constraints />"
+          R"(                      <WithComponentConstraints />"
+          R"(                    </INTEGER>"
+          R"(                  </Asn1Type>"
+          R"(                </CHOICE_ALTERNATIVE>"
+          R"(                <CHOICE_ALTERNATIVE Name="chp2" Line="23" CharPositionInLine="4" PresentWhenName="chp2" AdaName="chp2" CName="chp2" present-when="type = 2">"
+          R"(                  <Asn1Type id="MyModel.MyChoice.chp2" Line="23" CharPositionInLine="9" ParameterizedTypeInstance="false">"
+          R"(                    <INTEGER>"
+          R"(                      <Constraints />"
+          R"(                      <WithComponentConstraints />"
+          R"(                    </INTEGER>"
+          R"(                  </Asn1Type>"
+          R"(                </CHOICE_ALTERNATIVE>"
+          R"(                <Constraints />"
+          R"(                <WithComponentConstraints />"
+          R"(              </CHOICE>"
+          R"(            </Asn1Type>"
+          R"(          </TypeAssignment>"
+          R"(          <TypeAssignment Name="MySeq" Line="26" CharPositionInLine="0">"
+          R"(            <Asn1Type id="MyModel.MySeq" Line="26" CharPositionInLine="10" ParameterizedTypeInstance="false">"
+          R"(              <SEQUENCE>"
+          R"(                <ACN_COMPONENT Id="MyModel.MySeq.num" Name="num" Type="INTEGER" size="8" encoding="BCD" />"
+          R"(                <SEQUENCE_COMPONENT Name="internal" Line="28" CharPositionInLine="4">"
+          R"(                  <Asn1Type id="MyModel.MySeq.internal" Line="28" CharPositionInLine="13" ParameterizedTypeInstance="false">"
+          R"(                    <REFERENCE_TYPE Module="MyModel" TypeAssignment="MyChoice">"
+          R"(                      <AcnArguments>"
+          R"(                        <argument>num</argument>"
+          R"(                      </AcnArguments>"
+          R"(                      <Asn1Type id="MyModel.MySeq.internal" Line="20" CharPositionInLine="13" ParameterizedTypeInstance="false" tasInfoModule="MyModel" tasInfoName="MyChoice">"
+          R"(                        <AcnParameters>"
+          R"(                          <AcnParameter Id="MyModel.MySeq.internal.type" Name="type" Type="INTEGER" />"
+          R"(                        </AcnParameters>"
+          R"(                        <CHOICE>"
+          R"(                          <CHOICE_ALTERNATIVE Name="chp1" Line="22" CharPositionInLine="4" PresentWhenName="chp1" AdaName="chp1" CName="chp1" present-when="type = 1">"
+          R"(                            <Asn1Type id="MyModel.MySeq.internal.chp1" Line="22" CharPositionInLine="9" ParameterizedTypeInstance="false">"
+          R"(                              <INTEGER>"
+          R"(                                <Constraints />"
+          R"(                                <WithComponentConstraints />"
+          R"(                              </INTEGER>"
+          R"(                            </Asn1Type>"
+          R"(                          </CHOICE_ALTERNATIVE>"
+          R"(                          <CHOICE_ALTERNATIVE Name="chp2" Line="23" CharPositionInLine="4" PresentWhenName="chp2" AdaName="chp2" CName="chp2" present-when="type = 2">"
+          R"(                            <Asn1Type id="MyModel.MySeq.internal.chp2" Line="23" CharPositionInLine="9" ParameterizedTypeInstance="false">"
+          R"(                              <INTEGER>"
+          R"(                                <Constraints />"
+          R"(                                <WithComponentConstraints />"
+          R"(                              </INTEGER>"
+          R"(                            </Asn1Type>"
+          R"(                          </CHOICE_ALTERNATIVE>"
+          R"(                          <Constraints />"
+          R"(                          <WithComponentConstraints />"
+          R"(                        </CHOICE>"
+          R"(                      </Asn1Type>"
+          R"(                    </REFERENCE_TYPE>"
+          R"(                  </Asn1Type>"
+          R"(                </SEQUENCE_COMPONENT>"
+          R"(                <Constraints />"
+          R"(                <WithComponentConstraints />"
+          R"(              </SEQUENCE>"
+          R"(            </Asn1Type>"
+          R"(          </TypeAssignment>"
+          R"(        </TypeAssignments>"
+          R"(      </Module>)"
+          R"(    </Modules>)"
+          R"(  </Asn1File>)"
+          R"(</AstRoot>)");
+
+    auto type = m_parsedData["Test2File.asn"]->definitions("MyModel")->type("MyChoice");
+    auto choiceType = dynamic_cast<const Data::Types::Choice *>(type->type());
+    const auto &choiceAlternatives = choiceType->components();
+
+    QCOMPARE(choiceAlternatives.size(), static_cast<size_t>(2));
+    QVERIFY(choiceType->component(QStringLiteral("chp1")) != nullptr);
+    QVERIFY(choiceType->component(QStringLiteral("chp2")) != nullptr);
+
+    auto &choiceParams = choiceType->acnParameters();
+    QCOMPARE(choiceParams.size(), static_cast<size_t>(1));
+
+    auto param = itemFromCollection(choiceParams, QStringLiteral("MyModel.MyChoice.type"));
+    QVERIFY(param != nullptr);
+    QCOMPARE(param->id(), QStringLiteral("MyModel.MyChoice.type"));
+    QCOMPARE(param->name(), QStringLiteral("type"));
+    QCOMPARE(param->type(), QStringLiteral("INTEGER"));
+}
+
 void AstXmlParserTests::test_choiceAlternatives()
 {
     parse(R"(<?xml version="1.0" encoding="utf-8"?>)"
@@ -1328,24 +1446,23 @@ void AstXmlParserTests::test_choiceAlternatives()
 
     const auto type = m_parsedData["Test2File.asn"]->definitions("Defs")->type("MyChoice");
     const auto choiceType = dynamic_cast<const Data::Types::Choice *>(type->type());
-
     QVERIFY(choiceType != nullptr);
-    auto alternatives = choiceType->alternatives();
 
-    QCOMPARE(alternatives.size(), static_cast<unsigned int>(1));
-    auto alternative = alternatives.find(QStringLiteral("i1"));
+    QCOMPARE(choiceType->components().size(), static_cast<unsigned int>(1));
 
-    QVERIFY(alternative != alternatives.end());
-    QCOMPARE(alternative->second.presentWhenName(), QStringLiteral("i1"));
-    QCOMPARE(alternative->second.adaName(), QStringLiteral("i1"));
-    QCOMPARE(alternative->second.cName(), QStringLiteral("i1"));
+    auto alternative = choiceType->component(QStringLiteral("i1"));
+    QVERIFY(alternative != nullptr);
 
-    const auto &location = alternative->second.location();
+    QCOMPARE(alternative->presentWhenName(), QStringLiteral("i1"));
+    QCOMPARE(alternative->adaName(), QStringLiteral("i1"));
+    QCOMPARE(alternative->cName(), QStringLiteral("i1"));
+
+    const auto &location = alternative->location();
     QCOMPARE(location.path(), QStringLiteral("Test2File.asn"));
     QCOMPARE(location.line(), 7);
     QCOMPARE(location.column(), 4);
 
-    QCOMPARE(alternative->second.type().name(), QStringLiteral("INTEGER"));
+    QCOMPARE(alternative->type().name(), QStringLiteral("INTEGER"));
 }
 
 void AstXmlParserTests::test_choiceAlternativesWithAcnParams()
@@ -1382,10 +1499,10 @@ void AstXmlParserTests::test_choiceAlternativesWithAcnParams()
     const auto choiceType = dynamic_cast<const Data::Types::Choice *>(type->type());
 
     QCOMPARE(choiceType->determinant(), QStringLiteral("deter"));
+    QCOMPARE(choiceType->components().size(), static_cast<unsigned int>(1));
 
-    auto alternatives = choiceType->alternatives();
-    auto alternative = alternatives.find(QStringLiteral("i1"));
-    QCOMPARE(alternative->second.presentWhen(), QStringLiteral("type = 1"));
+    auto alternative = choiceType->component(QStringLiteral("i1"));
+    QCOMPARE(alternative->presentWhen(), QStringLiteral("type = 1"));
 }
 
 void AstXmlParserTests::test_booleanWithAcnParams()
@@ -1454,6 +1571,156 @@ void AstXmlParserTests::test_nullWithAcnParams()
     QCOMPARE(nullType->pattern(), QStringLiteral("1001"));
 }
 
+void AstXmlParserTests::test_sequnceWithAcnParams()
+{
+    parse(R"(<?xml version="1.0" encoding="utf-8"?>)"
+          R"(<AstRoot>)"
+          R"(  <Asn1File FileName="Test2File.asn">)"
+          R"(    <Modules>)"
+          R"(      <Module Name="MyModel" Line="13" CharPositionInLine="42">)"
+          R"(        <TypeAssignments>"
+          R"(          <TypeAssignment Name="MySeq" Line="3" CharPositionInLine="0">"
+          R"(            <Asn1Type id="MyModel.MySeq" Line="3" CharPositionInLine="10" ParameterizedTypeInstance="false">"
+          R"(              <AcnParameters>"
+          R"(                <AcnParameter Id="MyModel.MySeq.type" Name="type" Type="INTEGER" />"
+          R"(                <AcnParameter Id="MyModel.MySeq.other" Name="other" Type="INTEGER" />"
+          R"(              </AcnParameters>"
+          R"(              <SEQUENCE>"
+          R"(                <SEQUENCE_COMPONENT Name="chp1" Line="5" CharPositionInLine="4">"
+          R"(                  <Asn1Type id="MyModel.MySeq.chp1" Line="5" CharPositionInLine="9" ParameterizedTypeInstance="false">"
+          R"(                    <INTEGER>"
+          R"(                      <Constraints />"
+          R"(                      <WithComponentConstraints />"
+          R"(                    </INTEGER>"
+          R"(                  </Asn1Type>"
+          R"(                </SEQUENCE_COMPONENT>"
+          R"(                <SEQUENCE_COMPONENT Name="chp2" Line="6" CharPositionInLine="4">"
+          R"(                  <Asn1Type id="MyModel.MySeq.chp2" Line="6" CharPositionInLine="9" ParameterizedTypeInstance="false">"
+          R"(                    <INTEGER>"
+          R"(                      <Constraints />"
+          R"(                      <WithComponentConstraints />"
+          R"(                    </INTEGER>"
+          R"(                  </Asn1Type>"
+          R"(                </SEQUENCE_COMPONENT>"
+          R"(                <Constraints />"
+          R"(                <WithComponentConstraints />"
+          R"(              </SEQUENCE>"
+          R"(            </Asn1Type>"
+          R"(          </TypeAssignment>"
+          R"(          <TypeAssignment Name="ParamSeq" Line="9" CharPositionInLine="0">"
+          R"(            <Asn1Type id="MyModel.ParamSeq" Line="9" CharPositionInLine="13" ParameterizedTypeInstance="false">"
+          R"(              <SEQUENCE>"
+          R"(                <ACN_COMPONENT Id="MyModel.ParamSeq.firstNum" Name="firstNum" Type="INTEGER" size="8" encoding="BCD" />"
+          R"(                <ACN_COMPONENT Id="MyModel.ParamSeq.secondNum" Name="secondNum" Type="INTEGER" size="8" encoding="BCD" />"
+          R"(                <SEQUENCE_COMPONENT Name="internal" Line="11" CharPositionInLine="4">"
+          R"(                  <Asn1Type id="MyModel.ParamSeq.internal" Line="11" CharPositionInLine="13" ParameterizedTypeInstance="false">"
+          R"(                    <REFERENCE_TYPE Module="MyModel" TypeAssignment="MySeq">"
+          R"(                      <AcnArguments>"
+          R"(                        <argument>firstNum</argument>"
+          R"(                        <argument>secondNum</argument>"
+          R"(                      </AcnArguments>"
+          R"(                      <Asn1Type id="MyModel.ParamSeq.internal" Line="3" CharPositionInLine="10" ParameterizedTypeInstance="false" tasInfoModule="MyModel" tasInfoName="MySeq">"
+          R"(                        <AcnParameters>"
+          R"(                          <AcnParameter Id="MyModel.ParamSeq.internal.type" Name="type" Type="INTEGER" />"
+          R"(                          <AcnParameter Id="MyModel.ParamSeq.internal.other" Name="other" Type="INTEGER" />"
+          R"(                        </AcnParameters>"
+          R"(                        <SEQUENCE>"
+          R"(                          <SEQUENCE_COMPONENT Name="chp1" Line="5" CharPositionInLine="4">"
+          R"(                            <Asn1Type id="MyModel.ParamSeq.internal.chp1" Line="5" CharPositionInLine="9" ParameterizedTypeInstance="false">"
+          R"(                              <INTEGER>"
+          R"(                                <Constraints />"
+          R"(                                <WithComponentConstraints />"
+          R"(                              </INTEGER>"
+          R"(                            </Asn1Type>"
+          R"(                          </SEQUENCE_COMPONENT>"
+          R"(                          <SEQUENCE_COMPONENT Name="chp2" Line="6" CharPositionInLine="4">"
+          R"(                            <Asn1Type id="MyModel.ParamSeq.internal.chp2" Line="6" CharPositionInLine="9" ParameterizedTypeInstance="false">"
+          R"(                              <INTEGER>"
+          R"(                                <Constraints />"
+          R"(                                <WithComponentConstraints />"
+          R"(                              </INTEGER>"
+          R"(                            </Asn1Type>"
+          R"(                          </SEQUENCE_COMPONENT>"
+          R"(                          <Constraints />"
+          R"(                          <WithComponentConstraints />"
+          R"(                        </SEQUENCE>"
+          R"(                      </Asn1Type>"
+          R"(                    </REFERENCE_TYPE>"
+          R"(                  </Asn1Type>"
+          R"(                </SEQUENCE_COMPONENT>"
+          R"(                <Constraints />"
+          R"(                <WithComponentConstraints />"
+          R"(              </SEQUENCE>"
+          R"(            </Asn1Type>"
+          R"(          </TypeAssignment>"
+          R"(        </TypeAssignments>"
+          R"(      </Module>)"
+          R"(    </Modules>)"
+          R"(  </Asn1File>)"
+          R"(</AstRoot>)");
+
+    auto type = m_parsedData["Test2File.asn"]->definitions("MyModel")->type("MySeq");
+    auto seqType = dynamic_cast<const Data::Types::Sequence *>(type->type());
+
+    QCOMPARE(seqType->components().size(), static_cast<size_t>(2));
+    QVERIFY(seqType->component(QStringLiteral("chp1")) != nullptr);
+    QVERIFY(seqType->component(QStringLiteral("chp2")) != nullptr);
+
+    auto &seqTypeParams = seqType->acnParameters();
+    QCOMPARE(seqTypeParams.size(), static_cast<size_t>(2));
+
+    auto param = itemFromCollection(seqTypeParams, QStringLiteral("MyModel.MySeq.type"));
+    QVERIFY(param != nullptr);
+    QCOMPARE(param->id(), QStringLiteral("MyModel.MySeq.type"));
+    QCOMPARE(param->name(), QStringLiteral("type"));
+    QCOMPARE(param->type(), QStringLiteral("INTEGER"));
+
+    param = itemFromCollection(seqTypeParams, QStringLiteral("MyModel.MySeq.other"));
+    QVERIFY(param != nullptr);
+    QCOMPARE(param->id(), QStringLiteral("MyModel.MySeq.other"));
+    QCOMPARE(param->name(), QStringLiteral("other"));
+    QCOMPARE(param->type(), QStringLiteral("INTEGER"));
+
+    type = m_parsedData["Test2File.asn"]->definitions("MyModel")->type("ParamSeq");
+    seqType = dynamic_cast<const Data::Types::Sequence *>(type->type());
+
+    const auto &components = seqType->components();
+    QCOMPARE(components.size(), static_cast<size_t>(3));
+
+    auto comp = seqType->component(QStringLiteral("firstNum"));
+    QVERIFY(comp == components[0].get());
+
+    comp = seqType->component(QStringLiteral("secondNum"));
+    QVERIFY(comp == components[1].get());
+
+    comp = seqType->component(QStringLiteral("internal"));
+    QVERIFY(comp == components[2].get());
+
+    const auto userDefinedComponent = dynamic_cast<const Data::Types::UserdefinedType *>(
+        &comp->type());
+    QVERIFY(userDefinedComponent);
+
+    auto internalSeqType = dynamic_cast<const Data::Types::Sequence *>(
+        &userDefinedComponent->type());
+    auto &internalSeqTypeParam = internalSeqType->acnParameters();
+
+    QCOMPARE(internalSeqTypeParam.size(), static_cast<size_t>(2));
+
+    param = itemFromCollection(internalSeqTypeParam,
+                               QStringLiteral("MyModel.ParamSeq.internal.type"));
+    QVERIFY(param != nullptr);
+    QCOMPARE(param->id(), QStringLiteral("MyModel.ParamSeq.internal.type"));
+    QCOMPARE(param->name(), QStringLiteral("type"));
+    QCOMPARE(param->type(), QStringLiteral("INTEGER"));
+
+    param = itemFromCollection(internalSeqTypeParam,
+                               QStringLiteral("MyModel.ParamSeq.internal.other"));
+    QVERIFY(param != nullptr);
+    QCOMPARE(param->id(), QStringLiteral("MyModel.ParamSeq.internal.other"));
+    QCOMPARE(param->name(), QStringLiteral("other"));
+    QCOMPARE(param->type(), QStringLiteral("INTEGER"));
+}
+
 void AstXmlParserTests::test_sequenceComponents()
 {
     parse(R"(<?xml version="1.0" encoding="utf-8"?>)"
@@ -1464,9 +1731,12 @@ void AstXmlParserTests::test_sequenceComponents()
           R"(        <TypeAssignments>
           R"(          <TypeAssignment Name="MySeq" Line="3" CharPositionInLine="0">
           R"(            <Asn1Type id="MyModelWithSequence.MySeq" Line="3" CharPositionInLine="10" ParameterizedTypeInstance="false">
-          R"(              <SEQUENCE>
-          R"(                <SEQUENCE_COMPONENT Name="a1" Line="5" CharPositionInLine="4">
-          R"(                  <Asn1Type id="MyModelWithSequence.MySeq.a1" Line="5" CharPositionInLine="7" ParameterizedTypeInstance="false">
+          R"(              <AcnParameters>"
+          R"(                <AcnParameter Id="MyModel.MySeq.type" Name="type" Type="INTEGER" />"
+          R"(              </AcnParameters>"
+          R"(              <SEQUENCE>"
+          R"(                <SEQUENCE_COMPONENT Name="a1" Line="5" CharPositionInLine="4">"
+          R"(                  <Asn1Type id="MyModelWithSequence.MySeq.a1" Line="5" CharPositionInLine="7" ParameterizedTypeInstance="false">"
           R"(                    <INTEGER>"
           R"(                      <Constraints>"
           R"(                        <Range>"
@@ -1504,22 +1774,18 @@ void AstXmlParserTests::test_sequenceComponents()
     auto type = m_parsedData["Test2File.asn"]->definitions("Defs")->type("MySeq");
     const auto seqType = dynamic_cast<const Data::Types::Sequence *>(type->type());
 
-    const auto &components = seqType->components();
-    QCOMPARE(components.size(), static_cast<size_t>(2));
+    QCOMPARE(seqType->components().size(), static_cast<size_t>(2));
 
-    QCOMPARE(components.count("a1"), static_cast<size_t>(1));
-    const auto intComponent = dynamic_cast<const Data::Types::Integer *>(
-        &components.at(QStringLiteral("a1")).type());
-    QVERIFY(intComponent);
+    auto comp = seqType->component(QStringLiteral("a1"));
+    QVERIFY(comp != nullptr);
+    const auto &intComponent = dynamic_cast<const Data::Types::Integer &>(comp->type());
 
-    const auto ranges = intComponent->constraints().ranges();
+    const auto ranges = intComponent.constraints().ranges();
     QCOMPARE(ranges.size(), 1);
     QVERIFY(ranges.contains({1, 10}));
 
-    QCOMPARE(components.count("b1"), static_cast<size_t>(1));
-    const auto boolComponent = dynamic_cast<const Data::Types::Boolean *>(
-        &components.at(QStringLiteral("b1")).type());
-    QVERIFY(boolComponent);
+    comp = seqType->component(QStringLiteral("b1"));
+    QVERIFY(comp);
 }
 
 void AstXmlParserTests::test_sequenceComponentsWithAcnParams()
@@ -1556,11 +1822,157 @@ void AstXmlParserTests::test_sequenceComponentsWithAcnParams()
     auto type = m_parsedData["Test2File.asn"]->definitions("Defs")->type("MySeq");
     const auto seqType = dynamic_cast<const Data::Types::Sequence *>(type->type());
 
-    const auto &components = seqType->components();
-    QCOMPARE(components.size(), static_cast<size_t>(1));
+    QCOMPARE(seqType->components().size(), static_cast<size_t>(2));
 
-    const auto comp = components.at(QStringLiteral("i1"));
-    QCOMPARE(comp.presentWhen(), QStringLiteral("beta"));
+    const auto comp = seqType->component(QStringLiteral("i1"));
+    const auto acnComp = dynamic_cast<const Data::AsnSequenceComponent *>(comp);
+    QCOMPARE(acnComp->presentWhen(), QStringLiteral("beta"));
+}
+
+void AstXmlParserTests::test_sequenceAcnComponents()
+{
+    parse(R"(<?xml version="1.0" encoding="utf-8"?>)"
+          R"(<AstRoot>)"
+          R"(  <Asn1File FileName="Test2File.asn">)"
+          R"(    <Modules>)"
+          R"(      <Module Name="Defs" Line="13" CharPositionInLine="42">)"
+          R"(        <TypeAssignments>"
+          R"(          <TypeAssignment Name="MyEnum" Line="3" CharPositionInLine="0">"
+          R"(            <Asn1Type id="MyModel.MyEnum" Line="3" CharPositionInLine="11" ParameterizedTypeInstance="false">"
+          R"(              <Enumerated>"
+          R"(                <Items>"
+          R"(                  <Item Name="i1" Value="0" Line="3" CharPositionInLine="24" />"
+          R"(                  <Item Name="i2" Value="1" Line="3" CharPositionInLine="28" />"
+          R"(                </Items>"
+          R"(                <Constraints>"
+          R"(                  <OR>"
+          R"(                    <EnumValue>i1</EnumValue>"
+          R"(                    <EnumValue>i2</EnumValue>"
+          R"(                  </OR>"
+          R"(                </Constraints>"
+          R"(                <WithComponentConstraints />"
+          R"(              </Enumerated>"
+          R"(            </Asn1Type>"
+          R"(          </TypeAssignment>"
+          R"(          <TypeAssignment Name="MyChoice" Line="5" CharPositionInLine="0">"
+          R"(            <Asn1Type id="MyModel.MyChoice" Line="5" CharPositionInLine="13" ParameterizedTypeInstance="false">"
+          R"(              <CHOICE>"
+          R"(                <CHOICE_ALTERNATIVE Name="i1" Line="7" CharPositionInLine="4" PresentWhenName="i1" AdaName="i1" CName="i1">"
+          R"(                  <Asn1Type id="MyModel.MyChoice.i1" Line="7" CharPositionInLine="7" ParameterizedTypeInstance="false">"
+          R"(                    <INTEGER>"
+          R"(                      <Constraints />"
+          R"(                      <WithComponentConstraints />"
+          R"(                    </INTEGER>"
+          R"(                  </Asn1Type>"
+          R"(                </CHOICE_ALTERNATIVE>"
+          R"(                <CHOICE_ALTERNATIVE Name="i2" Line="8" CharPositionInLine="4" PresentWhenName="i2" AdaName="i2" CName="i2">"
+          R"(                  <Asn1Type id="MyModel.MyChoice.i2" Line="8" CharPositionInLine="7" ParameterizedTypeInstance="false">"
+          R"(                    <INTEGER>"
+          R"(                      <Constraints />"
+          R"(                      <WithComponentConstraints />"
+          R"(                    </INTEGER>"
+          R"(                  </Asn1Type>"
+          R"(                </CHOICE_ALTERNATIVE>"
+          R"(                <Constraints />"
+          R"(                <WithComponentConstraints />"
+          R"(              </CHOICE>"
+          R"(            </Asn1Type>"
+          R"(          </TypeAssignment>"
+          R"(          <TypeAssignment Name="MySeq" Line="11" CharPositionInLine="0">"
+          R"(            <Asn1Type id="MyModel.MySeq" Line="11" CharPositionInLine="10" ParameterizedTypeInstance="false">"
+          R"(              <SEQUENCE>"
+          R"(                <ACN_COMPONENT Id="MyModel.MySeq.beta" Name="beta" Type="BOOLEAN" true-value="0101" />"
+          R"(                <ACN_COMPONENT Id="MyModel.MySeq.firstDeter" Name="firstDeter" Type="Enumerated" size="12" encoding="BCD">"
+          R"(                  <Items>"
+          R"(                    <Item Name="i1" Value="0" />"
+          R"(                    <Item Name="i2" Value="1" />"
+          R"(                  </Items>"
+          R"(                  <Constraints>"
+          R"(                    <OR>"
+          R"(                      <EnumValue>i1</EnumValue>"
+          R"(                      <EnumValue>i2</EnumValue>"
+          R"(                    </OR>"
+          R"(                  </Constraints>"
+          R"(                  <WithComponentConstraints />"
+          R"(                </ACN_COMPONENT>"
+          R"(                <SEQUENCE_COMPONENT Name="ch1" Line="13" CharPositionInLine="4">"
+          R"(                  <Asn1Type id="MyModel.MySeq.ch1" Line="13" CharPositionInLine="8" ParameterizedTypeInstance="false">"
+          R"(                    <REFERENCE_TYPE Module="MyModel" TypeAssignment="MyChoice">"
+          R"(                      <Asn1Type id="MyModel.MySeq.ch1" Line="5" CharPositionInLine="13" ParameterizedTypeInstance="false" tasInfoModule="MyModel" tasInfoName="MyChoice">"
+          R"(                        <CHOICE determinant="firstDeter">"
+          R"(                          <CHOICE_ALTERNATIVE Name="i1" Line="7" CharPositionInLine="4" PresentWhenName="i1" AdaName="i1" CName="i1">"
+          R"(                            <Asn1Type id="MyModel.MySeq.ch1.i1" Line="7" CharPositionInLine="7" ParameterizedTypeInstance="false">"
+          R"(                              <INTEGER>"
+          R"(                                <Constraints />"
+          R"(                                <WithComponentConstraints />"
+          R"(                              </INTEGER>"
+          R"(                            </Asn1Type>"
+          R"(                          </CHOICE_ALTERNATIVE>"
+          R"(                          <CHOICE_ALTERNATIVE Name="i2" Line="8" CharPositionInLine="4" PresentWhenName="i2" AdaName="i2" CName="i2">"
+          R"(                            <Asn1Type id="MyModel.MySeq.ch1.i2" Line="8" CharPositionInLine="7" ParameterizedTypeInstance="false">"
+          R"(                              <INTEGER>"
+          R"(                                <Constraints />"
+          R"(                                <WithComponentConstraints />"
+          R"(                              </INTEGER>"
+          R"(                            </Asn1Type>"
+          R"(                          </CHOICE_ALTERNATIVE>"
+          R"(                          <Constraints />"
+          R"(                          <WithComponentConstraints />"
+          R"(                        </CHOICE>"
+          R"(                      </Asn1Type>"
+          R"(                    </REFERENCE_TYPE>"
+          R"(                  </Asn1Type>"
+          R"(                </SEQUENCE_COMPONENT>"
+          R"(                <ACN_COMPONENT Id="MyModel.MySeq.int" Name="int" Type="INTEGER" size="16" encoding="BCD" align-to-next="dword" />"
+          R"(                <Constraints />"
+          R"(                <WithComponentConstraints />"
+          R"(              </SEQUENCE>"
+          R"(            </Asn1Type>"
+          R"(          </TypeAssignment>"
+          R"(        </TypeAssignments>"
+          R"(      </Module>)"
+          R"(    </Modules>)"
+          R"(  </Asn1File>)"
+          R"(</AstRoot>)");
+
+    auto type = m_parsedData["Test2File.asn"]->definitions("Defs")->type("MySeq");
+    const auto seqType = dynamic_cast<const Data::Types::Sequence *>(type->type());
+
+    const auto &components = seqType->components();
+    QCOMPARE(components.size(), static_cast<size_t>(4));
+
+    auto comp = seqType->component(QStringLiteral("beta"));
+    QVERIFY(comp == components[0].get());
+    auto acnComp = dynamic_cast<const Data::AcnSequenceComponent *>(comp);
+    QCOMPARE(acnComp->id(), QStringLiteral("MyModel.MySeq.beta"));
+    QCOMPARE(comp->type().name(), QStringLiteral("BOOLEAN"));
+    auto &boolType = dynamic_cast<const Data::Types::Boolean &>(comp->type());
+    QCOMPARE(boolType.trueValue(), QStringLiteral("0101"));
+
+    comp = seqType->component(QStringLiteral("firstDeter"));
+    QVERIFY(comp == components[1].get());
+    acnComp = dynamic_cast<const Data::AcnSequenceComponent *>(comp);
+    QCOMPARE(acnComp->id(), QStringLiteral("MyModel.MySeq.firstDeter"));
+    const auto &enumType = dynamic_cast<const Data::Types::Enumerated &>(comp->type());
+    QCOMPARE(enumType.size(), 12);
+    QCOMPARE(enumType.encoding(), Data::Types::IntegerEncoding::BCD);
+    const auto enumItems = enumType.items();
+    QCOMPARE(enumItems.size(), 2);
+    QVERIFY(enumItems.contains("i1"));
+    auto item = enumItems.value("i1");
+    QCOMPARE(item.value(), 0);
+    QVERIFY(enumItems.contains("i2"));
+    item = enumItems.value("i2");
+    QCOMPARE(item.value(), 1);
+
+    comp = seqType->component(QStringLiteral("int"));
+    QVERIFY(comp == components[3].get());
+    acnComp = dynamic_cast<const Data::AcnSequenceComponent *>(comp);
+    QCOMPARE(acnComp->id(), QStringLiteral("MyModel.MySeq.int"));
+    const auto &intType = dynamic_cast<const Data::Types::Integer &>(comp->type());
+    QCOMPARE(intType.size(), 16);
+    QCOMPARE(intType.encoding(), Data::Types::IntegerEncoding::BCD);
+    QCOMPARE(intType.alignToNext(), Data::Types::AlignToNext::dword);
 }
 
 void AstXmlParserTests::parsingFails(const QString &xmlData)

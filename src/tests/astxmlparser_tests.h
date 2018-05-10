@@ -79,22 +79,28 @@ private slots:
     void test_sequenceOfAssignmentWithRangeConstraintInsideSizeConstraint();
     void test_sequenceOfAssignmentWithAcnParams();
 
+    void test_choiceWithAcnParams();
     void test_choiceAlternatives();
     void test_choiceAlternativesWithAcnParams();
 
+    void test_sequnceWithAcnParams();
     void test_sequenceComponents();
     void test_sequenceComponentsWithAcnParams();
+    void test_sequenceAcnComponents();
 
     void test_booleanWithAcnParams();
     void test_nullWithAcnParams();
 
 private:
+    template<typename Collection>
+    auto itemFromCollection(const Collection &col, const QString &id);
+
     void setXmlData(const QString &str);
     void parsingFails(const QString &xmlData);
     void parse(const QString &xmlData);
 
     QXmlStreamReader m_xmlReader;
-    std::map<QString, std::unique_ptr<MalTester::Data::File>> m_parsedData;
+    std::map<QString, std::unique_ptr<Data::File>> m_parsedData;
 };
 
 } // namespace Tests

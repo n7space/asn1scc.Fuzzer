@@ -23,47 +23,34 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-
 #pragma once
 
+#include <memory>
 #include <vector>
 
 #include <QString>
 
-#include <data/acnargument.h>
-
-#include "type.h"
-
 namespace MalTester {
 namespace Data {
-namespace Types {
 
-class UserdefinedType : public Type
+class AcnArgument
 {
 public:
-    UserdefinedType(const QString &name, const QString &module);
-    UserdefinedType(const UserdefinedType &other);
+    AcnArgument();
+    AcnArgument(const QString &argument)
+        : m_argument(argument)
+    {}
 
-    QString name() const override;
-    void accept(TypeVisitor &visitor) override;
-    std::unique_ptr<Type> clone() const override;
+    AcnArgument(const AcnArgument &other) = default;
 
-    const QString &module() const { return m_module; }
-
-    const Type &type() const { return *m_type; }
-    void setType(std::unique_ptr<Type> type);
-
-    const AcnArgumentPtrs &acnArguments() const { return m_arguments; }
-    void addArgument(AcnArgumentPtr argument);
+    const QString &id() const { return m_argument; }
 
 private:
-    QString m_name;
-    QString m_module;
-
-    std::unique_ptr<Type> m_type;
-    AcnArgumentPtrs m_arguments;
+    QString m_argument;
 };
 
-} // namespace Types
+using AcnArgumentPtr = std::unique_ptr<AcnArgument>;
+using AcnArgumentPtrs = std::vector<AcnArgumentPtr>;
+
 } // namespace Data
 } // namespace MalTester

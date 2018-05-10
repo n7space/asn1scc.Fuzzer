@@ -28,8 +28,9 @@
 #include <QtTest>
 
 #include <data/acnargument.h>
-#include <data/acncomponent.h>
 #include <data/acnparameter.h>
+#include <data/acnsequencecomponent.h>
+#include <data/asnsequencecomponent.h>
 
 #include <data/types/boolean.h>
 #include <data/types/choice.h>
@@ -1400,8 +1401,8 @@ void AstXmlParserTests::test_choiceWithAcnParams()
     const auto &choiceAlternatives = choiceType->components();
 
     QCOMPARE(choiceAlternatives.size(), static_cast<size_t>(2));
-    QCOMPARE(choiceAlternatives.count("chp1"), static_cast<size_t>(1));
-    QCOMPARE(choiceAlternatives.count("chp2"), static_cast<size_t>(1));
+    QVERIFY(choiceType->component(QStringLiteral("chp1")) != nullptr);
+    QVERIFY(choiceType->component(QStringLiteral("chp2")) != nullptr);
 
     auto &choiceParams = choiceType->acnParameters();
     QCOMPARE(choiceParams.size(), static_cast<size_t>(1));
@@ -1445,24 +1446,23 @@ void AstXmlParserTests::test_choiceAlternatives()
 
     const auto type = m_parsedData["Test2File.asn"]->definitions("Defs")->type("MyChoice");
     const auto choiceType = dynamic_cast<const Data::Types::Choice *>(type->type());
-
     QVERIFY(choiceType != nullptr);
-    auto alternatives = choiceType->components();
 
-    QCOMPARE(alternatives.size(), static_cast<unsigned int>(1));
-    auto alternative = alternatives.find(QStringLiteral("i1"));
+    QCOMPARE(choiceType->components().size(), static_cast<unsigned int>(1));
 
-    QVERIFY(alternative != alternatives.end());
-    QCOMPARE(alternative->second.presentWhenName(), QStringLiteral("i1"));
-    QCOMPARE(alternative->second.adaName(), QStringLiteral("i1"));
-    QCOMPARE(alternative->second.cName(), QStringLiteral("i1"));
+    auto alternative = choiceType->component(QStringLiteral("i1"));
+    QVERIFY(alternative != nullptr);
 
-    const auto &location = alternative->second.location();
+    QCOMPARE(alternative->presentWhenName(), QStringLiteral("i1"));
+    QCOMPARE(alternative->adaName(), QStringLiteral("i1"));
+    QCOMPARE(alternative->cName(), QStringLiteral("i1"));
+
+    const auto &location = alternative->location();
     QCOMPARE(location.path(), QStringLiteral("Test2File.asn"));
     QCOMPARE(location.line(), 7);
     QCOMPARE(location.column(), 4);
 
-    QCOMPARE(alternative->second.type().name(), QStringLiteral("INTEGER"));
+    QCOMPARE(alternative->type().name(), QStringLiteral("INTEGER"));
 }
 
 void AstXmlParserTests::test_choiceAlternativesWithAcnParams()
@@ -1499,10 +1499,10 @@ void AstXmlParserTests::test_choiceAlternativesWithAcnParams()
     const auto choiceType = dynamic_cast<const Data::Types::Choice *>(type->type());
 
     QCOMPARE(choiceType->determinant(), QStringLiteral("deter"));
+    QCOMPARE(choiceType->components().size(), static_cast<unsigned int>(1));
 
-    auto alternatives = choiceType->components();
-    auto alternative = alternatives.find(QStringLiteral("i1"));
-    QCOMPARE(alternative->second.presentWhen(), QStringLiteral("type = 1"));
+    auto alternative = choiceType->component(QStringLiteral("i1"));
+    QCOMPARE(alternative->presentWhen(), QStringLiteral("type = 1"));
 }
 
 void AstXmlParserTests::test_booleanWithAcnParams()
@@ -1661,10 +1661,10 @@ void AstXmlParserTests::test_sequnceWithAcnParams()
 
     auto type = m_parsedData["Test2File.asn"]->definitions("MyModel")->type("MySeq");
     auto seqType = dynamic_cast<const Data::Types::Sequence *>(type->type());
-    const auto &seqComponents = seqType->components();
-    QCOMPARE(seqComponents.size(), static_cast<size_t>(2));
-    QCOMPARE(seqComponents.count("chp1"), static_cast<size_t>(1));
-    QCOMPARE(seqComponents.count("chp2"), static_cast<size_t>(1));
+
+    QCOMPARE(seqType->components().size(), static_cast<size_t>(2));
+    QVERIFY(seqType->component(QStringLiteral("chp1")) != nullptr);
+    QVERIFY(seqType->component(QStringLiteral("chp2")) != nullptr);
 
     auto &seqTypeParams = seqType->acnParameters();
     QCOMPARE(seqTypeParams.size(), static_cast<size_t>(2));
@@ -1683,13 +1683,21 @@ void AstXmlParserTests::test_sequnceWithAcnParams()
 
     type = m_parsedData["Test2File.asn"]->definitions("MyModel")->type("ParamSeq");
     seqType = dynamic_cast<const Data::Types::Sequence *>(type->type());
+
     const auto &components = seqType->components();
-    QCOMPARE(components.size(), static_cast<size_t>(1));
-    QCOMPARE(components.count("internal"), static_cast<size_t>(1));
+    QCOMPARE(components.size(), static_cast<size_t>(3));
+
+    auto comp = seqType->component(QStringLiteral("firstNum"));
+    QVERIFY(comp == components[0].get());
+
+    comp = seqType->component(QStringLiteral("secondNum"));
+    QVERIFY(comp == components[1].get());
+
+    comp = seqType->component(QStringLiteral("internal"));
+    QVERIFY(comp == components[2].get());
 
     const auto userDefinedComponent = dynamic_cast<const Data::Types::UserdefinedType *>(
-        &components.at(QStringLiteral("internal")).type());
-
+        &comp->type());
     QVERIFY(userDefinedComponent);
 
     auto internalSeqType = dynamic_cast<const Data::Types::Sequence *>(
@@ -1711,15 +1719,6 @@ void AstXmlParserTests::test_sequnceWithAcnParams()
     QCOMPARE(param->id(), QStringLiteral("MyModel.ParamSeq.internal.other"));
     QCOMPARE(param->name(), QStringLiteral("other"));
     QCOMPARE(param->type(), QStringLiteral("INTEGER"));
-
-    const auto &acnArguments = userDefinedComponent->acnArguments();
-    QCOMPARE(acnArguments.size(), static_cast<size_t>(2));
-
-    auto argument = itemFromCollection(acnArguments, QStringLiteral("firstNum"));
-    QVERIFY(argument != nullptr);
-
-    argument = itemFromCollection(acnArguments, QStringLiteral("secondNum"));
-    QVERIFY(argument != nullptr);
 }
 
 void AstXmlParserTests::test_sequenceComponents()
@@ -1775,22 +1774,18 @@ void AstXmlParserTests::test_sequenceComponents()
     auto type = m_parsedData["Test2File.asn"]->definitions("Defs")->type("MySeq");
     const auto seqType = dynamic_cast<const Data::Types::Sequence *>(type->type());
 
-    const auto &components = seqType->components();
-    QCOMPARE(components.size(), static_cast<size_t>(2));
+    QCOMPARE(seqType->components().size(), static_cast<size_t>(2));
 
-    QCOMPARE(components.count("a1"), static_cast<size_t>(1));
-    const auto intComponent = dynamic_cast<const Data::Types::Integer *>(
-        &components.at(QStringLiteral("a1")).type());
-    QVERIFY(intComponent);
+    auto comp = seqType->component(QStringLiteral("a1"));
+    QVERIFY(comp != nullptr);
+    const auto &intComponent = dynamic_cast<const Data::Types::Integer &>(comp->type());
 
-    const auto ranges = intComponent->constraints().ranges();
+    const auto ranges = intComponent.constraints().ranges();
     QCOMPARE(ranges.size(), 1);
     QVERIFY(ranges.contains({1, 10}));
 
-    QCOMPARE(components.count("b1"), static_cast<size_t>(1));
-    const auto boolComponent = dynamic_cast<const Data::Types::Boolean *>(
-        &components.at(QStringLiteral("b1")).type());
-    QVERIFY(boolComponent);
+    comp = seqType->component(QStringLiteral("b1"));
+    QVERIFY(comp);
 }
 
 void AstXmlParserTests::test_sequenceComponentsWithAcnParams()
@@ -1827,11 +1822,11 @@ void AstXmlParserTests::test_sequenceComponentsWithAcnParams()
     auto type = m_parsedData["Test2File.asn"]->definitions("Defs")->type("MySeq");
     const auto seqType = dynamic_cast<const Data::Types::Sequence *>(type->type());
 
-    const auto &components = seqType->components();
-    QCOMPARE(components.size(), static_cast<size_t>(1));
+    QCOMPARE(seqType->components().size(), static_cast<size_t>(2));
 
-    const auto comp = components.at(QStringLiteral("i1"));
-    QCOMPARE(comp.presentWhen(), QStringLiteral("beta"));
+    const auto comp = seqType->component(QStringLiteral("i1"));
+    const auto acnComp = dynamic_cast<const Data::AsnSequenceComponent *>(comp);
+    QCOMPARE(acnComp->presentWhen(), QStringLiteral("beta"));
 }
 
 void AstXmlParserTests::test_sequenceAcnComponents()
@@ -1944,40 +1939,40 @@ void AstXmlParserTests::test_sequenceAcnComponents()
     const auto seqType = dynamic_cast<const Data::Types::Sequence *>(type->type());
 
     const auto &components = seqType->components();
-    QCOMPARE(components.size(), static_cast<size_t>(1));
+    QCOMPARE(components.size(), static_cast<size_t>(4));
 
-    const auto &acnComponents = seqType->acnComponents();
-    QCOMPARE(acnComponents.size(), static_cast<size_t>(3));
+    auto comp = seqType->component(QStringLiteral("beta"));
+    QVERIFY(comp == components[0].get());
+    auto acnComp = dynamic_cast<const Data::AcnSequenceComponent *>(comp);
+    QCOMPARE(acnComp->id(), QStringLiteral("MyModel.MySeq.beta"));
+    QCOMPARE(comp->type().name(), QStringLiteral("BOOLEAN"));
+    auto &boolType = dynamic_cast<const Data::Types::Boolean &>(comp->type());
+    QCOMPARE(boolType.trueValue(), QStringLiteral("0101"));
 
-    const auto enumComponent = itemFromCollection(acnComponents,
-                                                  QStringLiteral("MyModel.MySeq.firstDeter"));
-    QVERIFY(enumComponent != nullptr);
-    const auto enumType = dynamic_cast<const Data::Types::Enumerated *>(&enumComponent->type());
-    QCOMPARE(enumType->size(), 12);
-    QCOMPARE(enumType->encoding(), Data::Types::IntegerEncoding::BCD);
-
-    const auto enumItems = enumType->items();
+    comp = seqType->component(QStringLiteral("firstDeter"));
+    QVERIFY(comp == components[1].get());
+    acnComp = dynamic_cast<const Data::AcnSequenceComponent *>(comp);
+    QCOMPARE(acnComp->id(), QStringLiteral("MyModel.MySeq.firstDeter"));
+    const auto &enumType = dynamic_cast<const Data::Types::Enumerated &>(comp->type());
+    QCOMPARE(enumType.size(), 12);
+    QCOMPARE(enumType.encoding(), Data::Types::IntegerEncoding::BCD);
+    const auto enumItems = enumType.items();
     QCOMPARE(enumItems.size(), 2);
     QVERIFY(enumItems.contains("i1"));
     auto item = enumItems.value("i1");
     QCOMPARE(item.value(), 0);
-
     QVERIFY(enumItems.contains("i2"));
     item = enumItems.value("i2");
     QCOMPARE(item.value(), 1);
 
-    const auto boolComponent = itemFromCollection(acnComponents,
-                                                  QStringLiteral("MyModel.MySeq.beta"));
-    QVERIFY(boolComponent != nullptr);
-    const auto boolType = dynamic_cast<const Data::Types::Boolean *>(&boolComponent->type());
-    QCOMPARE(boolType->trueValue(), QStringLiteral("0101"));
-
-    const auto intComponent = itemFromCollection(acnComponents, QStringLiteral("MyModel.MySeq.int"));
-    QVERIFY(intComponent != nullptr);
-    const auto intType = dynamic_cast<const Data::Types::Integer *>(&intComponent->type());
-    QCOMPARE(intType->size(), 16);
-    QCOMPARE(intType->encoding(), Data::Types::IntegerEncoding::BCD);
-    QCOMPARE(intType->alignToNext(), Data::Types::AlignToNext::dword);
+    comp = seqType->component(QStringLiteral("int"));
+    QVERIFY(comp == components[3].get());
+    acnComp = dynamic_cast<const Data::AcnSequenceComponent *>(comp);
+    QCOMPARE(acnComp->id(), QStringLiteral("MyModel.MySeq.int"));
+    const auto &intType = dynamic_cast<const Data::Types::Integer &>(comp->type());
+    QCOMPARE(intType.size(), 16);
+    QCOMPARE(intType.encoding(), Data::Types::IntegerEncoding::BCD);
+    QCOMPARE(intType.alignToNext(), Data::Types::AlignToNext::dword);
 }
 
 void AstXmlParserTests::parsingFails(const QString &xmlData)

@@ -23,19 +23,38 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-#include "sequence.h"
+#pragma once
 
-#include "typevisitor.h"
+#include <data/sequencecomponent.h>
 
-using namespace MalTester::Data;
-using namespace MalTester::Data::Types;
+namespace MalTester {
+namespace Data {
 
-void Sequence::accept(TypeVisitor &visitor)
+class AsnSequenceComponent : public SequenceComponent
 {
-    visitor.visit(*this);
-}
+public:
+    AsnSequenceComponent() = default;
+    ~AsnSequenceComponent() override = default;
 
-std::unique_ptr<Type> Sequence::clone() const
-{
-    return std::make_unique<Sequence>(*this);
-}
+    AsnSequenceComponent(const QString &name, const QString &presentWhen, const SourceLocation &location, std::unique_ptr<Types::Type> type)
+        : SequenceComponent(name, std::move(type))
+        , m_presentWhen(presentWhen)
+        , m_location(location)
+    {}
+
+    AsnSequenceComponent(const AsnSequenceComponent &other)
+        : SequenceComponent(other)
+        , m_presentWhen(other.m_presentWhen)
+        , m_location(other.m_location)
+    {}
+
+    const SourceLocation &location() const { return m_location; }
+    const QString &presentWhen() const { return m_presentWhen; }
+
+private:
+    QString m_presentWhen;
+    SourceLocation m_location;
+};
+
+} // namespace Data
+} // namespace MalTester

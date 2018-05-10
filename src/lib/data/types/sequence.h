@@ -27,54 +27,24 @@
 
 #include <QString>
 
-#include <data/acncomponent.h>
-#include <data/sourcelocation.h>
+#include <data/sequencecomponent.h>
 
-#include <data/types/acnparameterizablecollection.h>
+#include <data/types/acnparameterizablecomposite.h>
 #include <data/types/type.h>
 
 namespace MalTester {
 namespace Data {
 namespace Types {
 
-class SequenceComponent
-{
-public:
-    SequenceComponent() = default;
-    SequenceComponent(const QString &name,
-                      const QString &presentWhen,
-                      const SourceLocation &location,
-                      std::unique_ptr<Type> type);
-
-    SequenceComponent(const SequenceComponent &other);
-
-    const QString &name() const { return m_name; }
-    const SourceLocation &location() const { return m_location; }
-    const Type &type() const { return *m_type; }
-    const QString &presentWhen() const { return m_presentWhen; }
-
-private:
-    QString m_name;
-    QString m_presentWhen;
-    SourceLocation m_location;
-    std::unique_ptr<Type> m_type;
-};
-
-class Sequence : public Type, public AcnParametrizableCollection<SequenceComponent>
+class Sequence : public Type, public AcnParameterizableCollection<SequenceComponent>
 {
 public:
     Sequence() = default;
-    Sequence(const Sequence &other);
+    Sequence(const Sequence &other) = default;
 
     QString name() const override { return QLatin1String("SEQUENCE"); }
     void accept(TypeVisitor &visitor) override;
     std::unique_ptr<Type> clone() const override;
-
-    const AcnComponentPtrs &acnComponents() const { return m_acnComponents; }
-    void addAcnComponent(AcnComponentPtr component);
-
-private:
-    AcnComponentPtrs m_acnComponents;
 };
 
 } // namespace Types

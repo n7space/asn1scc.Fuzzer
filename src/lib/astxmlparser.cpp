@@ -26,9 +26,10 @@
 
 #include "astxmlparser.h"
 
+#include <data/asnsequencecomponent.h>
 #include <data/sourcelocation.h>
 
-#include <data/types/acnparameterizablecollection.h>
+#include <data/types/acnparameterizablecomposite.h>
 #include <data/types/boolean.h>
 #include <data/types/choice.h>
 #include <data/types/enumerated.h>
@@ -293,14 +294,13 @@ public:
                                       readIntegerAttribute(QStringLiteral("Line")),
                                       readIntegerAttribute(QStringLiteral("CharPositionInLine")));
 
-        type.addComponent(name,
-                          {name,
-                           presentWhenName,
-                           adaNameAttribute,
-                           cNameAttribute,
-                           presentWhen,
-                           location,
-                           std::move(m_childType)});
+        type.addComponent(std::make_unique<Data::Types::ChoiceAlternative>(name,
+                                                                           presentWhenName,
+                                                                           adaNameAttribute,
+                                                                           cNameAttribute,
+                                                                           presentWhen,
+                                                                           location,
+                                                                           std::move(m_childType)));
     }
 
     void visit(Data::Types::Sequence &type) override
@@ -311,7 +311,10 @@ public:
                                       readIntegerAttribute(QStringLiteral("Line")),
                                       readIntegerAttribute(QStringLiteral("CharPositionInLine")));
 
-        type.addComponent(name, {name, presentWhen, location, std::move(m_childType)});
+        type.addComponent(std::make_unique<Data::AsnSequenceComponent>(name,
+                                                                       presentWhen,
+                                                                       location,
+                                                                       std::move(m_childType)));
     }
 
     void visit(Data::Types::SequenceOf &type) override
@@ -346,12 +349,12 @@ public:
         : m_acnParameters(std::move(acnParameters))
     {}
 
-    AcnDefinedItemsAddingVisitor(Data::AcnComponentPtrs acnComponents)
-        : m_acnComponents(std::move(acnComponents))
-    {}
-
     AcnDefinedItemsAddingVisitor(Data::AcnArgumentPtrs acnArguments)
         : m_acnArguments(std::move(acnArguments))
+    {}
+
+    AcnDefinedItemsAddingVisitor(Data::AcnSequenceComponentPtr acnComponent)
+        : m_acnComponent(std::move(acnComponent))
     {}
 
     ~AcnDefinedItemsAddingVisitor() override {}
@@ -374,8 +377,8 @@ public:
         for (auto &param : m_acnParameters)
             type.addParameter(std::move(param));
 
-        for (auto &component : m_acnComponents)
-            type.addAcnComponent(std::move(component));
+        if (m_acnComponent)
+            type.addComponent(std::move(m_acnComponent));
     }
 
     void visit(Data::Types::SequenceOf &type) override { Q_UNUSED(type); }
@@ -390,8 +393,8 @@ public:
 
 private:
     Data::AcnParameterPtrs m_acnParameters;
-    Data::AcnComponentPtrs m_acnComponents;
     Data::AcnArgumentPtrs m_acnArguments;
+    Data::AcnSequenceComponentPtr m_acnComponent;
 };
 } // namespace
 
@@ -780,18 +783,14 @@ void AstXmlParser::readTypeContents(const QString &name, Data::Types::Type &type
 
 void AstXmlParser::readSequence(Data::Types::Type &type)
 {
-    Data::AcnComponentPtrs components;
     while (m_xmlReader.readNextStartElement()) {
         if (m_xmlReader.name() == QStringLiteral("SEQUENCE_COMPONENT"))
             readSequenceComponent(type);
         else if (m_xmlReader.name() == QStringLiteral("ACN_COMPONENT"))
-            components.push_back(std::move(readAcnComponent()));
+            readAcnComponent(type);
         else
             m_xmlReader.skipCurrentElement();
     }
-
-    AcnDefinedItemsAddingVisitor visitor(std::move(components));
-    type.accept(visitor);
 }
 
 void AstXmlParser::readSequenceComponent(Data::Types::Type &type)
@@ -804,15 +803,16 @@ void AstXmlParser::readSequenceComponent(Data::Types::Type &type)
     m_xmlReader.skipCurrentElement();
 }
 
-Data::AcnComponentPtr AstXmlParser::readAcnComponent()
+void AstXmlParser::readAcnComponent(Data::Types::Type &type)
 {
     auto alignToNext = readIsAlignedToNext();
     auto name = readNameAttribute();
     auto id = readIdAttribute(QStringLiteral("Id"));
+    auto component = readTypeDetails(readTypeAttribute(), {}, false, alignToNext);
 
-    auto type = readTypeDetails(readTypeAttribute(), {}, false, alignToNext);
-
-    return std::make_unique<Data::AcnComponent>(id, name, std::move(type));
+    AcnDefinedItemsAddingVisitor visitor(
+        std::make_unique<Data::AcnSequenceComponent>(id, name, std::move(component)));
+    type.accept(visitor);
 }
 
 void AstXmlParser::readSequenceOf(Data::Types::Type &type)

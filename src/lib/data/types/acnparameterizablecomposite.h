@@ -25,7 +25,8 @@
 ****************************************************************************/
 #pragma once
 
-#include <map>
+#include <memory>
+#include <vector>
 
 #include <QString>
 
@@ -36,16 +37,17 @@ namespace Data {
 namespace Types {
 
 template<typename T>
-class AcnParametrizableCollection
+class AcnParameterizableCollection
 {
 public:
-    AcnParametrizableCollection() = default;
-    AcnParametrizableCollection(const AcnParametrizableCollection<T> &other);
+    AcnParameterizableCollection() = default;
+    AcnParameterizableCollection(const AcnParameterizableCollection<T> &other);
 
-    using Components = std::map<QString, T>;
+    using Components = std::vector<std::unique_ptr<T>>;
 
     const Components &components() const { return m_components; }
-    void addComponent(const QString &key, const T &component);
+    const T *component(const QString &name) const;
+    void addComponent(std::unique_ptr<T> component);
 
     const AcnParameterPtrs &acnParameters() const { return m_parameters; }
     void addParameter(AcnParameterPtr parameter);
@@ -56,21 +58,31 @@ protected:
 };
 
 template<typename T>
-inline AcnParametrizableCollection<T>::AcnParametrizableCollection(
-    const AcnParametrizableCollection<T> &other)
+inline const T *AcnParameterizableCollection<T>::component(const QString &name) const
+{
+    auto item = find_if(m_components.begin(), m_components.end(), [name](const auto &item) {
+        return item->name() == name;
+    });
+
+    return item == m_components.end() ? nullptr : (*item).get();
+}
+
+template<typename T>
+inline AcnParameterizableCollection<T>::AcnParameterizableCollection(
+    const AcnParameterizableCollection<T> &other)
 {
     for (const auto &parameter : other.m_parameters)
         addParameter(std::make_unique<AcnParameter>(*parameter));
 }
 
 template<typename T>
-inline void AcnParametrizableCollection<T>::addComponent(const QString &key, const T &component)
+inline void AcnParameterizableCollection<T>::addComponent(std::unique_ptr<T> component)
 {
-    m_components.insert(std::pair<QString, T>(key, component));
+    m_components.push_back(std::move(component));
 }
 
 template<typename T>
-inline void AcnParametrizableCollection<T>::addParameter(AcnParameterPtr parameter)
+inline void AcnParameterizableCollection<T>::addParameter(AcnParameterPtr parameter)
 {
     m_parameters.push_back(std::move(parameter));
 }

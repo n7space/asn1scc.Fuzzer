@@ -33,9 +33,11 @@
 #include <data/types/boolean.h>
 #include <data/types/choice.h>
 #include <data/types/enumerated.h>
+#include <data/types/ia5string.h>
 #include <data/types/integer.h>
 #include <data/types/integeracnparams.h>
 #include <data/types/null.h>
+#include <data/types/numericstring.h>
 #include <data/types/octetstring.h>
 #include <data/types/real.h>
 #include <data/types/sequence.h>
@@ -175,27 +177,26 @@ public:
 
     void visit(Data::Types::OctetString &type) override
     {
-        if (m_begin.type != m_end.type) {
-            m_xmlReader.raiseError("Range types mismatch: " + m_begin.type + " " + m_end.type);
-            return;
-        }
-
-        if (m_begin.type == QStringLiteral("IntegerValue"))
-            addRange(type.integerConstraints(), "Incorrect range for INTEGER");
-        else if (m_begin.type == QStringLiteral("OctetStringValue"))
-            type.stringConstraints().addRange(m_begin.value, m_end.value);
+        addRangeToStringType(QStringLiteral("IntegerValue"),
+                             QStringLiteral("OctetStringValue"),
+                             type.integerConstraints(),
+                             type.stringConstraints());
     }
 
     void visit(Data::Types::IA5String &type) override
     {
-        Q_UNUSED(type);
-        // TODO?
+        addRangeToStringType(QStringLiteral("IntegerValue"),
+                             QStringLiteral("StringValue"),
+                             type.integerConstraints(),
+                             type.stringConstraints());
     }
 
     void visit(Data::Types::NumericString &type) override
     {
-        Q_UNUSED(type);
-        // TODO?
+        addRangeToStringType(QStringLiteral("IntegerValue"),
+                             QStringLiteral("StringValue"),
+                             type.integerConstraints(),
+                             type.stringConstraints());
     }
 
     void visit(Data::Types::Enumerated &type) override
@@ -253,6 +254,22 @@ private:
         constraints.addRange(m_begin.value.toInt(&beginOk), m_end.value.toInt(&endOk));
         if (!beginOk || !endOk)
             m_xmlReader.raiseError(message + ": " + m_begin.value + " " + m_end.value);
+    }
+
+    void addRangeToStringType(const QString &intConstraintName,
+                              const QString &stringConstraintName,
+                              Data::Types::IntegerConstraints &intConstraints,
+                              Data::Types::StringConstraints &stringConstraints)
+    {
+        if (m_begin.type != m_end.type) {
+            m_xmlReader.raiseError("Range types mismatch: " + m_begin.type + " " + m_end.type);
+            return;
+        }
+
+        if (m_begin.type == intConstraintName)
+            addRange(intConstraints, "Incorrect range for String type");
+        else if (m_begin.type == stringConstraintName)
+            stringConstraints.addRange(m_begin.value, m_end.value);
     }
 
     QXmlStreamReader &m_xmlReader;
@@ -890,14 +907,16 @@ void AstXmlParser::readOctetString(Data::Types::Type &type)
 
 void AstXmlParser::readIA5String(Data::Types::Type &type)
 {
-    Q_UNUSED(type);
-    // TODO
+    readConstraints(type,
+                    ConstraintTypes()
+                        << QStringLiteral("IntegerValue") << QStringLiteral("StringValue"));
 }
 
 void AstXmlParser::readNumericString(Data::Types::Type &type)
 {
-    Q_UNUSED(type);
-    // TODO
+    readConstraints(type,
+                    ConstraintTypes()
+                        << QStringLiteral("IntegerValue") << QStringLiteral("StringValue"));
 }
 
 void AstXmlParser::readEnumeratedItem(Data::Types::Type &type)
@@ -938,7 +957,8 @@ void AstXmlParser::readRanges(Data::Types::Type &type, const ConstraintTypes &va
 {
     while (m_xmlReader.readNextStartElement()) {
         const auto &name = m_xmlReader.name().toString();
-        if (name == QStringLiteral("OR") || name == QStringLiteral("SIZE")) {
+        if (name == QStringLiteral("OR") || name == QStringLiteral("AND")
+            || name == QStringLiteral("ALPHA") || name == QStringLiteral("SIZE")) {
             readRanges(type, valName);
         } else if (name == QStringLiteral("Range")) {
             readRange(type, valName);

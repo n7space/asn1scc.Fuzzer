@@ -95,6 +95,14 @@ private slots:
     void test_octetStringWithRangedSizeConstraint();
     void test_octetStringWithValueDefined();
 
+    void test_iA5StringWithSizeConstraint();
+    void test_iA5StringWithValueConstraint();
+    void test_iA5StringWithValueDefined();
+
+    void test_numericStringWithSizeConstraint();
+    void test_numericStringWithValueConstraint();
+    void test_numericStringWithValueDefined();
+
 private:
     template<typename Collection>
     auto itemFromCollection(const Collection &col, const QString &id);

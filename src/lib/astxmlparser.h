@@ -45,6 +45,7 @@ class AstXmlParser
 {
 public:
     using ConstraintTypes = QStringList;
+    // TODO: Move to Constraint?
     struct Constraint
     {
         QString value;

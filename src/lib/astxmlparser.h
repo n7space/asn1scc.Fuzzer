@@ -44,6 +44,13 @@ namespace MalTester {
 class AstXmlParser
 {
 public:
+    using ConstraintTypes = QStringList;
+    struct Constraint
+    {
+        QString value;
+        QString type;
+    };
+
     explicit AstXmlParser(QXmlStreamReader &xmlReader);
 
     bool parse();
@@ -116,12 +123,16 @@ private:
     void readEnumerated(Data::Types::Type &type);
     void readEnumeratedItem(Data::Types::Type &type);
 
-    void readConstraints(Data::Types::Type &type, const QString &valName);
+    void readOctetString(Data::Types::Type &type);
+    void readIA5String(Data::Types::Type &type);
+    void readNumericString(Data::Types::Type &type);
+
+    void readConstraints(Data::Types::Type &type, const ConstraintTypes &valName);
     void readConstraint(std::unique_ptr<Data::Types::Type> &type, const QString &valName);
 
-    void readRanges(Data::Types::Type &type, const QString &valName);
-    void readRange(Data::Types::Type &type, const QString &valName);
-    QString readValue(const QString &valName);
+    void readRanges(Data::Types::Type &type, const ConstraintTypes &valName);
+    void readRange(Data::Types::Type &type, const ConstraintTypes &valName);
+    Constraint readValue(const ConstraintTypes &valName);
 
     QString readTypeAssignmentAttribute();
     QString readModuleAttribute();

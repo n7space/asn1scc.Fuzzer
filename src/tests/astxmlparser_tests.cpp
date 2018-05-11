@@ -34,9 +34,11 @@
 
 #include <data/types/boolean.h>
 #include <data/types/choice.h>
+#include <data/types/constraints.h>
 #include <data/types/enumerated.h>
 #include <data/types/integer.h>
 #include <data/types/null.h>
+#include <data/types/octetstring.h>
 #include <data/types/real.h>
 #include <data/types/sequence.h>
 #include <data/types/sequenceof.h>
@@ -1973,6 +1975,145 @@ void AstXmlParserTests::test_sequenceAcnComponents()
     QCOMPARE(intType.size(), 16);
     QCOMPARE(intType.encoding(), Data::Types::IntegerEncoding::BCD);
     QCOMPARE(intType.alignToNext(), Data::Types::AlignToNext::dword);
+}
+
+void AstXmlParserTests::test_octetStringWithSizeConstraint()
+{
+    parse(
+        R"(<?xml version="1.0" encoding="utf-8"?>)"
+        R"(<AstRoot>)"
+        R"(  <Asn1File FileName="Test2File.asn">)"
+        R"(    <Modules>)"
+        R"(      <Module Name="TestDefinitions" Line="13" CharPositionInLine="42">)"
+        R"(        <TypeAssignments>"
+        R"(          <TypeAssignment Name="MyOctetString" Line="3" CharPositionInLine="0">"
+        R"(            <Asn1Type id="MyModelToTestString.MyOctetString" Line="3" CharPositionInLine="26" ParameterizedTypeInstance="false">"
+        R"(              <OCTET_STRING>"
+        R"(                <Constraints>"
+        R"(                  <SIZE>"
+        R"(                    <IntegerValue>10</IntegerValue>"
+        R"(                  </SIZE>"
+        R"(                </Constraints>"
+        R"(                <WithComponentConstraints />"
+        R"(              </OCTET_STRING>"
+        R"(            </Asn1Type>"
+        R"(          </TypeAssignment>"
+        R"(        </TypeAssignments>"
+        R"(      </Module>)"
+        R"(    </Modules>)"
+        R"(  </Asn1File>)"
+        R"(</AstRoot>)");
+
+    const auto type
+        = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyOctetString");
+
+    const auto ocetStringType = dynamic_cast<const Data::Types::OctetString *>(type->type());
+    const auto &constraintRanges = ocetStringType->integerConstraints().ranges();
+
+    QCOMPARE(constraintRanges.size(), 1);
+    QVERIFY(constraintRanges.contains({10, 10}));
+}
+
+void AstXmlParserTests::test_octetStringWithRangedSizeConstraint()
+{
+    parse(
+        R"(<?xml version="1.0" encoding="utf-8"?>)"
+        R"(<AstRoot>)"
+        R"(  <Asn1File FileName="Test2File.asn">)"
+        R"(    <Modules>)"
+        R"(      <Module Name="TestDefinitions" Line="13" CharPositionInLine="42">)"
+        R"(        <TypeAssignments>"
+        R"(          <TypeAssignment Name="MyOctetString" Line="3" CharPositionInLine="0">"
+        R"(            <Asn1Type id="MyModelToTestString.MyOctetString" Line="3" CharPositionInLine="26" ParameterizedTypeInstance="false">"
+        R"(              <OCTET_STRING>"
+        R"(                <Constraints>"
+        R"(                  <SIZE>"
+        R"(                    <OR>"
+        R"(                      <OR>"
+        R"(                        <Range>"
+        R"(                          <a>"
+        R"(                            <IntegerValue>1</IntegerValue>"
+        R"(                          </a>"
+        R"(                          <b>"
+        R"(                            <IntegerValue>2</IntegerValue>"
+        R"(                          </b>"
+        R"(                        </Range>"
+        R"(                        <Range>"
+        R"(                          <a>"
+        R"(                            <IntegerValue>4</IntegerValue>"
+        R"(                          </a>"
+        R"(                          <b>"
+        R"(                            <IntegerValue>5</IntegerValue>"
+        R"(                          </b>"
+        R"(                        </Range>"
+        R"(                      </OR>"
+        R"(                      <Range>"
+        R"(                        <a>"
+        R"(                          <IntegerValue>7</IntegerValue>"
+        R"(                        </a>"
+        R"(                        <b>"
+        R"(                          <IntegerValue>8</IntegerValue>"
+        R"(                        </b>"
+        R"(                      </Range>"
+        R"(                    </OR>"
+        R"(                  </SIZE>"
+        R"(                </Constraints>"
+        R"(                <WithComponentConstraints />"
+        R"(              </OCTET_STRING>"
+        R"(            </Asn1Type>"
+        R"(          </TypeAssignment>"
+        R"(        </TypeAssignments>"
+        R"(      </Module>)"
+        R"(    </Modules>)"
+        R"(  </Asn1File>)"
+        R"(</AstRoot>)");
+
+    const auto type
+        = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyOctetString");
+
+    const auto ocetStringType = dynamic_cast<const Data::Types::OctetString *>(type->type());
+    const auto &constraintRanges = ocetStringType->integerConstraints().ranges();
+
+    QCOMPARE(constraintRanges.size(), 3);
+
+    QVERIFY(constraintRanges.contains({1, 2}));
+    QVERIFY(constraintRanges.contains({4, 5}));
+    QVERIFY(constraintRanges.contains({7, 8}));
+}
+
+void AstXmlParserTests::test_octetStringWithValueDefined()
+{
+    parse(
+        R"(<?xml version="1.0" encoding="utf-8"?>)"
+        R"(<AstRoot>)"
+        R"(  <Asn1File FileName="Test2File.asn">)"
+        R"(    <Modules>)"
+        R"(      <Module Name="TestDefinitions" Line="13" CharPositionInLine="42">)"
+        R"(        <TypeAssignments>"
+        R"(          <TypeAssignment Name="MyOctetString" Line="3" CharPositionInLine="0">"
+        R"(            <Asn1Type id="MyModelToTestString.MyOctetString" Line="3" CharPositionInLine="26" ParameterizedTypeInstance="false">"
+        R"(              <OCTET_STRING>
+        R"(                <Constraints>
+        R"(                  <OctetStringValue>599</OctetStringValue>
+        R"(                </Constraints>
+        R"(                <WithComponentConstraints />
+        R"(              </OCTET_STRING>
+        R"(            </Asn1Type>"
+        R"(          </TypeAssignment>"
+        R"(        </TypeAssignments>"
+        R"(      </Module>)"
+        R"(    </Modules>)"
+        R"(  </Asn1File>)"
+        R"(</AstRoot>)");
+
+    const auto type
+        = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyOctetString");
+
+    const auto ocetStringType = dynamic_cast<const Data::Types::OctetString *>(type->type());
+    const auto &constraintRanges = ocetStringType->stringConstraints().ranges();
+
+    QCOMPARE(constraintRanges.size(), 1);
+    QVERIFY(constraintRanges.contains({"599", "599"}));
 }
 
 void AstXmlParserTests::parsingFails(const QString &xmlData)

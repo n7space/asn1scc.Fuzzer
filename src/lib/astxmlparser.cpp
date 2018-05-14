@@ -172,34 +172,24 @@ public:
 
     void visit(Data::Types::BitString &type) override
     {
-        addRangeToStringType(QStringLiteral("IntegerValue"),
-                             QStringLiteral("BitStringValue"),
-                             type.integerConstraints(),
-                             type.stringConstraints());
+        addRangeToStringType(QStringLiteral("IntegerValue"), QStringLiteral("BitStringValue"), type);
     }
 
     void visit(Data::Types::OctetString &type) override
     {
         addRangeToStringType(QStringLiteral("IntegerValue"),
                              QStringLiteral("OctetStringValue"),
-                             type.integerConstraints(),
-                             type.stringConstraints());
+                             type);
     }
 
     void visit(Data::Types::IA5String &type) override
     {
-        addRangeToStringType(QStringLiteral("IntegerValue"),
-                             QStringLiteral("StringValue"),
-                             type.integerConstraints(),
-                             type.stringConstraints());
+        addRangeToStringType(QStringLiteral("IntegerValue"), QStringLiteral("StringValue"), type);
     }
 
     void visit(Data::Types::NumericString &type) override
     {
-        addRangeToStringType(QStringLiteral("IntegerValue"),
-                             QStringLiteral("StringValue"),
-                             type.integerConstraints(),
-                             type.stringConstraints());
+        addRangeToStringType(QStringLiteral("IntegerValue"), QStringLiteral("StringValue"), type);
     }
 
     void visit(Data::Types::Enumerated &type) override
@@ -261,8 +251,7 @@ private:
 
     void addRangeToStringType(const QString &intConstraintName,
                               const QString &stringConstraintName,
-                              Data::Types::IntegerConstraints &intConstraints,
-                              Data::Types::StringConstraints &stringConstraints)
+                              Data::Types::String &type)
     {
         if (m_begin.type != m_end.type) {
             m_xmlReader.raiseError("Range types mismatch: " + m_begin.type + " " + m_end.type);
@@ -270,9 +259,9 @@ private:
         }
 
         if (m_begin.type == intConstraintName)
-            addRange(intConstraints, "Incorrect range for String type");
+            addRange(type.integerConstraints(), "Incorrect range for String type");
         else if (m_begin.type == stringConstraintName)
-            stringConstraints.addRange(m_begin.value, m_end.value);
+            type.stringConstraints().addRange(m_begin.value, m_end.value);
     }
 
     QXmlStreamReader &m_xmlReader;
@@ -986,7 +975,7 @@ void AstXmlParser::readRanges(Data::Types::Type &type, const ConstraintTypes &va
 
 void AstXmlParser::readRange(Data::Types::Type &type, const ConstraintTypes &valName)
 {
-    AstXmlParser::Constraint a, b;
+    Constraint a, b;
     while (m_xmlReader.readNextStartElement()) {
         if (m_xmlReader.name() == QStringLiteral("a"))
             a = readValue(valName);
@@ -1002,7 +991,7 @@ void AstXmlParser::readRange(Data::Types::Type &type, const ConstraintTypes &val
 
 AstXmlParser::Constraint AstXmlParser::readValue(const ConstraintTypes &valName)
 {
-    AstXmlParser::Constraint val;
+    Constraint val;
     while (m_xmlReader.readNextStartElement()) {
         const auto &name = m_xmlReader.name().toString();
         if (valName.contains(name))

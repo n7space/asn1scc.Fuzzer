@@ -44,19 +44,18 @@ namespace MalTester {
 class AstXmlParser
 {
 public:
-    using ConstraintTypes = QStringList;
-    // TODO: Move to Constraint?
-    struct Constraint
-    {
-        QString value;
-        QString type;
-    };
-
     explicit AstXmlParser(QXmlStreamReader &xmlReader);
 
     bool parse();
 
     std::map<QString, std::unique_ptr<Data::File>> takeData() { return std::move(m_data); }
+
+    using ConstraintTypes = QStringList;
+    struct Constraint
+    {
+        QString value;
+        QString type;
+    };
 
 private:
     void readAstRoot();

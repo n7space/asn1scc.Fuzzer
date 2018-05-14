@@ -127,6 +127,7 @@ private:
     void readOctetString(Data::Types::Type &type);
     void readIA5String(Data::Types::Type &type);
     void readNumericString(Data::Types::Type &type);
+    void readBitString(Data::Types::Type &type);
 
     void readConstraints(Data::Types::Type &type, const ConstraintTypes &valName);
     void readConstraint(std::unique_ptr<Data::Types::Type> &type, const QString &valName);

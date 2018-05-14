@@ -103,6 +103,10 @@ private slots:
     void test_numericStringWithValueConstraint();
     void test_numericStringWithValueDefined();
 
+    void test_bitStringWithSizeConstraint();
+    void test_bitStringWithRangedSizeConstraint();
+    void test_bitStringWithValueDefined();
+
 private:
     template<typename Collection>
     auto itemFromCollection(const Collection &col, const QString &id);

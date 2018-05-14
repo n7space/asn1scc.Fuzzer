@@ -32,6 +32,7 @@
 #include <data/acnsequencecomponent.h>
 #include <data/asnsequencecomponent.h>
 
+#include <data/types/bitstring.h>
 #include <data/types/boolean.h>
 #include <data/types/choice.h>
 #include <data/types/constraints.h>
@@ -2427,6 +2428,143 @@ void AstXmlParserTests::test_numericStringWithValueDefined()
     const auto &stringRanges = numericString->stringConstraints().ranges();
     QCOMPARE(stringRanges.size(), 1);
     QVERIFY(stringRanges.contains({QStringLiteral("12345_ABCD"), QStringLiteral("12345_ABCD")}));
+}
+
+void AstXmlParserTests::test_bitStringWithSizeConstraint()
+{
+    parse(
+        R"(<?xml version="1.0" encoding="utf-8"?>)"
+        R"(<AstRoot>)"
+        R"(  <Asn1File FileName="Test2File.asn">)"
+        R"(    <Modules>)"
+        R"(      <Module Name="TestDefinitions" Line="13" CharPositionInLine="42">)"
+        R"(        <TypeAssignments>"
+        R"(          <TypeAssignment Name="MyBitString" Line="7" CharPositionInLine="0">"
+        R"(            <Asn1Type id="MyModelToTestString.MyBitString" Line="7" CharPositionInLine="24" ParameterizedTypeInstance="false">"
+        R"(              <BIT_STRING>"
+        R"(                <Constraints>"
+        R"(                  <SIZE>"
+        R"(                    <IntegerValue>12</IntegerValue>"
+        R"(                  </SIZE>"
+        R"(                </Constraints>"
+        R"(                <WithComponentConstraints />"
+        R"(              </BIT_STRING>"
+        R"(            </Asn1Type>"
+        R"(          </TypeAssignment>"
+        R"(        </TypeAssignments>"
+        R"(      </Module>)"
+        R"(    </Modules>)"
+        R"(  </Asn1File>)"
+        R"(</AstRoot>)");
+
+    const auto type
+        = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyBitString");
+    const auto bitString = dynamic_cast<const Data::Types::BitString *>(type->type());
+
+    const auto &integerRanges = bitString->integerConstraints().ranges();
+    QCOMPARE(integerRanges.size(), 1);
+    QVERIFY(integerRanges.contains({12, 12}));
+}
+
+void AstXmlParserTests::test_bitStringWithRangedSizeConstraint()
+{
+    parse(
+        R"(<?xml version="1.0" encoding="utf-8"?>)"
+        R"(<AstRoot>)"
+        R"(  <Asn1File FileName="Test2File.asn">)"
+        R"(    <Modules>)"
+        R"(      <Module Name="TestDefinitions" Line="13" CharPositionInLine="42">)"
+        R"(        <TypeAssignments>"
+        R"(          <TypeAssignment Name="MyBitString" Line="7" CharPositionInLine="0">"
+        R"(            <Asn1Type id="MyModelToTestString.MyBitString" Line="7" CharPositionInLine="24" ParameterizedTypeInstance="false">"
+        R"(              <BIT_STRING>"
+        R"(                <Constraints>"
+        R"(                  <SIZE>"
+        R"(                    <OR>"
+        R"(                      <OR>"
+        R"(                        <Range>"
+        R"(                          <a>"
+        R"(                            <IntegerValue>10</IntegerValue>"
+        R"(                          </a>"
+        R"(                          <b>"
+        R"(                            <IntegerValue>20</IntegerValue>"
+        R"(                          </b>"
+        R"(                        </Range>"
+        R"(                        <Range>"
+        R"(                          <a>"
+        R"(                            <IntegerValue>40</IntegerValue>"
+        R"(                          </a>"
+        R"(                          <b>"
+        R"(                            <IntegerValue>50</IntegerValue>"
+        R"(                          </b>"
+        R"(                        </Range>"
+        R"(                      </OR>"
+        R"(                      <Range>"
+        R"(                        <a>"
+        R"(                          <IntegerValue>70</IntegerValue>"
+        R"(                        </a>"
+        R"(                        <b>"
+        R"(                          <IntegerValue>80</IntegerValue>"
+        R"(                        </b>"
+        R"(                      </Range>"
+        R"(                    </OR>"
+        R"(                  </SIZE>"
+        R"(                </Constraints>"
+        R"(                <WithComponentConstraints />"
+        R"(              </BIT_STRING>"
+        R"(            </Asn1Type>"
+        R"(          </TypeAssignment>"
+        R"(        </TypeAssignments>"
+        R"(      </Module>)"
+        R"(    </Modules>)"
+        R"(  </Asn1File>)"
+        R"(</AstRoot>)");
+
+    const auto type
+        = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyBitString");
+    const auto bitString = dynamic_cast<const Data::Types::BitString *>(type->type());
+
+    const auto &constraintRanges = bitString->integerConstraints().ranges();
+
+    QCOMPARE(constraintRanges.size(), 3);
+
+    QVERIFY(constraintRanges.contains({10, 20}));
+    QVERIFY(constraintRanges.contains({40, 50}));
+    QVERIFY(constraintRanges.contains({70, 80}));
+}
+
+void AstXmlParserTests::test_bitStringWithValueDefined()
+{
+    parse(
+        R"(<?xml version="1.0" encoding="utf-8"?>)"
+        R"(<AstRoot>)"
+        R"(  <Asn1File FileName="Test2File.asn">)"
+        R"(    <Modules>)"
+        R"(      <Module Name="TestDefinitions" Line="13" CharPositionInLine="42">)"
+        R"(        <TypeAssignments>"
+        R"(          <TypeAssignment Name="MyBitString" Line="7" CharPositionInLine="0">"
+        R"(            <Asn1Type id="MyModelToTestString.MyBitString" Line="7" CharPositionInLine="24" ParameterizedTypeInstance="false">"
+        R"(              <BIT_STRING>"
+        R"(                <Constraints>"
+        R"(                  <BitStringValue>10101011</BitStringValue>"
+        R"(                </Constraints>"
+        R"(                <WithComponentConstraints />"
+        R"(              </BIT_STRING>"
+        R"(            </Asn1Type>"
+        R"(          </TypeAssignment>"
+        R"(        </TypeAssignments>"
+        R"(      </Module>)"
+        R"(    </Modules>)"
+        R"(  </Asn1File>)"
+        R"(</AstRoot>)");
+
+    const auto type
+        = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyBitString");
+    const auto bitString = dynamic_cast<const Data::Types::BitString *>(type->type());
+
+    const auto &stringRanges = bitString->stringConstraints().ranges();
+    QCOMPARE(stringRanges.size(), 1);
+    QVERIFY(stringRanges.contains({QStringLiteral("10101011"), QStringLiteral("10101011")}));
 }
 
 void AstXmlParserTests::parsingFails(const QString &xmlData)

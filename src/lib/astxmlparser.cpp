@@ -30,6 +30,7 @@
 #include <data/sourcelocation.h>
 
 #include <data/types/acnparameterizablecomposite.h>
+#include <data/types/bitstring.h>
 #include <data/types/boolean.h>
 #include <data/types/choice.h>
 #include <data/types/enumerated.h>
@@ -171,8 +172,10 @@ public:
 
     void visit(Data::Types::BitString &type) override
     {
-        Q_UNUSED(type);
-        // TODO?
+        addRangeToStringType(QStringLiteral("IntegerValue"),
+                             QStringLiteral("BitStringValue"),
+                             type.integerConstraints(),
+                             type.stringConstraints());
     }
 
     void visit(Data::Types::OctetString &type) override
@@ -808,6 +811,8 @@ void AstXmlParser::readTypeContents(const QString &name, Data::Types::Type &type
         readIA5String(type);
     else if (name == QStringLiteral("NumericString"))
         readNumericString(type);
+    else if (name == QStringLiteral("BIT_STRING"))
+        readBitString(type);
     else
         m_xmlReader.skipCurrentElement();
 }
@@ -917,6 +922,13 @@ void AstXmlParser::readNumericString(Data::Types::Type &type)
     readConstraints(type,
                     ConstraintTypes()
                         << QStringLiteral("IntegerValue") << QStringLiteral("StringValue"));
+}
+
+void AstXmlParser::readBitString(Data::Types::Type &type)
+{
+    readConstraints(type,
+                    ConstraintTypes()
+                        << QStringLiteral("IntegerValue") << QStringLiteral("BitStringValue"));
 }
 
 void AstXmlParser::readEnumeratedItem(Data::Types::Type &type)

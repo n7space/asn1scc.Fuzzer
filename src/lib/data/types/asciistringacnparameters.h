@@ -27,23 +27,31 @@
 
 #include <QString>
 
-#include <data/types/asciistringacnparameters.h>
-#include <data/types/string.h>
-#include <data/types/type.h>
-
 namespace MalTester {
 namespace Data {
 namespace Types {
 
-class NumericString : public String, public AsciiStringAcnParameters
+enum class AsciiStringEncoding {
+    ASCII,
+    unspecified,
+};
+
+class AsciiStringAcnParameters
 {
 public:
-    NumericString() = default;
-    NumericString(const NumericString &other) = default;
+    AsciiStringAcnParameters();
 
-    QString name() const override { return QLatin1String("NumericString"); }
-    void accept(TypeVisitor &visitor) override;
-    std::unique_ptr<Type> clone() const override;
+    void setEncoding(const AsciiStringEncoding encoding) { m_encoding = encoding; }
+    AsciiStringEncoding encoding() const { return m_encoding; }
+
+    void setTerminationPattern(const QString &pattern) { m_terminationPattern = pattern; }
+    const QString &terminationPattern() const { return m_terminationPattern; }
+
+    static AsciiStringEncoding mapEncoding(const QStringRef &in);
+
+private:
+    QString m_terminationPattern;
+    AsciiStringEncoding m_encoding;
 };
 
 } // namespace Types

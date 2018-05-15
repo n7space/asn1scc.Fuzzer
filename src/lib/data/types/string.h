@@ -61,6 +61,12 @@ public:
     {
         return WithConstraints<StringConstraints>::constraints();
     }
+
+    QString size() const { return m_size; }
+    void setSize(const QString &size) { m_size = size; }
+
+private:
+    QString m_size;
 };
 
 } // namespace Types

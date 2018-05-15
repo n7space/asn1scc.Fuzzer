@@ -35,6 +35,7 @@ SOURCES += \
     data/types/sequence.cpp \
     data/types/sequenceof.cpp \
     data/types/real.cpp \
+    data/types/asciistringacnparameters.cpp \
     \
     astxmlparser.cpp \
     astfilegenerator.cpp \
@@ -83,6 +84,7 @@ HEADERS += \
     data/types/constraints.h \
     data/types/string.h \
     data/types/acnparameterizablecomposite.h \
+    data/types/asciistringacnparameters.h \
     \
     astxmlparser.h \
     runparameters.h \

@@ -94,18 +94,22 @@ private slots:
     void test_octetStringWithSizeConstraint();
     void test_octetStringWithRangedSizeConstraint();
     void test_octetStringWithValueDefined();
+    void test_octetStringAcnParams();
 
     void test_iA5StringWithSizeConstraint();
     void test_iA5StringWithValueConstraint();
     void test_iA5StringWithValueDefined();
+    void test_iA5StringAcnParams();
 
     void test_numericStringWithSizeConstraint();
     void test_numericStringWithValueConstraint();
     void test_numericStringWithValueDefined();
+    void test_numericStringAcnParams();
 
     void test_bitStringWithSizeConstraint();
     void test_bitStringWithRangedSizeConstraint();
     void test_bitStringWithValueDefined();
+    void test_bitStringAcnParams();
 
 private:
     template<typename Collection>

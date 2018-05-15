@@ -83,13 +83,29 @@ private slots:
     void test_choiceAlternatives();
     void test_choiceAlternativesWithAcnParams();
 
+    void test_booleanWithAcnParams();
+    void test_nullWithAcnParams();
+
     void test_sequnceWithAcnParams();
     void test_sequenceComponents();
     void test_sequenceComponentsWithAcnParams();
     void test_sequenceAcnComponents();
 
-    void test_booleanWithAcnParams();
-    void test_nullWithAcnParams();
+    void test_octetStringWithSizeConstraint();
+    void test_octetStringWithRangedSizeConstraint();
+    void test_octetStringWithValueDefined();
+
+    void test_iA5StringWithSizeConstraint();
+    void test_iA5StringWithValueConstraint();
+    void test_iA5StringWithValueDefined();
+
+    void test_numericStringWithSizeConstraint();
+    void test_numericStringWithValueConstraint();
+    void test_numericStringWithValueDefined();
+
+    void test_bitStringWithSizeConstraint();
+    void test_bitStringWithRangedSizeConstraint();
+    void test_bitStringWithValueDefined();
 
 private:
     template<typename Collection>

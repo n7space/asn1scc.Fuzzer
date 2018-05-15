@@ -81,6 +81,7 @@ HEADERS += \
     data/types/sequenceof.h \
     data/types/real.h \
     data/types/constraints.h \
+    data/types/string.h \
     data/types/acnparameterizablecomposite.h \
     \
     astxmlparser.h \

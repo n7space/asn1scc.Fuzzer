@@ -50,6 +50,13 @@ public:
 
     std::map<QString, std::unique_ptr<Data::File>> takeData() { return std::move(m_data); }
 
+    using ConstraintTypes = QStringList;
+    struct Constraint
+    {
+        QString value;
+        QString type;
+    };
+
 private:
     void readAstRoot();
     void readAsn1File();
@@ -116,12 +123,17 @@ private:
     void readEnumerated(Data::Types::Type &type);
     void readEnumeratedItem(Data::Types::Type &type);
 
-    void readConstraints(Data::Types::Type &type, const QString &valName);
+    void readOctetString(Data::Types::Type &type);
+    void readIA5String(Data::Types::Type &type);
+    void readNumericString(Data::Types::Type &type);
+    void readBitString(Data::Types::Type &type);
+
+    void readConstraints(Data::Types::Type &type, const ConstraintTypes &valName);
     void readConstraint(std::unique_ptr<Data::Types::Type> &type, const QString &valName);
 
-    void readRanges(Data::Types::Type &type, const QString &valName);
-    void readRange(Data::Types::Type &type, const QString &valName);
-    QString readValue(const QString &valName);
+    void readRanges(Data::Types::Type &type, const ConstraintTypes &valName);
+    void readRange(Data::Types::Type &type, const ConstraintTypes &valName);
+    Constraint readValue(const ConstraintTypes &valName);
 
     QString readTypeAssignmentAttribute();
     QString readModuleAttribute();

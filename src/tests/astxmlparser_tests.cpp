@@ -32,11 +32,16 @@
 #include <data/acnsequencecomponent.h>
 #include <data/asnsequencecomponent.h>
 
+#include <data/types/bitstring.h>
 #include <data/types/boolean.h>
 #include <data/types/choice.h>
+#include <data/types/constraints.h>
 #include <data/types/enumerated.h>
+#include <data/types/ia5string.h>
 #include <data/types/integer.h>
 #include <data/types/null.h>
+#include <data/types/numericstring.h>
+#include <data/types/octetstring.h>
 #include <data/types/real.h>
 #include <data/types/sequence.h>
 #include <data/types/sequenceof.h>
@@ -1973,6 +1978,593 @@ void AstXmlParserTests::test_sequenceAcnComponents()
     QCOMPARE(intType.size(), 16);
     QCOMPARE(intType.encoding(), Data::Types::IntegerEncoding::BCD);
     QCOMPARE(intType.alignToNext(), Data::Types::AlignToNext::dword);
+}
+
+void AstXmlParserTests::test_octetStringWithSizeConstraint()
+{
+    parse(
+        R"(<?xml version="1.0" encoding="utf-8"?>)"
+        R"(<AstRoot>)"
+        R"(  <Asn1File FileName="Test2File.asn">)"
+        R"(    <Modules>)"
+        R"(      <Module Name="TestDefinitions" Line="13" CharPositionInLine="42">)"
+        R"(        <TypeAssignments>"
+        R"(          <TypeAssignment Name="MyOctetString" Line="3" CharPositionInLine="0">"
+        R"(            <Asn1Type id="MyModelToTestString.MyOctetString" Line="3" CharPositionInLine="26" ParameterizedTypeInstance="false">"
+        R"(              <OCTET_STRING>"
+        R"(                <Constraints>"
+        R"(                  <SIZE>"
+        R"(                    <IntegerValue>10</IntegerValue>"
+        R"(                  </SIZE>"
+        R"(                </Constraints>"
+        R"(                <WithComponentConstraints />"
+        R"(              </OCTET_STRING>"
+        R"(            </Asn1Type>"
+        R"(          </TypeAssignment>"
+        R"(        </TypeAssignments>"
+        R"(      </Module>)"
+        R"(    </Modules>)"
+        R"(  </Asn1File>)"
+        R"(</AstRoot>)");
+
+    const auto type
+        = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyOctetString");
+
+    const auto ocetStringType = dynamic_cast<const Data::Types::OctetString *>(type->type());
+    const auto &constraintRanges = ocetStringType->integerConstraints().ranges();
+
+    QCOMPARE(constraintRanges.size(), 1);
+    QVERIFY(constraintRanges.contains({10, 10}));
+}
+
+void AstXmlParserTests::test_octetStringWithRangedSizeConstraint()
+{
+    parse(
+        R"(<?xml version="1.0" encoding="utf-8"?>)"
+        R"(<AstRoot>)"
+        R"(  <Asn1File FileName="Test2File.asn">)"
+        R"(    <Modules>)"
+        R"(      <Module Name="TestDefinitions" Line="13" CharPositionInLine="42">)"
+        R"(        <TypeAssignments>"
+        R"(          <TypeAssignment Name="MyOctetString" Line="3" CharPositionInLine="0">"
+        R"(            <Asn1Type id="MyModelToTestString.MyOctetString" Line="3" CharPositionInLine="26" ParameterizedTypeInstance="false">"
+        R"(              <OCTET_STRING>"
+        R"(                <Constraints>"
+        R"(                  <SIZE>"
+        R"(                    <OR>"
+        R"(                      <OR>"
+        R"(                        <Range>"
+        R"(                          <a>"
+        R"(                            <IntegerValue>1</IntegerValue>"
+        R"(                          </a>"
+        R"(                          <b>"
+        R"(                            <IntegerValue>2</IntegerValue>"
+        R"(                          </b>"
+        R"(                        </Range>"
+        R"(                        <Range>"
+        R"(                          <a>"
+        R"(                            <IntegerValue>4</IntegerValue>"
+        R"(                          </a>"
+        R"(                          <b>"
+        R"(                            <IntegerValue>5</IntegerValue>"
+        R"(                          </b>"
+        R"(                        </Range>"
+        R"(                      </OR>"
+        R"(                      <Range>"
+        R"(                        <a>"
+        R"(                          <IntegerValue>7</IntegerValue>"
+        R"(                        </a>"
+        R"(                        <b>"
+        R"(                          <IntegerValue>8</IntegerValue>"
+        R"(                        </b>"
+        R"(                      </Range>"
+        R"(                    </OR>"
+        R"(                  </SIZE>"
+        R"(                </Constraints>"
+        R"(                <WithComponentConstraints />"
+        R"(              </OCTET_STRING>"
+        R"(            </Asn1Type>"
+        R"(          </TypeAssignment>"
+        R"(        </TypeAssignments>"
+        R"(      </Module>)"
+        R"(    </Modules>)"
+        R"(  </Asn1File>)"
+        R"(</AstRoot>)");
+
+    const auto type
+        = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyOctetString");
+
+    const auto ocetStringType = dynamic_cast<const Data::Types::OctetString *>(type->type());
+    const auto &constraintRanges = ocetStringType->integerConstraints().ranges();
+
+    QCOMPARE(constraintRanges.size(), 3);
+
+    QVERIFY(constraintRanges.contains({1, 2}));
+    QVERIFY(constraintRanges.contains({4, 5}));
+    QVERIFY(constraintRanges.contains({7, 8}));
+}
+
+void AstXmlParserTests::test_octetStringWithValueDefined()
+{
+    parse(
+        R"(<?xml version="1.0" encoding="utf-8"?>)"
+        R"(<AstRoot>)"
+        R"(  <Asn1File FileName="Test2File.asn">)"
+        R"(    <Modules>)"
+        R"(      <Module Name="TestDefinitions" Line="13" CharPositionInLine="42">)"
+        R"(        <TypeAssignments>"
+        R"(          <TypeAssignment Name="MyOctetString" Line="3" CharPositionInLine="0">"
+        R"(            <Asn1Type id="MyModelToTestString.MyOctetString" Line="3" CharPositionInLine="26" ParameterizedTypeInstance="false">"
+        R"(              <OCTET_STRING>"
+        R"(                <Constraints>"
+        R"(                  <OctetStringValue>599</OctetStringValue>"
+        R"(                </Constraints>"
+        R"(                <WithComponentConstraints />"
+        R"(              </OCTET_STRING>"
+        R"(            </Asn1Type>"
+        R"(          </TypeAssignment>"
+        R"(        </TypeAssignments>"
+        R"(      </Module>)"
+        R"(    </Modules>)"
+        R"(  </Asn1File>)"
+        R"(</AstRoot>)");
+
+    const auto type
+        = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyOctetString");
+
+    const auto ocetStringType = dynamic_cast<const Data::Types::OctetString *>(type->type());
+    const auto &constraintRanges = ocetStringType->stringConstraints().ranges();
+
+    QCOMPARE(constraintRanges.size(), 1);
+    QVERIFY(constraintRanges.contains({"599", "599"}));
+}
+
+void AstXmlParserTests::test_iA5StringWithSizeConstraint()
+{
+    parse(
+        R"(<?xml version="1.0" encoding="utf-8"?>)"
+        R"(<AstRoot>)"
+        R"(  <Asn1File FileName="Test2File.asn">)"
+        R"(    <Modules>)"
+        R"(      <Module Name="TestDefinitions" Line="13" CharPositionInLine="42">)"
+        R"(        <TypeAssignments>"
+        R"(         <TypeAssignment Name="MyIA5String" Line="7" CharPositionInLine="0">"
+        R"(           <Asn1Type id="MyModelToTestString.MyIA5String" Line="7" CharPositionInLine="24" ParameterizedTypeInstance="false">"
+        R"(             <IA5String>"
+        R"(               <Constraints>"
+        R"(                 <SIZE>"
+        R"(                   <Range>"
+        R"(                     <a>"
+        R"(                       <IntegerValue>1</IntegerValue>"
+        R"(                     </a>"
+        R"(                     <b>"
+        R"(                       <IntegerValue>10</IntegerValue>"
+        R"(                     </b>"
+        R"(                   </Range>"
+        R"(                 </SIZE>"
+        R"(               </Constraints>"
+        R"(               <WithComponentConstraints />"
+        R"(             </IA5String>"
+        R"(           </Asn1Type>"
+        R"(         </TypeAssignment>"
+        R"(        </TypeAssignments>"
+        R"(      </Module>)"
+        R"(    </Modules>)"
+        R"(  </Asn1File>)"
+        R"(</AstRoot>)");
+
+    const auto type
+        = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyIA5String");
+    const auto myIA5String = dynamic_cast<const Data::Types::IA5String *>(type->type());
+
+    const auto &constraintRanges = myIA5String->integerConstraints().ranges();
+
+    QCOMPARE(constraintRanges.size(), 1);
+    QVERIFY(constraintRanges.contains({1, 10}));
+}
+
+void AstXmlParserTests::test_iA5StringWithValueConstraint()
+{
+    parse(
+        R"(<?xml version="1.0" encoding="utf-8"?>)"
+        R"(<AstRoot>)"
+        R"(  <Asn1File FileName="Test2File.asn">)"
+        R"(    <Modules>)"
+        R"(      <Module Name="TestDefinitions" Line="13" CharPositionInLine="42">)"
+        R"(        <TypeAssignments>"
+        R"(         <TypeAssignment Name="MyIA5String" Line="7" CharPositionInLine="0">"
+        R"(           <Asn1Type id="MyModelToTestString.MyIA5String" Line="7" CharPositionInLine="24" ParameterizedTypeInstance="false">"
+        R"(             <IA5String>"
+        R"(               <Constraints>"
+        R"(                 <AND>"
+        R"(                   <SIZE>"
+        R"(                     <Range>"
+        R"(                       <a>"
+        R"(                         <IntegerValue>1</IntegerValue>"
+        R"(                       </a>"
+        R"(                       <b>"
+        R"(                         <IntegerValue>10</IntegerValue>"
+        R"(                       </b>"
+        R"(                     </Range>"
+        R"(                   </SIZE>"
+        R"(                   <ALPHA>"
+        R"(                     <OR>"
+        R"(                       <OR>"
+        R"(                         <Range>"
+        R"(                           <a>"
+        R"(                             <StringValue>A</StringValue>"
+        R"(                           </a>"
+        R"(                           <b>"
+        R"(                             <StringValue>D</StringValue>"
+        R"(                           </b>"
+        R"(                         </Range>"
+        R"(                         <Range>"
+        R"(                           <a>"
+        R"(                             <StringValue>X</StringValue>"
+        R"(                           </a>"
+        R"(                           <b>"
+        R"(                             <StringValue>Z</StringValue>"
+        R"(                           </b>"
+        R"(                         </Range>"
+        R"(                       </OR>"
+        R"(                       <Range>"
+        R"(                         <a>"
+        R"(                           <StringValue>1</StringValue>"
+        R"(                         </a>"
+        R"(                         <b>"
+        R"(                           <StringValue>9</StringValue>"
+        R"(                         </b>"
+        R"(                       </Range>"
+        R"(                     </OR>"
+        R"(                   </ALPHA>"
+        R"(                 </AND>"
+        R"(               </Constraints>"
+        R"(               <WithComponentConstraints />"
+        R"(             </IA5String>"
+        R"(           </Asn1Type>"
+        R"(         </TypeAssignment>"
+        R"(        </TypeAssignments>"
+        R"(      </Module>)"
+        R"(    </Modules>)"
+        R"(  </Asn1File>)"
+        R"(</AstRoot>)");
+
+    const auto type
+        = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyIA5String");
+    const auto myIA5String = dynamic_cast<const Data::Types::IA5String *>(type->type());
+
+    const auto &integerRanges = myIA5String->integerConstraints().ranges();
+    QCOMPARE(integerRanges.size(), 1);
+    QVERIFY(integerRanges.contains({1, 10}));
+
+    const auto &stringRanges = myIA5String->stringConstraints().ranges();
+    QCOMPARE(stringRanges.size(), 3);
+    QVERIFY(stringRanges.contains({QStringLiteral("A"), QStringLiteral("D")}));
+    QVERIFY(stringRanges.contains({QStringLiteral("X"), QStringLiteral("Z")}));
+    QVERIFY(stringRanges.contains({QStringLiteral("1"), QStringLiteral("9")}));
+}
+
+void AstXmlParserTests::test_iA5StringWithValueDefined()
+{
+    parse(
+        R"(<?xml version="1.0" encoding="utf-8"?>)"
+        R"(<AstRoot>)"
+        R"(  <Asn1File FileName="Test2File.asn">)"
+        R"(    <Modules>)"
+        R"(      <Module Name="TestDefinitions" Line="13" CharPositionInLine="42">)"
+        R"(        <TypeAssignments>"
+        R"(         <TypeAssignment Name="MyIA5String" Line="7" CharPositionInLine="0">"
+        R"(           <Asn1Type id="MyModelToTestString.MyIA5String" Line="7" CharPositionInLine="24" ParameterizedTypeInstance="false">"
+        R"(             <IA5String>"
+        R"(               <Constraints>"
+        R"(                 <StringValue>Text</StringValue>"
+        R"(               </Constraints>"
+        R"(               <WithComponentConstraints />"
+        R"(             </IA5String>"
+        R"(           </Asn1Type>"
+        R"(         </TypeAssignment>"
+        R"(        </TypeAssignments>"
+        R"(      </Module>)"
+        R"(    </Modules>)"
+        R"(  </Asn1File>)"
+        R"(</AstRoot>)");
+
+    const auto type
+        = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyIA5String");
+    const auto myIA5String = dynamic_cast<const Data::Types::IA5String *>(type->type());
+
+    const auto &stringRanges = myIA5String->stringConstraints().ranges();
+    QCOMPARE(stringRanges.size(), 1);
+    QVERIFY(stringRanges.contains({QStringLiteral("Text"), QStringLiteral("Text")}));
+}
+
+void AstXmlParserTests::test_numericStringWithSizeConstraint()
+{
+    parse(
+        R"(<?xml version="1.0" encoding="utf-8"?>)"
+        R"(<AstRoot>)"
+        R"(  <Asn1File FileName="Test2File.asn">)"
+        R"(    <Modules>)"
+        R"(      <Module Name="TestDefinitions" Line="13" CharPositionInLine="42">)"
+        R"(        <TypeAssignments>"
+        R"(          <TypeAssignment Name="MyNumericString" Line="11" CharPositionInLine="0">"
+        R"(            <Asn1Type id="MyModelToTestString.MyNumericString" Line="11" CharPositionInLine="28" ParameterizedTypeInstance="false">"
+        R"(              <NumericString>"
+        R"(                <Constraints>"
+        R"(                  <SIZE>"
+        R"(                    <Range>"
+        R"(                      <a>"
+        R"(                        <IntegerValue>10</IntegerValue>"
+        R"(                      </a>"
+        R"(                      <b>"
+        R"(                        <IntegerValue>100</IntegerValue>"
+        R"(                      </b>"
+        R"(                    </Range>"
+        R"(                  </SIZE>"
+        R"(                </Constraints>"
+        R"(                <WithComponentConstraints />"
+        R"(              </NumericString>"
+        R"(            </Asn1Type>"
+        R"(          </TypeAssignment>"
+        R"(        </TypeAssignments>"
+        R"(      </Module>)"
+        R"(    </Modules>)"
+        R"(  </Asn1File>)"
+        R"(</AstRoot>)");
+
+    const auto type
+        = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyNumericString");
+    const auto numericString = dynamic_cast<const Data::Types::NumericString *>(type->type());
+
+    const auto &constraintRanges = numericString->integerConstraints().ranges();
+
+    QCOMPARE(constraintRanges.size(), 1);
+    QVERIFY(constraintRanges.contains({10, 100}));
+}
+
+void AstXmlParserTests::test_numericStringWithValueConstraint()
+{
+    parse(
+        R"(<?xml version="1.0" encoding="utf-8"?>)"
+        R"(<AstRoot>)"
+        R"(  <Asn1File FileName="Test2File.asn">)"
+        R"(    <Modules>)"
+        R"(      <Module Name="TestDefinitions" Line="13" CharPositionInLine="42">)"
+        R"(        <TypeAssignments>"
+        R"(          <TypeAssignment Name="MyNumericString" Line="11" CharPositionInLine="0">"
+        R"(            <Asn1Type id="MyModelToTestString.MyNumericString" Line="11" CharPositionInLine="28" ParameterizedTypeInstance="false">"
+        R"(              <NumericString>"
+        R"(                <Constraints>"
+        R"(                  <AND>"
+        R"(                    <SIZE>"
+        R"(                      <IntegerValue>10</IntegerValue>"
+        R"(                    </SIZE>"
+        R"(                    <ALPHA>"
+        R"(                      <OR>"
+        R"(                        <Range>"
+        R"(                          <a>"
+        R"(                            <StringValue>1</StringValue>"
+        R"(                          </a>"
+        R"(                          <b>"
+        R"(                            <StringValue>5</StringValue>"
+        R"(                          </b>"
+        R"(                        </Range>"
+        R"(                        <AND>"
+        R"(                          <Range>"
+        R"(                            <a>"
+        R"(                              <StringValue>6</StringValue>"
+        R"(                            </a>"
+        R"(                            <b>"
+        R"(                              <StringValue>9</StringValue>"
+        R"(                            </b>"
+        R"(                          </Range>"
+        R"(                          <Range>"
+        R"(                            <a>"
+        R"(                              <StringValue>1</StringValue>"
+        R"(                            </a>"
+        R"(                            <b>"
+        R"(                              <StringValue>8</StringValue>"
+        R"(                            </b>"
+        R"(                          </Range>"
+        R"(                        </AND>"
+        R"(                      </OR>"
+        R"(                    </ALPHA>"
+        R"(                  </AND>"
+        R"(                </Constraints>"
+        R"(                <WithComponentConstraints />"
+        R"(              </NumericString>"
+        R"(            </Asn1Type>"
+        R"(          </TypeAssignment>"
+        R"(        </TypeAssignments>"
+        R"(      </Module>)"
+        R"(    </Modules>)"
+        R"(  </Asn1File>)"
+        R"(</AstRoot>)");
+
+    const auto type
+        = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyNumericString");
+    const auto numericString = dynamic_cast<const Data::Types::NumericString *>(type->type());
+
+    const auto &integerRanges = numericString->integerConstraints().ranges();
+    QCOMPARE(integerRanges.size(), 1);
+    QVERIFY(integerRanges.contains({10, 10}));
+
+    const auto &stringRanges = numericString->stringConstraints().ranges();
+    QCOMPARE(stringRanges.size(), 3);
+    QVERIFY(stringRanges.contains({QStringLiteral("1"), QStringLiteral("5")}));
+    QVERIFY(stringRanges.contains({QStringLiteral("6"), QStringLiteral("9")}));
+    QVERIFY(stringRanges.contains({QStringLiteral("1"), QStringLiteral("8")}));
+}
+
+void AstXmlParserTests::test_numericStringWithValueDefined()
+{
+    parse(
+        R"(<?xml version="1.0" encoding="utf-8"?>)"
+        R"(<AstRoot>)"
+        R"(  <Asn1File FileName="Test2File.asn">)"
+        R"(    <Modules>)"
+        R"(      <Module Name="TestDefinitions" Line="13" CharPositionInLine="42">)"
+        R"(        <TypeAssignments>"
+        R"(          <TypeAssignment Name="MyNumericString" Line="11" CharPositionInLine="0">"
+        R"(            <Asn1Type id="MyModelToTestString.MyNumericString" Line="11" CharPositionInLine="28" ParameterizedTypeInstance="false">"
+        R"(              <NumericString>"
+        R"(                <Constraints>"
+        R"(                  <StringValue>12345_ABCD</StringValue>"
+        R"(                </Constraints>"
+        R"(                <WithComponentConstraints />"
+        R"(              </NumericString>"
+        R"(            </Asn1Type>"
+        R"(          </TypeAssignment>"
+        R"(        </TypeAssignments>"
+        R"(      </Module>)"
+        R"(    </Modules>)"
+        R"(  </Asn1File>)"
+        R"(</AstRoot>)");
+
+    const auto type
+        = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyNumericString");
+    const auto numericString = dynamic_cast<const Data::Types::NumericString *>(type->type());
+
+    const auto &stringRanges = numericString->stringConstraints().ranges();
+    QCOMPARE(stringRanges.size(), 1);
+    QVERIFY(stringRanges.contains({QStringLiteral("12345_ABCD"), QStringLiteral("12345_ABCD")}));
+}
+
+void AstXmlParserTests::test_bitStringWithSizeConstraint()
+{
+    parse(
+        R"(<?xml version="1.0" encoding="utf-8"?>)"
+        R"(<AstRoot>)"
+        R"(  <Asn1File FileName="Test2File.asn">)"
+        R"(    <Modules>)"
+        R"(      <Module Name="TestDefinitions" Line="13" CharPositionInLine="42">)"
+        R"(        <TypeAssignments>"
+        R"(          <TypeAssignment Name="MyBitString" Line="7" CharPositionInLine="0">"
+        R"(            <Asn1Type id="MyModelToTestString.MyBitString" Line="7" CharPositionInLine="24" ParameterizedTypeInstance="false">"
+        R"(              <BIT_STRING>"
+        R"(                <Constraints>"
+        R"(                  <SIZE>"
+        R"(                    <IntegerValue>12</IntegerValue>"
+        R"(                  </SIZE>"
+        R"(                </Constraints>"
+        R"(                <WithComponentConstraints />"
+        R"(              </BIT_STRING>"
+        R"(            </Asn1Type>"
+        R"(          </TypeAssignment>"
+        R"(        </TypeAssignments>"
+        R"(      </Module>)"
+        R"(    </Modules>)"
+        R"(  </Asn1File>)"
+        R"(</AstRoot>)");
+
+    const auto type
+        = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyBitString");
+    const auto bitString = dynamic_cast<const Data::Types::BitString *>(type->type());
+
+    const auto &integerRanges = bitString->integerConstraints().ranges();
+    QCOMPARE(integerRanges.size(), 1);
+    QVERIFY(integerRanges.contains({12, 12}));
+}
+
+void AstXmlParserTests::test_bitStringWithRangedSizeConstraint()
+{
+    parse(
+        R"(<?xml version="1.0" encoding="utf-8"?>)"
+        R"(<AstRoot>)"
+        R"(  <Asn1File FileName="Test2File.asn">)"
+        R"(    <Modules>)"
+        R"(      <Module Name="TestDefinitions" Line="13" CharPositionInLine="42">)"
+        R"(        <TypeAssignments>"
+        R"(          <TypeAssignment Name="MyBitString" Line="7" CharPositionInLine="0">"
+        R"(            <Asn1Type id="MyModelToTestString.MyBitString" Line="7" CharPositionInLine="24" ParameterizedTypeInstance="false">"
+        R"(              <BIT_STRING>"
+        R"(                <Constraints>"
+        R"(                  <SIZE>"
+        R"(                    <OR>"
+        R"(                      <OR>"
+        R"(                        <Range>"
+        R"(                          <a>"
+        R"(                            <IntegerValue>10</IntegerValue>"
+        R"(                          </a>"
+        R"(                          <b>"
+        R"(                            <IntegerValue>20</IntegerValue>"
+        R"(                          </b>"
+        R"(                        </Range>"
+        R"(                        <Range>"
+        R"(                          <a>"
+        R"(                            <IntegerValue>40</IntegerValue>"
+        R"(                          </a>"
+        R"(                          <b>"
+        R"(                            <IntegerValue>50</IntegerValue>"
+        R"(                          </b>"
+        R"(                        </Range>"
+        R"(                      </OR>"
+        R"(                      <Range>"
+        R"(                        <a>"
+        R"(                          <IntegerValue>70</IntegerValue>"
+        R"(                        </a>"
+        R"(                        <b>"
+        R"(                          <IntegerValue>80</IntegerValue>"
+        R"(                        </b>"
+        R"(                      </Range>"
+        R"(                    </OR>"
+        R"(                  </SIZE>"
+        R"(                </Constraints>"
+        R"(                <WithComponentConstraints />"
+        R"(              </BIT_STRING>"
+        R"(            </Asn1Type>"
+        R"(          </TypeAssignment>"
+        R"(        </TypeAssignments>"
+        R"(      </Module>)"
+        R"(    </Modules>)"
+        R"(  </Asn1File>)"
+        R"(</AstRoot>)");
+
+    const auto type
+        = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyBitString");
+    const auto bitString = dynamic_cast<const Data::Types::BitString *>(type->type());
+
+    const auto &constraintRanges = bitString->integerConstraints().ranges();
+
+    QCOMPARE(constraintRanges.size(), 3);
+
+    QVERIFY(constraintRanges.contains({10, 20}));
+    QVERIFY(constraintRanges.contains({40, 50}));
+    QVERIFY(constraintRanges.contains({70, 80}));
+}
+
+void AstXmlParserTests::test_bitStringWithValueDefined()
+{
+    parse(
+        R"(<?xml version="1.0" encoding="utf-8"?>)"
+        R"(<AstRoot>)"
+        R"(  <Asn1File FileName="Test2File.asn">)"
+        R"(    <Modules>)"
+        R"(      <Module Name="TestDefinitions" Line="13" CharPositionInLine="42">)"
+        R"(        <TypeAssignments>"
+        R"(          <TypeAssignment Name="MyBitString" Line="7" CharPositionInLine="0">"
+        R"(            <Asn1Type id="MyModelToTestString.MyBitString" Line="7" CharPositionInLine="24" ParameterizedTypeInstance="false">"
+        R"(              <BIT_STRING>"
+        R"(                <Constraints>"
+        R"(                  <BitStringValue>10101011</BitStringValue>"
+        R"(                </Constraints>"
+        R"(                <WithComponentConstraints />"
+        R"(              </BIT_STRING>"
+        R"(            </Asn1Type>"
+        R"(          </TypeAssignment>"
+        R"(        </TypeAssignments>"
+        R"(      </Module>)"
+        R"(    </Modules>)"
+        R"(  </Asn1File>)"
+        R"(</AstRoot>)");
+
+    const auto type
+        = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyBitString");
+    const auto bitString = dynamic_cast<const Data::Types::BitString *>(type->type());
+
+    const auto &stringRanges = bitString->stringConstraints().ranges();
+    QCOMPARE(stringRanges.size(), 1);
+    QVERIFY(stringRanges.contains({QStringLiteral("10101011"), QStringLiteral("10101011")}));
 }
 
 void AstXmlParserTests::parsingFails(const QString &xmlData)

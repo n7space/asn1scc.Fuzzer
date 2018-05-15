@@ -27,13 +27,14 @@
 
 #include <QString>
 
+#include <data/types/string.h>
 #include <data/types/type.h>
 
 namespace MalTester {
 namespace Data {
 namespace Types {
 
-class IA5String : public Type
+class IA5String : public String
 {
 public:
     IA5String() = default;

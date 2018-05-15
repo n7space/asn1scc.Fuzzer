@@ -65,6 +65,7 @@ private:
 using IntegerConstraints = RangeConstraints<int>;
 using RealConstraints = RangeConstraints<double>;
 using EnumeratedConstraints = RangeConstraints<int>;
+using StringConstraints = RangeConstraints<QString>;
 
 } // namespace Types
 } // namespace Data

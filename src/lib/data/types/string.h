@@ -25,24 +25,42 @@
 ****************************************************************************/
 #pragma once
 
-#include <QString>
+#include "constraints.h"
 
-#include <data/types/string.h>
 #include <data/types/type.h>
 
 namespace MalTester {
 namespace Data {
 namespace Types {
 
-class OctetString : public String
+class String : public Type,
+               public WithConstraints<IntegerConstraints>,
+               public WithConstraints<StringConstraints>
 {
-public:
-    OctetString() = default;
-    OctetString(const OctetString &other) = default;
+protected:
+    String() = default;
+    String(const String &other) = default;
 
-    QString name() const override { return QLatin1String("OCTET STRING"); }
-    void accept(TypeVisitor &visitor) override;
-    std::unique_ptr<Type> clone() const override;
+public:
+    IntegerConstraints &integerConstraints()
+    {
+        return WithConstraints<IntegerConstraints>::constraints();
+    }
+
+    const IntegerConstraints &integerConstraints() const
+    {
+        return WithConstraints<IntegerConstraints>::constraints();
+    }
+
+    StringConstraints &stringConstraints()
+    {
+        return WithConstraints<StringConstraints>::constraints();
+    }
+
+    const StringConstraints &stringConstraints() const
+    {
+        return WithConstraints<StringConstraints>::constraints();
+    }
 };
 
 } // namespace Types

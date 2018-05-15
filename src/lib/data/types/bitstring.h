@@ -27,13 +27,14 @@
 
 #include <QString>
 
+#include <data/types/string.h>
 #include <data/types/type.h>
 
 namespace MalTester {
 namespace Data {
 namespace Types {
 
-class BitString : public Type
+class BitString : public String
 {
 public:
     BitString() = default;

@@ -27,6 +27,7 @@
 
 #include <QString>
 
+#include <data/types/asciistringacnparameters.h>
 #include <data/types/string.h>
 #include <data/types/type.h>
 
@@ -34,7 +35,7 @@ namespace MalTester {
 namespace Data {
 namespace Types {
 
-class IA5String : public String
+class IA5String : public String, public AsciiStringAcnParameters
 {
 public:
     IA5String() = default;

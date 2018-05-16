@@ -23,29 +23,17 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-#pragma once
+#include "asciistringacnparameters.h"
 
-#include <QString>
+using namespace MalTester::Data::Types;
 
-#include <data/types/asciistringacnparameters.h>
-#include <data/types/string.h>
-#include <data/types/type.h>
+AsciiStringAcnParameters::AsciiStringAcnParameters()
+    : m_encoding(AsciiStringEncoding::unspecified)
+{}
 
-namespace MalTester {
-namespace Data {
-namespace Types {
-
-class NumericString : public String, public AsciiStringAcnParameters
+AsciiStringEncoding AsciiStringAcnParameters::mapEncoding(const QStringRef &in)
 {
-public:
-    NumericString() = default;
-    NumericString(const NumericString &other) = default;
-
-    QString name() const override { return QLatin1String("NumericString"); }
-    void accept(TypeVisitor &visitor) override;
-    std::unique_ptr<Type> clone() const override;
-};
-
-} // namespace Types
-} // namespace Data
-} // namespace MalTester
+    if (in == "ASCII")
+        return AsciiStringEncoding::ASCII;
+    return AsciiStringEncoding::unspecified;
+}

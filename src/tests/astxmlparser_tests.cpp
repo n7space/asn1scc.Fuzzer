@@ -812,7 +812,7 @@ void AstXmlParserTests::test_enumeratedWithAcnParams()
         R"(        <TypeAssignments>)"
         R"(          <TypeAssignment Name="MyEnum" Line="9" CharPositionInLine="0">)"
         R"(            <Asn1Type id="Constrained.MyEnum" Line="9" CharPositionInLine="21" ParameterizedTypeInstance="false" align-to-next="dword">)"
-        R"(              <Enumerated endianness="big" size="8" encoding="BCD">)"
+        R"(              <Enumerated endianness="big" size="8" encoding="BCD" encode-values="false">)"
         R"(                <Items>)"
         R"(                  <Item Name="ldev1" Value="0" Line="11" CharPositionInLine="4" />)"
         R"(                  <Item Name="ldev2" Value="1" Line="12" CharPositionInLine="4" />)"
@@ -838,7 +838,7 @@ void AstXmlParserTests::test_enumeratedWithAcnParams()
     QCOMPARE(type->encoding(), Data::Types::IntegerEncoding::BCD);
     QCOMPARE(type->endianness(), Data::Types::Endianness::big);
     QCOMPARE(type->alignToNext(), Data::Types::AlignToNext::dword);
-    QCOMPARE(type->encodeValues(), true);
+    QCOMPARE(type->encodeValues(), false);
 }
 
 void AstXmlParserTests::test_singleIntegerTypeAssignmentWithSimpleConstraint()

@@ -36,8 +36,13 @@ public:
     AsnSequenceComponent() = default;
     ~AsnSequenceComponent() override = default;
 
-    AsnSequenceComponent(const QString &name, const QString &presentWhen, const SourceLocation &location, std::unique_ptr<Types::Type> type)
+    AsnSequenceComponent(const QString &name,
+                         bool optional,
+                         const QString &presentWhen,
+                         const SourceLocation &location,
+                         std::unique_ptr<Types::Type> type)
         : SequenceComponent(name, std::move(type))
+        , m_optional(optional)
         , m_presentWhen(presentWhen)
         , m_location(location)
     {}
@@ -50,8 +55,10 @@ public:
 
     const SourceLocation &location() const { return m_location; }
     const QString &presentWhen() const { return m_presentWhen; }
+    bool isOptional() const { return m_optional; }
 
 private:
+    bool m_optional;
     QString m_presentWhen;
     SourceLocation m_location;
 };

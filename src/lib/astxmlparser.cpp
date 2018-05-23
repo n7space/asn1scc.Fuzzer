@@ -330,11 +330,13 @@ public:
     {
         const auto name = readStringAttribute(QStringLiteral("Name"));
         const auto presentWhen = readStringAttribute(QStringLiteral("present-when"));
+        const auto optional = readStringAttribute(QStringLiteral("Optional")).toLower();
         Data::SourceLocation location(m_currentFile,
                                       readIntegerAttribute(QStringLiteral("Line")),
                                       readIntegerAttribute(QStringLiteral("CharPositionInLine")));
 
         type.addComponent(std::make_unique<Data::AsnSequenceComponent>(name,
+                                                                       optional == "true",
                                                                        presentWhen,
                                                                        location,
                                                                        std::move(m_childType)));

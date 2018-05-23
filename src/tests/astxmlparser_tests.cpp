@@ -32,6 +32,7 @@
 #include <data/acnsequencecomponent.h>
 #include <data/asnsequencecomponent.h>
 
+#include <data/asnsequencecomponent.h>
 #include <data/types/bitstring.h>
 #include <data/types/boolean.h>
 #include <data/types/choice.h>
@@ -1741,9 +1742,9 @@ void AstXmlParserTests::test_sequenceComponents()
         R"(    <Modules>)"
         R"(      <Module Name="Defs" Line="13" CharPositionInLine="42">)"
         R"(        <TypeAssignments>
-          R"(          <TypeAssignment Name="MySeq" Line="3" CharPositionInLine="0">
-          R"(            <Asn1Type id="MyModelWithSequence.MySeq" Line="3" CharPositionInLine="10" ParameterizedTypeInstance="false">
-          R"(              <AcnParameters>)"
+        R"(          <TypeAssignment Name="MySeq" Line="3" CharPositionInLine="0">
+        R"(            <Asn1Type id="MyModelWithSequence.MySeq" Line="3" CharPositionInLine="10" ParameterizedTypeInstance="false">
+        R"(              <AcnParameters>)"
         R"(                <AcnParameter Id="MyModel.MySeq.type" Name="type" Type="INTEGER" />)"
         R"(              </AcnParameters>)"
         R"(              <SEQUENCE>)"
@@ -1764,7 +1765,7 @@ void AstXmlParserTests::test_sequenceComponents()
         R"(                    </INTEGER>)"
         R"(                  </Asn1Type>)"
         R"(                </SEQUENCE_COMPONENT>)"
-        R"(                <SEQUENCE_COMPONENT Name="b1" Line="6" CharPositionInLine="4">)"
+        R"(                <SEQUENCE_COMPONENT Name="b1" Line="6" CharPositionInLine="4" Optional="TRUE">)"
         R"(                  <Asn1Type id="MyModelWithSequence.MySeq.b1" Line="6" CharPositionInLine="7" ParameterizedTypeInstance="false">)"
         R"(                    <BOOLEAN>)"
         R"(                      <Constraints />)"
@@ -1790,6 +1791,7 @@ void AstXmlParserTests::test_sequenceComponents()
 
     auto comp = seqType->component(QStringLiteral("a1"));
     QVERIFY(comp != nullptr);
+    QCOMPARE(dynamic_cast<const Data::AsnSequenceComponent &>(*comp).isOptional(), false);
     const auto &intComponent = dynamic_cast<const Data::Types::Integer &>(comp->type());
 
     const auto ranges = intComponent.constraints().ranges();
@@ -1797,7 +1799,8 @@ void AstXmlParserTests::test_sequenceComponents()
     QVERIFY(ranges.contains({1, 10}));
 
     comp = seqType->component(QStringLiteral("b1"));
-    QVERIFY(comp);
+    QVERIFY(comp != nullptr);
+    QCOMPARE(dynamic_cast<const Data::AsnSequenceComponent &>(*comp).isOptional(), true);
 }
 
 void AstXmlParserTests::test_sequenceComponentsWithAcnParams()

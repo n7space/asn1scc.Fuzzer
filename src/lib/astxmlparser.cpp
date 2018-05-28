@@ -104,8 +104,8 @@ public:
     {
         setIntegerAcnParameters(type);
 
-        bool encodeValues = true; // TODO: read encodeValues from ast when possible
-        type.setEncodeValues(encodeValues);
+        const auto encodeValues = m_attributes.value(QStringLiteral("encode-values"));
+        type.setEncodeValues(encodeValues.toString().toLower() == "true");
     }
 
     void visit(Data::Types::Choice &type) override

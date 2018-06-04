@@ -714,7 +714,7 @@ static bool isTypeName(const QString &name)
     return name == QStringLiteral("BIT_STRING")
            || name == QStringLiteral("BOOLEAN")
            || name == QStringLiteral("CHOICE")
-           || name == QStringLiteral("Enumerated")
+           || name == QStringLiteral("ENUMERATED")
            || name == QStringLiteral("NumericString")
            || name == QStringLiteral("IA5String")
            || name == QStringLiteral("INTEGER")
@@ -861,7 +861,7 @@ void AstXmlParser::readTypeContents(const QString &name, Data::Types::Type &type
         readInteger(type);
     else if (name == QStringLiteral("REAL"))
         readReal(type);
-    else if (name == QStringLiteral("Enumerated"))
+    else if (name == QStringLiteral("ENUMERATED"))
         readEnumerated(type);
     else if (name == QStringLiteral("OCTET_STRING"))
         readOctetString(type);
@@ -1080,17 +1080,17 @@ void AstXmlParser::tryAddOperator(Data::Types::Type &type, const QString &operat
 
 void AstXmlParser::readRange(Data::Types::Type &type, const ConstraintType &constraintName)
 {
-    Constraint a, b;
+    Constraint min, max;
     while (m_xmlReader.readNextStartElement()) {
-        if (m_xmlReader.name() == QStringLiteral("a"))
-            a = readValue(constraintName);
-        else if (m_xmlReader.name() == QStringLiteral("b"))
-            b = readValue(constraintName);
+        if (m_xmlReader.name() == QStringLiteral("Min"))
+            min = readValue(constraintName);
+        else if (m_xmlReader.name() == QStringLiteral("Max"))
+            max = readValue(constraintName);
         else
             m_xmlReader.skipCurrentElement();
     }
 
-    RangeConstraintAssigningVisitor visitor(m_xmlReader, a, b);
+    RangeConstraintAssigningVisitor visitor(m_xmlReader, min, max);
     type.accept(visitor);
 }
 

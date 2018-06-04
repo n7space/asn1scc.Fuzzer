@@ -25,36 +25,63 @@
 ****************************************************************************/
 #pragma once
 
+#include <memory>
+#include <vector>
+
 #include <QString>
 
-#include "constraints.h"
-#include "type.h"
+#include <data/expressiontree/expressionnode.h>
 
 namespace MalTester {
 namespace Data {
-namespace Types {
+namespace ExpressionTree {
 
-class SequenceOf : public Type, public WithConstraints
+template<typename T>
+class RootNode : public ExpressionNode<T>
 {
 public:
-    SequenceOf() = default;
-    SequenceOf(const SequenceOf &other);
+    RootNode() = default;
+    RootNode(const RootNode &other)
+    {
+        for (const auto &child : other.m_children)
+            appendChild(child->clone());
+    }
 
-    QString name() const override { return QLatin1String("SEQUENCE OF"); }
-    void accept(TypeVisitor &visitor) override;
-    std::unique_ptr<Type> clone() const override;
+    std::unique_ptr<ExpressionNode<T>> clone() const override
+    {
+        return std::make_unique<RootNode<T>>(*this);
+    }
 
-    QString size() const { return m_size; }
-    void setSize(const QString &size) { m_size = size; }
-
-    const Type &itemsType() const { return *m_itemsType; }
-    void setItemsType(std::unique_ptr<Type> itemsType) { m_itemsType = std::move(itemsType); }
+    void appendChild(std::unique_ptr<ExpressionNode<T>> child) override;
+    bool isFull() const override;
+    QString asString() const override;
 
 private:
-    QString m_size;
-    std::unique_ptr<Type> m_itemsType;
+    std::vector<std::unique_ptr<ExpressionNode<T>>> m_children;
 };
 
-} // namespace Types
+template<typename T>
+inline QString RootNode<T>::asString() const
+{
+    QString res;
+    for (const auto &child : m_children)
+        res += '(' + child->asString() + ')';
+
+    return res;
+}
+
+template<typename T>
+inline void RootNode<T>::appendChild(std::unique_ptr<ExpressionNode<T>> child)
+{
+    m_children.push_back(std::move(child));
+}
+
+template<typename T>
+inline bool RootNode<T>::isFull() const
+{
+    return false;
+}
+
+} // namespace ExpressionTree
 } // namespace Data
 } // namespace MalTester

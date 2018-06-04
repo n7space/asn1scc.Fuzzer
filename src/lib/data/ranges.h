@@ -25,36 +25,60 @@
 ****************************************************************************/
 #pragma once
 
+#include <QPair>
 #include <QString>
-
-#include "constraints.h"
-#include "type.h"
 
 namespace MalTester {
 namespace Data {
-namespace Types {
 
-class SequenceOf : public Type, public WithConstraints
+class Range
 {
 public:
-    SequenceOf() = default;
-    SequenceOf(const SequenceOf &other);
-
-    QString name() const override { return QLatin1String("SEQUENCE OF"); }
-    void accept(TypeVisitor &visitor) override;
-    std::unique_ptr<Type> clone() const override;
-
-    QString size() const { return m_size; }
-    void setSize(const QString &size) { m_size = size; }
-
-    const Type &itemsType() const { return *m_itemsType; }
-    void setItemsType(std::unique_ptr<Type> itemsType) { m_itemsType = std::move(itemsType); }
-
-private:
-    QString m_size;
-    std::unique_ptr<Type> m_itemsType;
+    virtual ~Range() = default;
+    virtual QString asString() const = 0;
 };
 
-} // namespace Types
+template<typename T>
+class TypedRange : public Range
+{
+public:
+    TypedRange(const T &begin, const T &end)
+        : m_data(begin, end)
+    {}
+
+    ~TypedRange() override = default;
+
+protected:
+    QPair<T, T> m_data;
+};
+
+class IntegerRange : public TypedRange<int>
+{
+public:
+    IntegerRange(const int &begin, const int &end);
+    QString asString() const override;
+};
+
+class RealRange : public TypedRange<double>
+{
+public:
+    RealRange(const double &begin, const double &end);
+    QString asString() const override;
+};
+
+class EnumeratedRange : public TypedRange<int>
+{
+public:
+    EnumeratedRange(const int &begin, const int &end);
+    QString asString() const override;
+};
+
+class StringRange : public TypedRange<QString>
+{
+public:
+    StringRange(const QString &begin, const QString &end);
+    QString asString() const override;
+};
+
 } // namespace Data
 } // namespace MalTester

@@ -27,6 +27,7 @@
 #include "astxmlparser.h"
 
 #include <data/asnsequencecomponent.h>
+#include <data/ranges.h>
 #include <data/sourcelocation.h>
 
 #include <data/types/acnparameterizablecomposite.h>
@@ -151,6 +152,56 @@ private:
     const QXmlStreamAttributes &m_attributes;
 };
 
+class OperatorAssigningVisitor : public Data::Types::TypeVisitor
+{
+public:
+    OperatorAssigningVisitor(const QString &operatorType)
+        : m_operatorType(operatorType)
+    {}
+
+    ~OperatorAssigningVisitor() override = default;
+
+    void visit(Data::Types::Boolean &type) override { Q_UNUSED(type); }
+    void visit(Data::Types::Null &type) override { Q_UNUSED(type); }
+
+    void visit(Data::Types::BitString &type) override { addOperatorToStringType(type); }
+    void visit(Data::Types::OctetString &type) override { addOperatorToStringType(type); }
+    void visit(Data::Types::IA5String &type) override { addOperatorToStringType(type); }
+    void visit(Data::Types::NumericString &type) override { addOperatorToStringType(type); }
+
+    void visit(Data::Types::Enumerated &type) override
+    {
+        type.constraints().addOperator(m_operatorType);
+    }
+
+    void visit(Data::Types::Choice &type) override { Q_UNUSED(type); }
+    void visit(Data::Types::Sequence &type) override { Q_UNUSED(type); }
+
+    void visit(Data::Types::SequenceOf &type) override
+    {
+        type.constraints().addOperator(m_operatorType);
+    }
+
+    void visit(Data::Types::Real &type) override { type.constraints().addOperator(m_operatorType); }
+
+    void visit(Data::Types::LabelType &type) override { Q_UNUSED(type); }
+
+    void visit(Data::Types::Integer &type) override
+    {
+        type.constraints().addOperator(m_operatorType);
+    }
+
+    void visit(Data::Types::UserdefinedType &type) override { Q_UNUSED(type); }
+
+private:
+    void addOperatorToStringType(Data::Types::String &type)
+    {
+        type.constraints().addOperator(m_operatorType);
+    }
+
+    const QString m_operatorType;
+};
+
 class RangeConstraintAssigningVisitor : public Data::Types::TypeVisitor
 {
 public:
@@ -207,7 +258,7 @@ public:
         }
 
         const auto val = items.value(m_begin.value).value();
-        type.constraints().addRange(val, val);
+        type.constraints().addRange(new Data::EnumeratedRange(val, val));
     }
 
     void visit(Data::Types::Choice &type) override { Q_UNUSED(type); }
@@ -220,23 +271,28 @@ public:
 
     void visit(Data::Types::SequenceOf &type) override
     {
-        addRange(type.constraints(), "Incorrect SIZE range for SEQUENCE OF");
+        addIntegerRange(type.constraints(), "Incorrect SIZE range for SEQUENCE OF");
     }
 
     void visit(Data::Types::Real &type) override
     {
         bool beginOk = false;
         bool endOk = false;
-        type.constraints().addRange(m_begin.value.toDouble(&beginOk), m_end.value.toDouble(&endOk));
-        if (!beginOk || !endOk)
+        auto range = new Data::RealRange(m_begin.value.toDouble(&beginOk),
+                                         m_end.value.toDouble(&endOk));
+        if (!beginOk || !endOk) {
             m_xmlReader.raiseError("Incorrect range for REAL: " + m_begin.value + " " + m_end.value);
+            return;
+        }
+
+        type.constraints().addRange(range);
     }
 
     void visit(Data::Types::LabelType &type) override { Q_UNUSED(type); }
 
     void visit(Data::Types::Integer &type) override
     {
-        addRange(type.constraints(), "Incorrect range for INTEGER");
+        addIntegerRange(type.constraints(), "Incorrect range for INTEGER");
     }
 
     void visit(Data::Types::UserdefinedType &type) override
@@ -246,13 +302,18 @@ public:
     }
 
 private:
-    void addRange(Data::Types::IntegerConstraints &constraints, const QString &message)
+    void addIntegerRange(Data::Types::RangeConstraints &constraints, const QString &message)
     {
         bool beginOk = false;
         bool endOk = false;
-        constraints.addRange(m_begin.value.toInt(&beginOk), m_end.value.toInt(&endOk));
-        if (!beginOk || !endOk)
+        auto range = new Data::IntegerRange(m_begin.value.toInt(&beginOk),
+                                            m_end.value.toInt(&endOk));
+        if (!beginOk || !endOk) {
             m_xmlReader.raiseError(message + ": " + m_begin.value + " " + m_end.value);
+            return;
+        }
+
+        constraints.addRange(range);
     }
 
     void addRangeToStringType(const QString &intConstraintName,
@@ -265,9 +326,9 @@ private:
         }
 
         if (m_begin.type == intConstraintName)
-            addRange(type.integerConstraints(), "Incorrect range for String type");
+            addIntegerRange(type.constraints(), "Incorrect range for string type");
         else if (m_begin.type == stringConstraintName)
-            type.stringConstraints().addRange(m_begin.value, m_end.value);
+            type.constraints().addRange(new Data::StringRange(m_begin.value, m_end.value));
     }
 
     QXmlStreamReader &m_xmlReader;
@@ -852,7 +913,7 @@ void AstXmlParser::readSequenceOf(Data::Types::Type &type)
 {
     while (m_xmlReader.readNextStartElement()) {
         if (m_xmlReader.name() == QStringLiteral("Constraints")) {
-            readRanges(type, ConstraintTypes() << QStringLiteral("IntegerValue"));
+            readExpressionTree(type, QStringLiteral("IntegerValue"));
         } else if (m_xmlReader.name() == QStringLiteral("Asn1Type")) {
             auto attributes = m_xmlReader.attributes();
             auto childType = readType();
@@ -880,12 +941,12 @@ void AstXmlParser::readChoice(Data::Types::Type &type)
 
 void AstXmlParser::readInteger(Data::Types::Type &type)
 {
-    readConstraints(type, ConstraintTypes() << QStringLiteral("IntegerValue"));
+    readConstraints(type, QStringLiteral("IntegerValue"));
 }
 
 void AstXmlParser::readReal(Data::Types::Type &type)
 {
-    readConstraints(type, ConstraintTypes() << QStringLiteral("RealValue"));
+    readConstraints(type, QStringLiteral("RealValue"));
 }
 
 void AstXmlParser::readEnumerated(Data::Types::Type &type)
@@ -894,7 +955,7 @@ void AstXmlParser::readEnumerated(Data::Types::Type &type)
         if (m_xmlReader.name() == QStringLiteral("Items"))
             readEnumeratedItem(type);
         else if (m_xmlReader.name() == QStringLiteral("Constraints"))
-            readRanges(type, ConstraintTypes() << QStringLiteral("EnumValue"));
+            readExpressionTree(type, QStringLiteral("EnumValue"));
         else
             m_xmlReader.skipCurrentElement();
     }
@@ -902,30 +963,22 @@ void AstXmlParser::readEnumerated(Data::Types::Type &type)
 
 void AstXmlParser::readOctetString(Data::Types::Type &type)
 {
-    readConstraints(type,
-                    ConstraintTypes()
-                        << QStringLiteral("IntegerValue") << QStringLiteral("OctetStringValue"));
+    readConstraints(type, QStringLiteral("OctetStringValue"));
 }
 
 void AstXmlParser::readIA5String(Data::Types::Type &type)
 {
-    readConstraints(type,
-                    ConstraintTypes()
-                        << QStringLiteral("IntegerValue") << QStringLiteral("StringValue"));
+    readConstraints(type, QStringLiteral("StringValue"));
 }
 
 void AstXmlParser::readNumericString(Data::Types::Type &type)
 {
-    readConstraints(type,
-                    ConstraintTypes()
-                        << QStringLiteral("IntegerValue") << QStringLiteral("StringValue"));
+    readConstraints(type, QStringLiteral("StringValue"));
 }
 
 void AstXmlParser::readBitString(Data::Types::Type &type)
 {
-    readConstraints(type,
-                    ConstraintTypes()
-                        << QStringLiteral("IntegerValue") << QStringLiteral("BitStringValue"));
+    readConstraints(type, QStringLiteral("BitStringValue"));
 }
 
 void AstXmlParser::readEnumeratedItem(Data::Types::Type &type)
@@ -952,26 +1005,36 @@ void AstXmlParser::readReferenceType(Data::Types::Type &type)
     }
 }
 
-void AstXmlParser::readConstraints(Data::Types::Type &type, const ConstraintTypes &valName)
+void AstXmlParser::readConstraints(Data::Types::Type &type, const ConstraintType &constraintName)
 {
     while (m_xmlReader.readNextStartElement()) {
         if (m_xmlReader.name() == QStringLiteral("Constraints"))
-            readRanges(type, valName);
+            readExpressionTree(type, constraintName);
         else
             m_xmlReader.skipCurrentElement();
     }
 }
 
-void AstXmlParser::readRanges(Data::Types::Type &type, const ConstraintTypes &valName)
+void AstXmlParser::readExpressionTree(Data::Types::Type &type, const ConstraintType &constraintName)
 {
     while (m_xmlReader.readNextStartElement()) {
         const auto &name = m_xmlReader.name().toString();
-        if (name == QStringLiteral("OR") || name == QStringLiteral("AND")
-            || name == QStringLiteral("ALPHA") || name == QStringLiteral("SIZE")) {
-            readRanges(type, valName);
+        if (name == QStringLiteral("SIZE")) {
+            tryAddOperator(type, name);
+            readAlphanumericalConstraints(type,
+                                          QStringLiteral("IntegerValue"),
+                                          QStringLiteral("SIZE"));
+        } else if (name == QStringLiteral("ALPHA")) {
+            tryAddOperator(type, name);
+            readAlphanumericalConstraints(type,
+                                          QStringLiteral("StringValue"),
+                                          QStringLiteral("ALPHA"));
+        } else if (name == QStringLiteral("OR") || name == QStringLiteral("AND")) {
+            tryAddOperator(type, name);
+            readExpressionTree(type, constraintName);
         } else if (name == QStringLiteral("Range")) {
-            readRange(type, valName);
-        } else if (valName.contains(name)) {
+            readRange(type, constraintName);
+        } else if (constraintName == name) {
             Constraint val{m_xmlReader.readElementText(), name};
             RangeConstraintAssigningVisitor visitor(m_xmlReader, val, val);
             type.accept(visitor);
@@ -981,14 +1044,48 @@ void AstXmlParser::readRanges(Data::Types::Type &type, const ConstraintTypes &va
     }
 }
 
-void AstXmlParser::readRange(Data::Types::Type &type, const ConstraintTypes &valName)
+void AstXmlParser::readAlphanumericalConstraints(Data::Types::Type &type,
+                                                 const ConstraintType &constraintName,
+                                                 const QString &tagName)
+{
+    do {
+        readAlphanumericalConstraint(type, constraintName);
+    } while (m_xmlReader.isEndElement() && m_xmlReader.name() != tagName);
+}
+
+void AstXmlParser::readAlphanumericalConstraint(Data::Types::Type &type,
+                                                const ConstraintType &constraintName)
+{
+    while (m_xmlReader.readNextStartElement()) {
+        const auto &name = m_xmlReader.name().toString();
+        if (name == QStringLiteral("OR") || name == QStringLiteral("AND")) {
+            tryAddOperator(type, name);
+        } else if (name == QStringLiteral("Range")) {
+            readRange(type, constraintName);
+        } else if (name == constraintName) {
+            Constraint val{m_xmlReader.readElementText(), name};
+            RangeConstraintAssigningVisitor visitor(m_xmlReader, val, val);
+            type.accept(visitor);
+        } else {
+            m_xmlReader.skipCurrentElement();
+        }
+    }
+}
+
+void AstXmlParser::tryAddOperator(Data::Types::Type &type, const QString &operatorName)
+{
+    OperatorAssigningVisitor visitor(operatorName);
+    type.accept(visitor);
+}
+
+void AstXmlParser::readRange(Data::Types::Type &type, const ConstraintType &constraintName)
 {
     Constraint a, b;
     while (m_xmlReader.readNextStartElement()) {
         if (m_xmlReader.name() == QStringLiteral("a"))
-            a = readValue(valName);
+            a = readValue(constraintName);
         else if (m_xmlReader.name() == QStringLiteral("b"))
-            b = readValue(valName);
+            b = readValue(constraintName);
         else
             m_xmlReader.skipCurrentElement();
     }
@@ -997,12 +1094,12 @@ void AstXmlParser::readRange(Data::Types::Type &type, const ConstraintTypes &val
     type.accept(visitor);
 }
 
-AstXmlParser::Constraint AstXmlParser::readValue(const ConstraintTypes &valName)
+AstXmlParser::Constraint AstXmlParser::readValue(const ConstraintType &constraintName)
 {
     Constraint val;
     while (m_xmlReader.readNextStartElement()) {
         const auto &name = m_xmlReader.name().toString();
-        if (valName.contains(name))
+        if (constraintName == name)
             val = {m_xmlReader.readElementText(), name};
         else
             m_xmlReader.skipCurrentElement();

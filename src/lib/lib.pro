@@ -16,6 +16,7 @@ SOURCES += \
     data/typereference.cpp \
     data/valueassignment.cpp \
     data/visitor.cpp \
+    data/ranges.cpp \
     \
     data/types/type.cpp \
     data/types/typevisitor.cpp \
@@ -62,6 +63,7 @@ HEADERS += \
     data/acnsequencecomponent.h \
     data/sequencecomponent.h \
     data/acnargument.h \
+    data/ranges.h \
     \
     data/types/typefactory.h \
     data/types/labeltype.h \
@@ -85,6 +87,14 @@ HEADERS += \
     data/types/string.h \
     data/types/acnparameterizablecomposite.h \
     data/types/asciistringacnparameters.h \
+    data/expressiontree/expressiontree.h \
+    \
+    data/expressiontree/expressiontree.h \
+    data/expressiontree/expressionnode.h \
+    data/expressiontree/rootnode.h \
+    data/expressiontree/rangenode.h \
+    data/expressiontree/logicoperatornode.h \
+    data/expressiontree/constrainingoperatornode.h \
     \
     astxmlparser.h \
     runparameters.h \

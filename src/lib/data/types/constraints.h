@@ -30,42 +30,39 @@
 #include <QList>
 #include <QPair>
 
+#include <data/expressiontree/expressiontree.h>
+#include <data/ranges.h>
+
 namespace MalTester {
 namespace Data {
 namespace Types {
 
-template<typename T>
 class RangeConstraints
 {
 public:
-    using Range = QPair<T, T>;
-    using Ranges = QList<Range>;
+    using RangesTree = ExpressionTree::ExpressionTree<const Range *>;
 
-    const Ranges &ranges() const { return m_ranges; }
-    void addRange(const T &begin, const T &end) { m_ranges.push_back({begin, end}); }
+    const RangesTree &rangesTree() const { return m_rangesTree; }
+
+    void addRange(const Range *range) { m_rangesTree.addRange(range); }
+    void addOperator(const QString &type) { m_rangesTree.addOperator(type); }
 
 private:
-    Ranges m_ranges;
+    RangesTree m_rangesTree;
 };
 
-template<typename T>
 class WithConstraints
 {
 public:
     WithConstraints() = default;
     WithConstraints(const WithConstraints &other) = default;
 
-    T &constraints() { return m_constraints; }
-    const T &constraints() const { return m_constraints; }
+    RangeConstraints &constraints() { return m_constraints; }
+    const RangeConstraints &constraints() const { return m_constraints; }
 
 private:
-    T m_constraints;
+    RangeConstraints m_constraints;
 };
-
-using IntegerConstraints = RangeConstraints<int>;
-using RealConstraints = RangeConstraints<double>;
-using EnumeratedConstraints = RangeConstraints<int>;
-using StringConstraints = RangeConstraints<QString>;
 
 } // namespace Types
 } // namespace Data

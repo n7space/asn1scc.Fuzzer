@@ -25,36 +25,39 @@
 ****************************************************************************/
 #pragma once
 
+#include <memory>
+
 #include <QString>
 
-#include "constraints.h"
-#include "type.h"
+#include <data/expressiontree/expressionnode.h>
 
 namespace MalTester {
 namespace Data {
-namespace Types {
+namespace ExpressionTree {
 
-class SequenceOf : public Type, public WithConstraints
+template<typename T>
+class RangeNode : public ExpressionNode<T>
 {
 public:
-    SequenceOf() = default;
-    SequenceOf(const SequenceOf &other);
+    RangeNode(const T &range)
+        : m_range(range)
+    {}
 
-    QString name() const override { return QLatin1String("SEQUENCE OF"); }
-    void accept(TypeVisitor &visitor) override;
-    std::unique_ptr<Type> clone() const override;
+    ~RangeNode() override = default;
 
-    QString size() const { return m_size; }
-    void setSize(const QString &size) { m_size = size; }
+    std::unique_ptr<ExpressionNode<T>> clone() const override
+    {
+        return std::make_unique<RangeNode<T>>(*this);
+    }
 
-    const Type &itemsType() const { return *m_itemsType; }
-    void setItemsType(std::unique_ptr<Type> itemsType) { m_itemsType = std::move(itemsType); }
+    void appendChild(std::unique_ptr<ExpressionNode<T>> child) override { Q_UNUSED(child); }
+    bool isFull() const override { return true; }
+    QString asString() const override { return m_range->asString(); }
 
 private:
-    QString m_size;
-    std::unique_ptr<Type> m_itemsType;
+    const T m_range;
 };
 
-} // namespace Types
+} // namespace ExpressionTree
 } // namespace Data
 } // namespace MalTester

@@ -33,16 +33,12 @@ namespace MalTester {
 namespace Data {
 namespace ExpressionTree {
 
-template<typename T>
 class ExpressionNode
 {
 public:
     virtual ~ExpressionNode() = default;
 
-    virtual std::unique_ptr<ExpressionNode<T>> clone() const = 0;
-
-    virtual void appendChild(std::unique_ptr<ExpressionNode<T>> child) = 0;
-    virtual bool isFull() const = 0;
+    virtual std::unique_ptr<ExpressionNode> clone() const = 0;
     virtual QString asString() const = 0;
 };
 

@@ -27,6 +27,7 @@
 #include "ranges.h"
 
 using namespace MalTester::Data;
+using namespace MalTester::Data::ExpressionTree;
 
 IntegerRange::IntegerRange(const int &begin, const int &end)
     : TypedRange(begin, end)
@@ -38,6 +39,11 @@ QString IntegerRange::asString() const
         return QString::number(m_data.first) + " .. " + QString::number(m_data.second);
     else
         return QString::number(m_data.first);
+}
+
+std::unique_ptr<ExpressionNode> IntegerRange::clone() const
+{
+    return std::make_unique<IntegerRange>(*this);
 }
 
 RealRange::RealRange(const double &begin, const double &end)
@@ -52,6 +58,11 @@ QString RealRange::asString() const
         return QString::number(m_data.first);
 }
 
+std::unique_ptr<ExpressionNode> RealRange::clone() const
+{
+    return std::make_unique<RealRange>(*this);
+}
+
 EnumeratedRange::EnumeratedRange(const int &begin, const int &end)
     : TypedRange(begin, end)
 {}
@@ -64,14 +75,24 @@ QString EnumeratedRange::asString() const
         return QString::number(m_data.first);
 }
 
+std::unique_ptr<ExpressionNode> EnumeratedRange::clone() const
+{
+    return std::make_unique<EnumeratedRange>(*this);
+}
+
 StringRange::StringRange(const QString &begin, const QString &end)
     : TypedRange(begin, end)
 {}
 
+std::unique_ptr<ExpressionNode> StringRange::clone() const
+{
+    return std::make_unique<StringRange>(*this);
+}
+
 QString StringRange::asString() const
 {
     if (m_data.first != m_data.second)
-        return '"' + m_data.first + QStringLiteral("\" .. \"") + m_data.second + '"';
+        return '"' + m_data.first + "\" .. \"" + m_data.second + '"';
     else
         return '"' + m_data.first + '"';
 }

@@ -23,41 +23,32 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-#pragma once
 
-#include <memory>
+#include "rootnode.h"
 
-#include <QString>
+using namespace MalTester::Data::ExpressionTree;
 
-#include <data/expressiontree/expressionnode.h>
-
-namespace MalTester {
-namespace Data {
-namespace ExpressionTree {
-
-template<typename T>
-class RangeNode : public ExpressionNode<T>
+RootNode::RootNode(const RootNode &other)
 {
-public:
-    RangeNode(const T &range)
-        : m_range(range)
-    {}
+    for (const auto &child : other.m_children)
+        appendChild(child->clone());
+}
 
-    ~RangeNode() override = default;
+std::unique_ptr<ExpressionNode> RootNode::clone() const
+{
+    return std::make_unique<RootNode>(*this);
+}
 
-    std::unique_ptr<ExpressionNode<T>> clone() const override
-    {
-        return std::make_unique<RangeNode<T>>(*this);
-    }
+QString RootNode::asString() const
+{
+    QString res;
+    for (const auto &child : m_children)
+        res += '(' + child->asString() + ')';
 
-    void appendChild(std::unique_ptr<ExpressionNode<T>> child) override { Q_UNUSED(child); }
-    bool isFull() const override { return true; }
-    QString asString() const override { return m_range->asString(); }
+    return res;
+}
 
-private:
-    const T m_range;
-};
-
-} // namespace ExpressionTree
-} // namespace Data
-} // namespace MalTester
+void RootNode::appendChild(std::unique_ptr<const ExpressionNode> child)
+{
+    m_children.push_back(std::move(child));
+}

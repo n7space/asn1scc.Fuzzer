@@ -28,14 +28,16 @@
 #include <QPair>
 #include <QString>
 
+#include <data/expressiontree/expressionnode.h>
+
 namespace MalTester {
 namespace Data {
+namespace ExpressionTree {
 
-class Range
+class Range : public ExpressionTree::ExpressionNode
 {
 public:
     virtual ~Range() = default;
-    virtual QString asString() const = 0;
 };
 
 template<typename T>
@@ -56,6 +58,8 @@ class IntegerRange : public TypedRange<int>
 {
 public:
     IntegerRange(const int &begin, const int &end);
+
+    std::unique_ptr<ExpressionNode> clone() const override;
     QString asString() const override;
 };
 
@@ -63,6 +67,8 @@ class RealRange : public TypedRange<double>
 {
 public:
     RealRange(const double &begin, const double &end);
+
+    std::unique_ptr<ExpressionNode> clone() const override;
     QString asString() const override;
 };
 
@@ -70,6 +76,8 @@ class EnumeratedRange : public TypedRange<int>
 {
 public:
     EnumeratedRange(const int &begin, const int &end);
+
+    std::unique_ptr<ExpressionNode> clone() const override;
     QString asString() const override;
 };
 
@@ -77,8 +85,11 @@ class StringRange : public TypedRange<QString>
 {
 public:
     StringRange(const QString &begin, const QString &end);
+
+    std::unique_ptr<ExpressionNode> clone() const override;
     QString asString() const override;
 };
 
+} // namespace ExpressionTree
 } // namespace Data
 } // namespace MalTester

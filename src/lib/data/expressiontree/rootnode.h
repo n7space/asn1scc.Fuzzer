@@ -36,51 +36,20 @@ namespace MalTester {
 namespace Data {
 namespace ExpressionTree {
 
-template<typename T>
-class RootNode : public ExpressionNode<T>
+class RootNode : public ExpressionNode
 {
 public:
     RootNode() = default;
-    RootNode(const RootNode &other)
-    {
-        for (const auto &child : other.m_children)
-            appendChild(child->clone());
-    }
+    RootNode(const RootNode &other);
 
-    std::unique_ptr<ExpressionNode<T>> clone() const override
-    {
-        return std::make_unique<RootNode<T>>(*this);
-    }
-
-    void appendChild(std::unique_ptr<ExpressionNode<T>> child) override;
-    bool isFull() const override;
+    std::unique_ptr<ExpressionNode> clone() const override;
     QString asString() const override;
 
+    void appendChild(std::unique_ptr<const ExpressionNode> child);
+
 private:
-    std::vector<std::unique_ptr<ExpressionNode<T>>> m_children;
+    std::vector<std::unique_ptr<const ExpressionNode>> m_children;
 };
-
-template<typename T>
-inline QString RootNode<T>::asString() const
-{
-    QString res;
-    for (const auto &child : m_children)
-        res += '(' + child->asString() + ')';
-
-    return res;
-}
-
-template<typename T>
-inline void RootNode<T>::appendChild(std::unique_ptr<ExpressionNode<T>> child)
-{
-    m_children.push_back(std::move(child));
-}
-
-template<typename T>
-inline bool RootNode<T>::isFull() const
-{
-    return false;
-}
 
 } // namespace ExpressionTree
 } // namespace Data

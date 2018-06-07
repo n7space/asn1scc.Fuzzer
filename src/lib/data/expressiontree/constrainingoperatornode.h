@@ -35,27 +35,13 @@ namespace MalTester {
 namespace Data {
 namespace ExpressionTree {
 
-template<typename T>
-class ConstrainingOperatorNode : public ExpressionNode<T>
+class ConstrainingOperatorNode : public ExpressionNode
 {
 public:
-    ConstrainingOperatorNode(const QString &type)
-        : m_type(stringToOperatorType(type))
-        , m_child(nullptr)
-    {}
+    ConstrainingOperatorNode(const QString &type, const ExpressionNode *child);
+    ConstrainingOperatorNode(const ConstrainingOperatorNode &other);
 
-    ConstrainingOperatorNode(const ConstrainingOperatorNode &other)
-    {
-        m_child = other.m_child ? other.m_child->clone() : nullptr;
-    }
-
-    std::unique_ptr<ExpressionNode<T>> clone() const override
-    {
-        return std::make_unique<ConstrainingOperatorNode<T>>(*this);
-    }
-
-    void appendChild(std::unique_ptr<ExpressionNode<T>> child) override;
-    bool isFull() const override;
+    std::unique_ptr<ExpressionNode> clone() const override;
     QString asString() const override;
 
 private:
@@ -63,44 +49,8 @@ private:
     static NodeType stringToOperatorType(const QString &name);
 
     NodeType m_type;
-    std::unique_ptr<ExpressionNode<T>> m_child;
+    std::unique_ptr<const ExpressionNode> m_child;
 };
-
-template<typename T>
-inline void ConstrainingOperatorNode<T>::appendChild(std::unique_ptr<ExpressionNode<T>> child)
-{
-    m_child = std::move(child);
-}
-
-template<typename T>
-inline bool ConstrainingOperatorNode<T>::isFull() const
-{
-    return m_child != nullptr;
-}
-
-template<typename T>
-inline QString ConstrainingOperatorNode<T>::asString() const
-{
-    if (m_type == NodeType::SIZE)
-        return QStringLiteral("(SIZE (") + m_child->asString() + QStringLiteral("))");
-
-    if (m_type == NodeType::FROM)
-        return QStringLiteral("(FROM (") + m_child->asString() + QStringLiteral("))");
-
-    return {};
-}
-
-template<typename T>
-inline typename ConstrainingOperatorNode<T>::NodeType
-ConstrainingOperatorNode<T>::stringToOperatorType(const QString &name)
-{
-    if (name == QStringLiteral("SIZE"))
-        return NodeType::SIZE;
-    if (name == QStringLiteral("ALPHA"))
-        return NodeType::FROM;
-
-    return NodeType::UNKNOWN;
-}
 
 } // namespace ExpressionTree
 } // namespace Data

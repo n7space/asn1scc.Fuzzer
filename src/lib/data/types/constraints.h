@@ -30,8 +30,11 @@
 #include <QList>
 #include <QPair>
 
+#include <data/expressiontree/expressionnode.h>
 #include <data/expressiontree/expressiontree.h>
-#include <data/ranges.h>
+#include <data/expressiontree/rootnode.h>
+
+#include <data/expressiontree/ranges.h>
 
 namespace MalTester {
 namespace Data {
@@ -40,12 +43,11 @@ namespace Types {
 class RangeConstraints
 {
 public:
-    using RangesTree = ExpressionTree::ExpressionTree<const Range *>;
+    using RangesTree = ExpressionTree::ExpressionTree;
 
     const RangesTree &rangesTree() const { return m_rangesTree; }
 
-    void addRange(const Range *range) { m_rangesTree.addRange(range); }
-    void addOperator(const QString &type) { m_rangesTree.addOperator(type); }
+    void addToRoot(const ExpressionTree::ExpressionNode *node) { m_rangesTree.addToRoot(node); }
 
 private:
     RangesTree m_rangesTree;

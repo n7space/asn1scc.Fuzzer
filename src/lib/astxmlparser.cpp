@@ -154,33 +154,39 @@ private:
     const QXmlStreamAttributes &m_attributes;
 };
 
-class SubtreeAddingVisior : public Data::Types::TypeVisitor
+class SubtreeAddingVisitor : public Data::Types::TypeVisitor
 {
 public:
-    SubtreeAddingVisior(const Data::ExpressionTree::ExpressionNode *node)
+    SubtreeAddingVisitor(const Data::ExpressionTree::ExpressionNode *node)
         : m_node(node)
     {}
 
-    ~SubtreeAddingVisior() override = default;
+    ~SubtreeAddingVisitor() override = default;
 
     void visit(Data::Types::Boolean &type) override { Q_UNUSED(type); }
     void visit(Data::Types::Null &type) override { Q_UNUSED(type); }
 
-    void visit(Data::Types::BitString &type) override { type.constraints().addToRoot(m_node); }
-    void visit(Data::Types::OctetString &type) override { type.constraints().addToRoot(m_node); }
-    void visit(Data::Types::IA5String &type) override { type.constraints().addToRoot(m_node); }
-    void visit(Data::Types::NumericString &type) override { type.constraints().addToRoot(m_node); }
-    void visit(Data::Types::Enumerated &type) override { type.constraints().addToRoot(m_node); }
+    void visit(Data::Types::BitString &type) override { type.constraints().appendSubtree(m_node); }
+    void visit(Data::Types::OctetString &type) override
+    {
+        type.constraints().appendSubtree(m_node);
+    }
+    void visit(Data::Types::IA5String &type) override { type.constraints().appendSubtree(m_node); }
+    void visit(Data::Types::NumericString &type) override
+    {
+        type.constraints().appendSubtree(m_node);
+    }
+    void visit(Data::Types::Enumerated &type) override { type.constraints().appendSubtree(m_node); }
 
     void visit(Data::Types::Choice &type) override { Q_UNUSED(type); }
     void visit(Data::Types::Sequence &type) override { Q_UNUSED(type); }
 
-    void visit(Data::Types::SequenceOf &type) override { type.constraints().addToRoot(m_node); }
-    void visit(Data::Types::Real &type) override { type.constraints().addToRoot(m_node); }
+    void visit(Data::Types::SequenceOf &type) override { type.constraints().appendSubtree(m_node); }
+    void visit(Data::Types::Real &type) override { type.constraints().appendSubtree(m_node); }
 
     void visit(Data::Types::LabelType &type) override { Q_UNUSED(type); }
 
-    void visit(Data::Types::Integer &type) override { type.constraints().addToRoot(m_node); }
+    void visit(Data::Types::Integer &type) override { type.constraints().appendSubtree(m_node); }
 
     void visit(Data::Types::UserdefinedType &type) override { Q_UNUSED(type); }
 
@@ -1024,7 +1030,7 @@ void AstXmlParser::readExpressionTree(Data::Types::Type &type, const ConstraintT
         if (subtree == nullptr)
             continue;
 
-        SubtreeAddingVisior visitor(subtree);
+        SubtreeAddingVisitor visitor(subtree);
         type.accept(visitor);
     }
 }
@@ -1038,14 +1044,14 @@ const AstXmlParser::ExpressionNode *AstXmlParser::readExpressionSubtree(
         const auto child = readNodeNextChild(type, QStringLiteral("IntegerValue"));
 
         m_xmlReader.skipCurrentElement();
-        return new Data::ExpressionTree::ConstrainingOperatorNode(name, child);
+        return new Data::ExpressionTree::ConstrainingOperator(name, child);
     }
 
     if (name == QStringLiteral("ALPHA")) {
         const auto child = readNodeNextChild(type, QStringLiteral("StringValue"));
 
         m_xmlReader.skipCurrentElement();
-        return new Data::ExpressionTree::ConstrainingOperatorNode(name, child);
+        return new Data::ExpressionTree::ConstrainingOperator(name, child);
     }
 
     if (name == QStringLiteral("OR") || name == QStringLiteral("AND")) {
@@ -1054,7 +1060,7 @@ const AstXmlParser::ExpressionNode *AstXmlParser::readExpressionSubtree(
 
         m_xmlReader.skipCurrentElement();
 
-        return new Data::ExpressionTree::LogicOperatorNode(name, childLeft, childRight);
+        return new Data::ExpressionTree::LogicOperator(name, childLeft, childRight);
     }
 
     if (name == QStringLiteral("Range"))

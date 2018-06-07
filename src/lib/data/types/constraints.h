@@ -32,7 +32,6 @@
 
 #include <data/expressiontree/expressionnode.h>
 #include <data/expressiontree/expressiontree.h>
-#include <data/expressiontree/rootnode.h>
 
 #include <data/expressiontree/ranges.h>
 
@@ -47,7 +46,10 @@ public:
 
     const RangesTree &rangesTree() const { return m_rangesTree; }
 
-    void addToRoot(const ExpressionTree::ExpressionNode *node) { m_rangesTree.addToRoot(node); }
+    void appendSubtree(const ExpressionTree::ExpressionNode *node)
+    {
+        m_rangesTree.appendSubtree(node);
+    }
 
 private:
     RangesTree m_rangesTree;

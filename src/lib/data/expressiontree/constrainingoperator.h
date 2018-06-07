@@ -35,11 +35,11 @@ namespace MalTester {
 namespace Data {
 namespace ExpressionTree {
 
-class ConstrainingOperatorNode : public ExpressionNode
+class ConstrainingOperator : public ExpressionNode
 {
 public:
-    ConstrainingOperatorNode(const QString &type, const ExpressionNode *child);
-    ConstrainingOperatorNode(const ConstrainingOperatorNode &other);
+    ConstrainingOperator(const QString &type, const ExpressionNode *child);
+    ConstrainingOperator(const ConstrainingOperator &other);
 
     std::unique_ptr<ExpressionNode> clone() const override;
     QString asString() const override;

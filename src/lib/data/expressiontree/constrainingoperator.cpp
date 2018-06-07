@@ -23,39 +23,43 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-#pragma once
 
-#include <memory>
+#include "constrainingoperator.h"
 
-#include <QString>
+using namespace MalTester::Data::ExpressionTree;
 
-#include <data/expressiontree/expressionnode.h>
+ConstrainingOperator::ConstrainingOperator(const QString &type, const ExpressionNode *child)
+    : m_type(stringToOperatorType(type))
+    , m_child(child)
+{}
 
-namespace MalTester {
-namespace Data {
-namespace ExpressionTree {
-
-class LogicOperatorNode : public ExpressionNode
+ConstrainingOperator::ConstrainingOperator(const ConstrainingOperator &other)
 {
-public:
-    LogicOperatorNode(const QString &type,
-                      const ExpressionNode *leftChild,
-                      const ExpressionNode *rightChild);
+    m_child = other.m_child ? other.m_child->clone() : nullptr;
+}
 
-    LogicOperatorNode(const LogicOperatorNode &other);
+std::unique_ptr<ExpressionNode> ConstrainingOperator::clone() const
+{
+    return std::make_unique<ConstrainingOperator>(*this);
+}
 
-    std::unique_ptr<ExpressionNode> clone() const override;
-    QString asString() const override;
+QString ConstrainingOperator::asString() const
+{
+    if (m_type == NodeType::SIZE)
+        return QStringLiteral("(SIZE (") + m_child->asString() + QStringLiteral("))");
 
-private:
-    enum class NodeType { AND, OR, UNKNOWN };
-    static NodeType stringToOperatorType(const QString &name);
+    if (m_type == NodeType::FROM)
+        return QStringLiteral("(FROM (") + m_child->asString() + QStringLiteral("))");
 
-    NodeType m_type;
-    std::unique_ptr<const ExpressionNode> m_leftChild;
-    std::unique_ptr<const ExpressionNode> m_rightChild;
-};
+    return {};
+}
 
-} // namespace ExpressionTree
-} // namespace Data
-} // namespace MalTester
+ConstrainingOperator::NodeType ConstrainingOperator::stringToOperatorType(const QString &name)
+{
+    if (name == QStringLiteral("SIZE"))
+        return NodeType::SIZE;
+    if (name == QStringLiteral("ALPHA"))
+        return NodeType::FROM;
+
+    return NodeType::UNKNOWN;
+}

@@ -26,15 +26,13 @@
 #pragma once
 
 #include <memory>
-#include <stack>
 
 #include <QString>
 
-#include <data/expressiontree/constrainingoperatornode.h>
+#include <data/expressiontree/constrainingoperator.h>
 #include <data/expressiontree/expressionnode.h>
-#include <data/expressiontree/logicoperatornode.h>
+#include <data/expressiontree/logicoperator.h>
 #include <data/expressiontree/ranges.h>
-#include <data/expressiontree/rootnode.h>
 
 namespace MalTester {
 namespace Data {
@@ -43,24 +41,18 @@ namespace ExpressionTree {
 class ExpressionTree
 {
 public:
-    ExpressionTree()
-        : m_root(new RootNode)
-    {}
+    ExpressionTree();
+    ~ExpressionTree();
 
-    ExpressionTree(const ExpressionTree &other)
-    {
-        m_root = std::make_unique<RootNode>(*other.m_root);
-    }
+    ExpressionTree(const ExpressionTree &other);
 
-    void addToRoot(const ExpressionNode *node)
-    {
-        m_root->appendChild(std::unique_ptr<const ExpressionNode>(node));
-    }
+    void appendSubtree(const ExpressionNode *node);
 
-    QString expression() const { return m_root->asString(); }
+    QString expression() const;
 
 private:
-    std::unique_ptr<RootNode> m_root;
+    class Root;
+    std::unique_ptr<Root> m_root;
 };
 
 } // namespace ExpressionTree

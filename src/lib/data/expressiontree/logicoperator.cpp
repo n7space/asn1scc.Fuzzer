@@ -24,30 +24,30 @@
 **
 ****************************************************************************/
 
-#include "logicoperatornode.h"
+#include "logicoperator.h"
 
 using namespace MalTester::Data::ExpressionTree;
 
-LogicOperatorNode::LogicOperatorNode(const QString &type,
-                                     const ExpressionNode *leftChild,
-                                     const ExpressionNode *rightChild)
+LogicOperator::LogicOperator(const QString &type,
+                             const ExpressionNode *leftChild,
+                             const ExpressionNode *rightChild)
     : m_type(stringToOperatorType(type))
     , m_leftChild(leftChild)
     , m_rightChild(rightChild)
 {}
 
-LogicOperatorNode::LogicOperatorNode(const LogicOperatorNode &other)
+LogicOperator::LogicOperator(const LogicOperator &other)
 {
     m_leftChild = other.m_leftChild ? other.m_leftChild->clone() : nullptr;
     m_rightChild = other.m_rightChild ? other.m_rightChild->clone() : nullptr;
 }
 
-std::unique_ptr<ExpressionNode> LogicOperatorNode::clone() const
+std::unique_ptr<ExpressionNode> LogicOperator::clone() const
 {
-    return std::make_unique<LogicOperatorNode>(*this);
+    return std::make_unique<LogicOperator>(*this);
 }
 
-QString LogicOperatorNode::LogicOperatorNode::asString() const
+QString LogicOperator::LogicOperator::asString() const
 {
     QString left;
     QString middle;
@@ -67,13 +67,12 @@ QString LogicOperatorNode::LogicOperatorNode::asString() const
     return QLatin1Char('(') + left + middle + right + QLatin1Char(')');
 }
 
-LogicOperatorNode::NodeType LogicOperatorNode::LogicOperatorNode::stringToOperatorType(
-    const QString &name)
+LogicOperator::NodeType LogicOperator::LogicOperator::stringToOperatorType(const QString &name)
 {
     if (name == QStringLiteral("OR"))
-        return LogicOperatorNode::NodeType::OR;
+        return LogicOperator::NodeType::OR;
     if (name == QStringLiteral("AND"))
-        return LogicOperatorNode::NodeType::AND;
+        return LogicOperator::NodeType::AND;
 
-    return LogicOperatorNode::NodeType::UNKNOWN;
+    return LogicOperator::NodeType::UNKNOWN;
 }

@@ -37,9 +37,9 @@ SOURCES += \
     data/types/real.cpp \
     data/types/asciistringacnparameters.cpp \
     \
-    data/expressiontree/constrainingoperatornode.cpp \
-    data/expressiontree/logicoperatornode.cpp \
-    data/expressiontree/rootnode.cpp \
+    data/expressiontree/expressiontree.cpp \
+    data/expressiontree/constrainingoperator.cpp \
+    data/expressiontree/logicoperator.cpp \
     data/expressiontree/ranges.cpp \
     \
     astxmlparser.cpp \
@@ -96,9 +96,8 @@ HEADERS += \
     data/expressiontree/ranges.h \
     data/expressiontree/expressiontree.h \
     data/expressiontree/expressionnode.h \
-    data/expressiontree/rootnode.h \
-    data/expressiontree/logicoperatornode.h \
-    data/expressiontree/constrainingoperatornode.h \
+    data/expressiontree/logicoperator.h \
+    data/expressiontree/constrainingoperator.h \
     \
     astxmlparser.h \
     runparameters.h \

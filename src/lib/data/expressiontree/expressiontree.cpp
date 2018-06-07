@@ -23,34 +23,60 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-#pragma once
 
-#include <memory>
+#include "expressiontree.h"
+
 #include <vector>
 
-#include <QString>
+using namespace MalTester::Data::ExpressionTree;
 
-#include <data/expressiontree/expressionnode.h>
-
-namespace MalTester {
-namespace Data {
-namespace ExpressionTree {
-
-class RootNode : public ExpressionNode
+class ExpressionTree::Root : public ExpressionNode
 {
 public:
-    RootNode() = default;
-    RootNode(const RootNode &other);
+    Root() = default;
+    Root(const Root &other)
+    {
+        for (const auto &child : other.m_children)
+            appendChild(child->clone());
+    }
 
-    std::unique_ptr<ExpressionNode> clone() const override;
-    QString asString() const override;
+    std::unique_ptr<ExpressionNode> clone() const override { return std::make_unique<Root>(*this); }
 
-    void appendChild(std::unique_ptr<const ExpressionNode> child);
+    QString asString() const override
+    {
+        QString res;
+        for (const auto &child : m_children)
+            res += '(' + child->asString() + ')';
+
+        return res;
+    }
+
+    void appendChild(std::unique_ptr<const ExpressionNode> child)
+    {
+        m_children.push_back(std::move(child));
+    }
 
 private:
     std::vector<std::unique_ptr<const ExpressionNode>> m_children;
 };
 
-} // namespace ExpressionTree
-} // namespace Data
-} // namespace MalTester
+ExpressionTree::ExpressionTree()
+    : m_root(new Root)
+{}
+
+ExpressionTree::~ExpressionTree() {}
+
+ExpressionTree::ExpressionTree(const ExpressionTree &other)
+{
+    m_root = std::make_unique<Root>(*other.m_root);
+}
+
+void ExpressionTree::appendSubtree(const ExpressionNode *node)
+{
+    m_root->appendChild(std::unique_ptr<const ExpressionNode>(node));
+}
+
+QString ExpressionTree::expression() const
+{
+    return m_root->asString();
+}

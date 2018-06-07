@@ -23,32 +23,39 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
+#pragma once
 
-#include "rootnode.h"
+#include <memory>
 
-using namespace MalTester::Data::ExpressionTree;
+#include <QString>
 
-RootNode::RootNode(const RootNode &other)
+#include <data/expressiontree/expressionnode.h>
+
+namespace MalTester {
+namespace Data {
+namespace ExpressionTree {
+
+class LogicOperator : public ExpressionNode
 {
-    for (const auto &child : other.m_children)
-        appendChild(child->clone());
-}
+public:
+    LogicOperator(const QString &type,
+                  const ExpressionNode *leftChild,
+                  const ExpressionNode *rightChild);
 
-std::unique_ptr<ExpressionNode> RootNode::clone() const
-{
-    return std::make_unique<RootNode>(*this);
-}
+    LogicOperator(const LogicOperator &other);
 
-QString RootNode::asString() const
-{
-    QString res;
-    for (const auto &child : m_children)
-        res += '(' + child->asString() + ')';
+    std::unique_ptr<ExpressionNode> clone() const override;
+    QString asString() const override;
 
-    return res;
-}
+private:
+    enum class NodeType { AND, OR, UNKNOWN };
+    static NodeType stringToOperatorType(const QString &name);
 
-void RootNode::appendChild(std::unique_ptr<const ExpressionNode> child)
-{
-    m_children.push_back(std::move(child));
-}
+    NodeType m_type;
+    std::unique_ptr<const ExpressionNode> m_leftChild;
+    std::unique_ptr<const ExpressionNode> m_rightChild;
+};
+
+} // namespace ExpressionTree
+} // namespace Data
+} // namespace MalTester

@@ -25,49 +25,71 @@
 ****************************************************************************/
 #pragma once
 
-#include <functional>
-
-#include <QList>
 #include <QPair>
+#include <QString>
 
 #include <data/expressiontree/expressionnode.h>
-#include <data/expressiontree/expressiontree.h>
-
-#include <data/expressiontree/ranges.h>
 
 namespace MalTester {
 namespace Data {
-namespace Types {
+namespace ExpressionTree {
 
-class RangeConstraints
+class Range : public ExpressionTree::ExpressionNode
 {
 public:
-    using RangesTree = ExpressionTree::ExpressionTree;
-
-    const RangesTree &rangesTree() const { return m_rangesTree; }
-
-    void appendSubtree(const ExpressionTree::ExpressionNode *node)
-    {
-        m_rangesTree.appendSubtree(node);
-    }
-
-private:
-    RangesTree m_rangesTree;
+    virtual ~Range() = default;
 };
 
-class WithConstraints
+template<typename T>
+class TypedRange : public Range
 {
 public:
-    WithConstraints() = default;
-    WithConstraints(const WithConstraints &other) = default;
+    TypedRange(const T &begin, const T &end)
+        : m_data(begin, end)
+    {}
 
-    RangeConstraints &constraints() { return m_constraints; }
-    const RangeConstraints &constraints() const { return m_constraints; }
+    ~TypedRange() override = default;
 
-private:
-    RangeConstraints m_constraints;
+protected:
+    QPair<T, T> m_data;
 };
 
-} // namespace Types
+class IntegerRange : public TypedRange<int>
+{
+public:
+    IntegerRange(const int &begin, const int &end);
+
+    std::unique_ptr<ExpressionNode> clone() const override;
+    QString asString() const override;
+};
+
+class RealRange : public TypedRange<double>
+{
+public:
+    RealRange(const double &begin, const double &end);
+
+    std::unique_ptr<ExpressionNode> clone() const override;
+    QString asString() const override;
+};
+
+class EnumeratedRange : public TypedRange<int>
+{
+public:
+    EnumeratedRange(const int &begin, const int &end);
+
+    std::unique_ptr<ExpressionNode> clone() const override;
+    QString asString() const override;
+};
+
+class StringRange : public TypedRange<QString>
+{
+public:
+    StringRange(const QString &begin, const QString &end);
+
+    std::unique_ptr<ExpressionNode> clone() const override;
+    QString asString() const override;
+};
+
+} // namespace ExpressionTree
 } // namespace Data
 } // namespace MalTester

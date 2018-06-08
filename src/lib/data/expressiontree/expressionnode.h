@@ -25,36 +25,23 @@
 ****************************************************************************/
 #pragma once
 
-#include <QString>
+#include <memory>
 
-#include "constraints.h"
-#include "type.h"
+#include <QString>
 
 namespace MalTester {
 namespace Data {
-namespace Types {
+namespace ExpressionTree {
 
-class SequenceOf : public Type, public WithConstraints
+class ExpressionNode
 {
 public:
-    SequenceOf() = default;
-    SequenceOf(const SequenceOf &other);
+    virtual ~ExpressionNode() = default;
 
-    QString name() const override { return QLatin1String("SEQUENCE OF"); }
-    void accept(TypeVisitor &visitor) override;
-    std::unique_ptr<Type> clone() const override;
-
-    QString size() const { return m_size; }
-    void setSize(const QString &size) { m_size = size; }
-
-    const Type &itemsType() const { return *m_itemsType; }
-    void setItemsType(std::unique_ptr<Type> itemsType) { m_itemsType = std::move(itemsType); }
-
-private:
-    QString m_size;
-    std::unique_ptr<Type> m_itemsType;
+    virtual std::unique_ptr<ExpressionNode> clone() const = 0;
+    virtual QString asString() const = 0;
 };
 
-} // namespace Types
+} // namespace ExpressionTree
 } // namespace Data
 } // namespace MalTester

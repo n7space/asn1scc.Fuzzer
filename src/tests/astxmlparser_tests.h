@@ -111,6 +111,8 @@ private slots:
     void test_bitStringWithValueDefined();
     void test_bitStringAcnParams();
 
+    void test_notRelatedConstraintsInNumericString();
+
 private:
     template<typename Collection>
     auto itemFromCollection(const Collection &col, const QString &id);

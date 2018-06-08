@@ -28,6 +28,7 @@
 #include <QTest>
 
 #include <astxmlparser_tests.h>
+#include <expressiontree_tests.h>
 
 int main(int argc, char *argv[])
 {
@@ -38,6 +39,7 @@ int main(int argc, char *argv[])
     const auto runTest = [&ret](QObject *obj) { ret |= QTest::qExec(obj); };
 
     runTest(new MalTester::Tests::AstXmlParserTests);
+    runTest(new MalTester::Tests::ExpressionTreeTests);
 
     return ret;
 }

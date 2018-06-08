@@ -33,7 +33,7 @@ namespace MalTester {
 namespace Data {
 namespace Types {
 
-class Integer : public Type, public WithConstraints<IntegerConstraints>, public IntegerAcnParameters
+class Integer : public Type, public WithConstraints, public IntegerAcnParameters
 {
 public:
     Integer() = default;

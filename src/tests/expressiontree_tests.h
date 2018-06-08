@@ -25,36 +25,30 @@
 ****************************************************************************/
 #pragma once
 
-#include <QString>
-
-#include "constraints.h"
-#include "type.h"
+#include <QObject>
 
 namespace MalTester {
-namespace Data {
-namespace Types {
+namespace Tests {
 
-class SequenceOf : public Type, public WithConstraints
+class ExpressionTreeTests : public QObject
 {
+    Q_OBJECT
 public:
-    SequenceOf() = default;
-    SequenceOf(const SequenceOf &other);
+    explicit ExpressionTreeTests(QObject *parent = 0);
 
-    QString name() const override { return QLatin1String("SEQUENCE OF"); }
-    void accept(TypeVisitor &visitor) override;
-    std::unique_ptr<Type> clone() const override;
+private slots:
+    void test_emptyTree();
+    void test_singleValue();
 
-    QString size() const { return m_size; }
-    void setSize(const QString &size) { m_size = size; }
+    void test_alternativesExpression();
+    void test_sumsExpression();
+    void test_alternativesAndSumsExpression();
 
-    const Type &itemsType() const { return *m_itemsType; }
-    void setItemsType(std::unique_ptr<Type> itemsType) { m_itemsType = std::move(itemsType); }
+    void test_sizeExpression();
+    void test_sizeAndAlphabetExpression();
 
-private:
-    QString m_size;
-    std::unique_ptr<Type> m_itemsType;
+    void test_logicalAndConstrainingOperators();
 };
 
-} // namespace Types
-} // namespace Data
+} // namespace Tests
 } // namespace MalTester

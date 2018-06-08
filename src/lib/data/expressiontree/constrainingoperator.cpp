@@ -23,38 +23,43 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-#pragma once
 
-#include <QString>
+#include "constrainingoperator.h"
 
-#include "constraints.h"
-#include "type.h"
+using namespace MalTester::Data::ExpressionTree;
 
-namespace MalTester {
-namespace Data {
-namespace Types {
+ConstrainingOperator::ConstrainingOperator(const QString &type, const ExpressionNode *child)
+    : m_type(stringToOperatorType(type))
+    , m_child(child)
+{}
 
-class SequenceOf : public Type, public WithConstraints
+ConstrainingOperator::ConstrainingOperator(const ConstrainingOperator &other)
 {
-public:
-    SequenceOf() = default;
-    SequenceOf(const SequenceOf &other);
+    m_child = other.m_child ? other.m_child->clone() : nullptr;
+}
 
-    QString name() const override { return QLatin1String("SEQUENCE OF"); }
-    void accept(TypeVisitor &visitor) override;
-    std::unique_ptr<Type> clone() const override;
+std::unique_ptr<ExpressionNode> ConstrainingOperator::clone() const
+{
+    return std::make_unique<ConstrainingOperator>(*this);
+}
 
-    QString size() const { return m_size; }
-    void setSize(const QString &size) { m_size = size; }
+QString ConstrainingOperator::asString() const
+{
+    if (m_type == NodeType::SIZE)
+        return QStringLiteral("(SIZE (") + m_child->asString() + QStringLiteral("))");
 
-    const Type &itemsType() const { return *m_itemsType; }
-    void setItemsType(std::unique_ptr<Type> itemsType) { m_itemsType = std::move(itemsType); }
+    if (m_type == NodeType::FROM)
+        return QStringLiteral("(FROM (") + m_child->asString() + QStringLiteral("))");
 
-private:
-    QString m_size;
-    std::unique_ptr<Type> m_itemsType;
-};
+    return {};
+}
 
-} // namespace Types
-} // namespace Data
-} // namespace MalTester
+ConstrainingOperator::NodeType ConstrainingOperator::stringToOperatorType(const QString &name)
+{
+    if (name == QStringLiteral("SIZE"))
+        return NodeType::SIZE;
+    if (name == QStringLiteral("ALPHA"))
+        return NodeType::FROM;
+
+    return NodeType::UNKNOWN;
+}

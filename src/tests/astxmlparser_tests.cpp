@@ -166,7 +166,7 @@ void AstXmlParserTests::test_builtinTypeReference_data()
     QTest::newRow("OctetString")   << "OCTET_STRING"  << "OCTET STRING";
     QTest::newRow("IA5String")     << "IA5String"     << "IA5String";
     QTest::newRow("NumericString") << "NumericString" << "NumericString";
-    QTest::newRow("Enumerated")    << "Enumerated"    << "ENUMERATED";
+    QTest::newRow("Enumerated")    << "ENUMERATED"    << "ENUMERATED";
     QTest::newRow("Choice")        << "CHOICE"        << "CHOICE";
     QTest::newRow("Sequence")      << "SEQUENCE"      << "SEQUENCE";
     QTest::newRow("SequenceOf")    << "SEQUENCE_OF"   << "SEQUENCE OF";
@@ -717,7 +717,7 @@ void AstXmlParserTests::test_enumeratedItems()
         R"(        <TypeAssignments>)"
         R"(          <TypeAssignment Name="MyEnum" Line="9" CharPositionInLine="0">)"
         R"(            <Asn1Type id="Constrained.MyEnum" Line="9" CharPositionInLine="21" ParameterizedTypeInstance="false">)"
-        R"(              <Enumerated>)"
+        R"(              <ENUMERATED>)"
         R"(                <Items>)"
         R"(                  <Item Name="ldev1" Value="0" Line="11" CharPositionInLine="4" />)"
         R"(                  <Item Name="ldev2" Value="1" Line="12" CharPositionInLine="4" />)"
@@ -725,7 +725,7 @@ void AstXmlParserTests::test_enumeratedItems()
         R"(                </Items>)"
         R"(                <Constraints />)"
         R"(                <WithComponentConstraints />)"
-        R"(              </Enumerated>)"
+        R"(              </ENUMERATED>)"
         R"(            </Asn1Type>)"
         R"(          </TypeAssignment>)"
         R"(        </TypeAssignments>)"
@@ -767,7 +767,7 @@ void AstXmlParserTests::test_enumeratedConstraints()
         R"(        <TypeAssignments>)"
         R"(          <TypeAssignment Name="MyEnum" Line="9" CharPositionInLine="0">)"
         R"(            <Asn1Type id="Constrained.MyEnum" Line="9" CharPositionInLine="21" ParameterizedTypeInstance="false">)"
-        R"(              <Enumerated>)"
+        R"(              <ENUMERATED>)"
         R"(                <Items>)"
         R"(                  <Item Name="ldev1" Value="0" Line="11" CharPositionInLine="4" />)"
         R"(                  <Item Name="ldev2" Value="1" Line="12" CharPositionInLine="4" />)"
@@ -783,7 +783,7 @@ void AstXmlParserTests::test_enumeratedConstraints()
         R"(                  </OR>)"
         R"(                </Constraints>)"
         R"(                <WithComponentConstraints />)"
-        R"(              </Enumerated>)"
+        R"(              </ENUMERATED>)"
         R"(            </Asn1Type>)"
         R"(          </TypeAssignment>)"
         R"(        </TypeAssignments>)"
@@ -794,12 +794,8 @@ void AstXmlParserTests::test_enumeratedConstraints()
 
     const auto type = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyEnum");
     const auto enumType = dynamic_cast<const Data::Types::Enumerated *>(type->type());
-    const auto constraintRanges = enumType->constraints().ranges();
 
-    QCOMPARE(constraintRanges.size(), 3);
-    QVERIFY(constraintRanges.contains({0, 0}));
-    QVERIFY(constraintRanges.contains({1, 1}));
-    QVERIFY(constraintRanges.contains({2, 2}));
+    QCOMPARE(enumType->constraints().rangesTree().expression(), QStringLiteral("(((0 | 1) | 2))"));
 }
 
 void AstXmlParserTests::test_enumeratedWithAcnParams()
@@ -813,7 +809,7 @@ void AstXmlParserTests::test_enumeratedWithAcnParams()
         R"(        <TypeAssignments>)"
         R"(          <TypeAssignment Name="MyEnum" Line="9" CharPositionInLine="0">)"
         R"(            <Asn1Type id="Constrained.MyEnum" Line="9" CharPositionInLine="21" ParameterizedTypeInstance="false" align-to-next="dword">)"
-        R"(              <Enumerated endianness="big" size="8" encoding="BCD" encode-values="false">)"
+        R"(              <ENUMERATED endianness="big" size="8" encoding="BCD" encode-values="false">)"
         R"(                <Items>)"
         R"(                  <Item Name="ldev1" Value="0" Line="11" CharPositionInLine="4" />)"
         R"(                  <Item Name="ldev2" Value="1" Line="12" CharPositionInLine="4" />)"
@@ -821,7 +817,7 @@ void AstXmlParserTests::test_enumeratedWithAcnParams()
         R"(                </Items>)"
         R"(                <Constraints />)"
         R"(                <WithComponentConstraints />)"
-        R"(              </Enumerated>)"
+        R"(              </ENUMERATED>)"
         R"(            </Asn1Type>)"
         R"(          </TypeAssignment>)"
         R"(        </TypeAssignments>)"
@@ -869,10 +865,8 @@ void AstXmlParserTests::test_singleIntegerTypeAssignmentWithSimpleConstraint()
 
     const auto type = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyInt");
     const auto intType = dynamic_cast<const Data::Types::Integer *>(type->type());
-    const auto constraintRanges = intType->constraints().ranges();
 
-    QCOMPARE(constraintRanges.size(), 1);
-    QVERIFY(constraintRanges.contains({1, 1}));
+    QCOMPARE(intType->constraints().rangesTree().expression(), QStringLiteral("(1)"));
 }
 
 void AstXmlParserTests::test_singleIntegerTypeAssignmentWithRangedConstraints()
@@ -893,20 +887,20 @@ void AstXmlParserTests::test_singleIntegerTypeAssignmentWithRangedConstraints()
           R"(                        <OR>
           R"(                          <OR>
           R"(                            <Range>
-          R"(                              <a>
+          R"(                              <Min>
           R"(                                <IntegerValue>10</IntegerValue>
-          R"(                              </a>
-          R"(                              <b>
+          R"(                              </Min>
+          R"(                              <Max>
           R"(                                <IntegerValue>20</IntegerValue>
-          R"(                              </b>
+          R"(                              </Max>
           R"(                            </Range>
           R"(                            <Range>
-          R"(                              <a>
+          R"(                              <Min>
           R"(                                <IntegerValue>30</IntegerValue>
-          R"(                              </a>
-          R"(                              <b>
+          R"(                              </Min>
+          R"(                              <Max>
           R"(                                <IntegerValue>40</IntegerValue>
-          R"(                              </b>
+          R"(                              </Max>
           R"(                            </Range>
           R"(                          </OR>
           R"(                          <IntegerValue>42</IntegerValue>
@@ -916,12 +910,12 @@ void AstXmlParserTests::test_singleIntegerTypeAssignmentWithRangedConstraints()
           R"(                      <IntegerValue>46</IntegerValue>
           R"(                    </OR>
           R"(                    <Range>
-          R"(                      <a>
+          R"(                      <Min>
           R"(                        <IntegerValue>50</IntegerValue>
-          R"(                      </a>
-          R"(                      <b>
+          R"(                      </Min>
+          R"(                      <Max>
           R"(                        <IntegerValue>80</IntegerValue>
-          R"(                      </b>
+          R"(                      </Max>
           R"(                    </Range>
           R"(                  </OR>
           R"(                </Constraints>
@@ -937,16 +931,8 @@ void AstXmlParserTests::test_singleIntegerTypeAssignmentWithRangedConstraints()
 
     const auto type = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyInt");
     const auto intType = dynamic_cast<const Data::Types::Integer *>(type->type());
-    const auto constraintRanges = intType->constraints().ranges();
-
-    QCOMPARE(constraintRanges.size(), 6);
-
-    QVERIFY(constraintRanges.contains({10, 20}));
-    QVERIFY(constraintRanges.contains({30, 40}));
-    QVERIFY(constraintRanges.contains({42, 42}));
-    QVERIFY(constraintRanges.contains({44, 44}));
-    QVERIFY(constraintRanges.contains({46, 46}));
-    QVERIFY(constraintRanges.contains({50, 80}));
+    QCOMPARE(intType->constraints().rangesTree().expression(),
+             QStringLiteral("((((((10 .. 20 | 30 .. 40) | 42) | 44) | 46) | 50 .. 80))"));
 }
 
 void AstXmlParserTests::test_singleIntegerTypeAssignmentWithAcnParams()
@@ -1011,11 +997,7 @@ void AstXmlParserTests::test_singleRealTypeAssignmentWithSimpleConstraint()
 
     const auto type = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyReal");
     const auto realType = dynamic_cast<const Data::Types::Real *>(type->type());
-    const auto constraintRanges = realType->constraints().ranges();
-
-    QCOMPARE(constraintRanges.size(), 1);
-    QVERIFY(qFuzzyCompare(constraintRanges.at(0).first, 1.1));
-    QVERIFY(qFuzzyCompare(constraintRanges.at(0).second, 1.1));
+    QCOMPARE(realType->constraints().rangesTree().expression(), QStringLiteral("(1.1)"));
 }
 
 void AstXmlParserTests::test_singleRealTypeAssignmentWithRangedConstraints()
@@ -1033,20 +1015,20 @@ void AstXmlParserTests::test_singleRealTypeAssignmentWithRangedConstraints()
         R"(                <Constraints>)"
         R"(                  <OR>)"
         R"(                    <Range>)"
-        R"(                      <a>)"
+        R"(                      <Min>)"
         R"(                        <RealValue>1.1</RealValue>)"
-        R"(                      </a>)"
-        R"(                      <b>)"
+        R"(                      </Min>)"
+        R"(                      <Max>)"
         R"(                        <RealValue>2.5</RealValue>)"
-        R"(                      </b>)"
+        R"(                      </Max>)"
         R"(                    </Range>)"
         R"(                    <Range>)"
-        R"(                      <a>)"
+        R"(                      <Min>)"
         R"(                        <RealValue>4.5</RealValue>)"
-        R"(                      </a>)"
-        R"(                      <b>)"
+        R"(                      </Min>)"
+        R"(                      <Max>)"
         R"(                        <RealValue>5.5</RealValue>)"
-        R"(                      </b>)"
+        R"(                      </Max>)"
         R"(                    </Range>)"
         R"(                  </OR>)"
         R"(                </Constraints>)"
@@ -1062,15 +1044,8 @@ void AstXmlParserTests::test_singleRealTypeAssignmentWithRangedConstraints()
 
     const auto type = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyReal");
     const auto realType = dynamic_cast<const Data::Types::Real *>(type->type());
-    const auto constraintRanges = realType->constraints().ranges();
-
-    QCOMPARE(constraintRanges.size(), 2);
-
-    QVERIFY(qFuzzyCompare(constraintRanges.at(0).first, 1.1));
-    QVERIFY(qFuzzyCompare(constraintRanges.at(0).second, 2.5));
-
-    QVERIFY(qFuzzyCompare(constraintRanges.at(1).first, 4.5));
-    QVERIFY(qFuzzyCompare(constraintRanges.at(1).second, 5.5));
+    QCOMPARE(realType->constraints().rangesTree().expression(),
+             QStringLiteral("((1.1 .. 2.5 | 4.5 .. 5.5))"));
 }
 
 void AstXmlParserTests::test_singleRealTypeAssignmentWithAcnParams()
@@ -1140,12 +1115,9 @@ void AstXmlParserTests::test_sequenceOfAssignmentWithSimpleConstraint()
         R"(</AstRoot>)");
 
     const auto type = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MySeq0");
-    const auto realType = dynamic_cast<const Data::Types::SequenceOf *>(type->type());
-    const auto constraintRanges = realType->constraints().ranges();
-
-    QCOMPARE(constraintRanges.size(), 1);
-    QCOMPARE(constraintRanges.at(0).first, 10);
-    QCOMPARE(constraintRanges.at(0).second, 10);
+    const auto sequenceOfType = dynamic_cast<const Data::Types::SequenceOf *>(type->type());
+    QCOMPARE(sequenceOfType->constraints().rangesTree().expression(),
+             QStringLiteral("((SIZE (10)))"));
 }
 
 void AstXmlParserTests::test_sequenceOfAssignmentWithMultipleRangeConstraints()
@@ -1164,22 +1136,22 @@ void AstXmlParserTests::test_sequenceOfAssignmentWithMultipleRangeConstraints()
         R"(                  <OR>)"
         R"(                    <SIZE>)"
         R"(                      <Range>)"
-        R"(                        <a>)"
+        R"(                        <Min>)"
         R"(                          <IntegerValue>0</IntegerValue>)"
-        R"(                        </a>)"
-        R"(                        <b>)"
+        R"(                        </Min>)"
+        R"(                        <Max>)"
         R"(                          <IntegerValue>10</IntegerValue>)"
-        R"(                        </b>)"
+        R"(                        </Max>)"
         R"(                     </Range>)"
         R"(                   </SIZE>)"
         R"(                   <SIZE>)"
         R"(                     <Range>)"
-        R"(                       <a>)"
+        R"(                       <Min>)"
         R"(                         <IntegerValue>20</IntegerValue>)"
-        R"(                       </a>)"
-        R"(                       <b>)"
+        R"(                       </Min>)"
+        R"(                       <Max>)"
         R"(                         <IntegerValue>22</IntegerValue>)"
-        R"(                       </b>)"
+        R"(                       </Max>)"
         R"(                     </Range>)"
         R"(                   </SIZE>)"
         R"(                 </OR>)"
@@ -1201,12 +1173,9 @@ void AstXmlParserTests::test_sequenceOfAssignmentWithMultipleRangeConstraints()
         R"(</AstRoot>)");
 
     const auto type = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MySeq0");
-    const auto realType = dynamic_cast<const Data::Types::SequenceOf *>(type->type());
-    const auto constraintRanges = realType->constraints().ranges();
-
-    QCOMPARE(constraintRanges.size(), 2);
-    QVERIFY(constraintRanges.contains({0, 10}));
-    QVERIFY(constraintRanges.contains({20, 22}));
+    const auto sequenceOfType = dynamic_cast<const Data::Types::SequenceOf *>(type->type());
+    QCOMPARE(sequenceOfType->constraints().rangesTree().expression(),
+             QStringLiteral("(((SIZE (0 .. 10)) | (SIZE (20 .. 22))))"));
 }
 
 void AstXmlParserTests::test_sequenceOfAssignmentWithRangeConstraintInsideSizeConstraint()
@@ -1225,20 +1194,20 @@ void AstXmlParserTests::test_sequenceOfAssignmentWithRangeConstraintInsideSizeCo
         R"(                  <SIZE>)"
         R"(                    <OR>)"
         R"(                      <Range>)"
-        R"(                        <a>)"
+        R"(                        <Min>)"
         R"(                          <IntegerValue>0</IntegerValue>)"
-        R"(                        </a>)"
-        R"(                        <b>)"
+        R"(                        </Min>)"
+        R"(                        <Max>)"
         R"(                          <IntegerValue>10</IntegerValue>)"
-        R"(                        </b>)"
+        R"(                        </Max>)"
         R"(                     </Range>)"
         R"(                     <Range>)"
-        R"(                       <a>)"
+        R"(                       <Min>)"
         R"(                         <IntegerValue>20</IntegerValue>)"
-        R"(                       </a>)"
-        R"(                       <b>)"
+        R"(                       </Min>)"
+        R"(                       <Max>)"
         R"(                         <IntegerValue>22</IntegerValue>)"
-        R"(                       </b>)"
+        R"(                       </Max>)"
         R"(                     </Range>)"
         R"(                   </OR>)"
         R"(                 </SIZE>)"
@@ -1260,12 +1229,9 @@ void AstXmlParserTests::test_sequenceOfAssignmentWithRangeConstraintInsideSizeCo
         R"(</AstRoot>)");
 
     const auto type = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MySeq0");
-    const auto realType = dynamic_cast<const Data::Types::SequenceOf *>(type->type());
-    const auto constraintRanges = realType->constraints().ranges();
-
-    QCOMPARE(constraintRanges.size(), 2);
-    QVERIFY(constraintRanges.contains({0, 10}));
-    QVERIFY(constraintRanges.contains({20, 22}));
+    const auto sequenceOfType = dynamic_cast<const Data::Types::SequenceOf *>(type->type());
+    QCOMPARE(sequenceOfType->constraints().rangesTree().expression(),
+             QStringLiteral("((SIZE ((0 .. 10 | 20 .. 22))))"));
 }
 
 void AstXmlParserTests::test_sequenceOfAssignmentWithAcnParams()
@@ -1753,12 +1719,12 @@ void AstXmlParserTests::test_sequenceComponents()
         R"(                    <INTEGER>)"
         R"(                      <Constraints>)"
         R"(                        <Range>)"
-        R"(                          <a>)"
+        R"(                          <Min>)"
         R"(                            <IntegerValue>1</IntegerValue>)"
-        R"(                          </a>)"
-        R"(                          <b>)"
+        R"(                          </Min>)"
+        R"(                          <Max>)"
         R"(                            <IntegerValue>10</IntegerValue>)"
-        R"(                          </b>)"
+        R"(                          </Max>)"
         R"(                        </Range>)"
         R"(                      </Constraints>)"
         R"(                      <WithComponentConstraints />)"
@@ -1794,9 +1760,7 @@ void AstXmlParserTests::test_sequenceComponents()
     QCOMPARE(dynamic_cast<const Data::AsnSequenceComponent &>(*comp).isOptional(), false);
     const auto &intComponent = dynamic_cast<const Data::Types::Integer &>(comp->type());
 
-    const auto ranges = intComponent.constraints().ranges();
-    QCOMPARE(ranges.size(), 1);
-    QVERIFY(ranges.contains({1, 10}));
+    QCOMPARE(intComponent.constraints().rangesTree().expression(), QStringLiteral("(1 .. 10)"));
 
     comp = seqType->component(QStringLiteral("b1"));
     QVERIFY(comp != nullptr);
@@ -1855,7 +1819,7 @@ void AstXmlParserTests::test_sequenceAcnComponents()
         R"(        <TypeAssignments>)"
         R"(          <TypeAssignment Name="MyEnum" Line="3" CharPositionInLine="0">)"
         R"(            <Asn1Type id="MyModel.MyEnum" Line="3" CharPositionInLine="11" ParameterizedTypeInstance="false">)"
-        R"(              <Enumerated>)"
+        R"(              <ENUMERATED>)"
         R"(                <Items>)"
         R"(                  <Item Name="i1" Value="0" Line="3" CharPositionInLine="24" />)"
         R"(                  <Item Name="i2" Value="1" Line="3" CharPositionInLine="28" />)"
@@ -1867,7 +1831,7 @@ void AstXmlParserTests::test_sequenceAcnComponents()
         R"(                  </OR>)"
         R"(                </Constraints>)"
         R"(                <WithComponentConstraints />)"
-        R"(              </Enumerated>)"
+        R"(              </ENUMERATED>)"
         R"(            </Asn1Type>)"
         R"(          </TypeAssignment>)"
         R"(          <TypeAssignment Name="MyChoice" Line="5" CharPositionInLine="0">)"
@@ -1898,7 +1862,7 @@ void AstXmlParserTests::test_sequenceAcnComponents()
         R"(            <Asn1Type id="MyModel.MySeq" Line="11" CharPositionInLine="10" ParameterizedTypeInstance="false">)"
         R"(              <SEQUENCE>)"
         R"(                <ACN_COMPONENT Id="MyModel.MySeq.beta" Name="beta" Type="BOOLEAN" true-value="0101" />)"
-        R"(                <ACN_COMPONENT Id="MyModel.MySeq.firstDeter" Name="firstDeter" Type="Enumerated" size="12" encoding="BCD">)"
+        R"(                <ACN_COMPONENT Id="MyModel.MySeq.firstDeter" Name="firstDeter" Type="ENUMERATED" size="12" encoding="BCD">)"
         R"(                  <Items>)"
         R"(                    <Item Name="i1" Value="0" />)"
         R"(                    <Item Name="i2" Value="1" />)"
@@ -2022,10 +1986,8 @@ void AstXmlParserTests::test_octetStringWithSizeConstraint()
         = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyOctetString");
 
     const auto ocetStringType = dynamic_cast<const Data::Types::OctetString *>(type->type());
-    const auto &constraintRanges = ocetStringType->integerConstraints().ranges();
-
-    QCOMPARE(constraintRanges.size(), 1);
-    QVERIFY(constraintRanges.contains({10, 10}));
+    QCOMPARE(ocetStringType->constraints().rangesTree().expression(),
+             QStringLiteral("((SIZE (10)))"));
 }
 
 void AstXmlParserTests::test_octetStringWithRangedSizeConstraint()
@@ -2045,29 +2007,29 @@ void AstXmlParserTests::test_octetStringWithRangedSizeConstraint()
         R"(                    <OR>)"
         R"(                      <OR>)"
         R"(                        <Range>)"
-        R"(                          <a>)"
+        R"(                          <Min>)"
         R"(                            <IntegerValue>1</IntegerValue>)"
-        R"(                          </a>)"
-        R"(                          <b>)"
+        R"(                          </Min>)"
+        R"(                          <Max>)"
         R"(                            <IntegerValue>2</IntegerValue>)"
-        R"(                          </b>)"
+        R"(                          </Max>)"
         R"(                        </Range>)"
         R"(                        <Range>)"
-        R"(                          <a>)"
+        R"(                          <Min>)"
         R"(                            <IntegerValue>4</IntegerValue>)"
-        R"(                          </a>)"
-        R"(                          <b>)"
+        R"(                          </Min>)"
+        R"(                          <Max>)"
         R"(                            <IntegerValue>5</IntegerValue>)"
-        R"(                          </b>)"
+        R"(                          </Max>)"
         R"(                        </Range>)"
         R"(                      </OR>)"
         R"(                      <Range>)"
-        R"(                        <a>)"
+        R"(                        <Min>)"
         R"(                          <IntegerValue>7</IntegerValue>)"
-        R"(                        </a>)"
-        R"(                        <b>)"
+        R"(                        </Min>)"
+        R"(                        <Max>)"
         R"(                          <IntegerValue>8</IntegerValue>)"
-        R"(                        </b>)"
+        R"(                        </Max>)"
         R"(                      </Range>)"
         R"(                    </OR>)"
         R"(                  </SIZE>)"
@@ -2086,13 +2048,8 @@ void AstXmlParserTests::test_octetStringWithRangedSizeConstraint()
         = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyOctetString");
 
     const auto ocetStringType = dynamic_cast<const Data::Types::OctetString *>(type->type());
-    const auto &constraintRanges = ocetStringType->integerConstraints().ranges();
-
-    QCOMPARE(constraintRanges.size(), 3);
-
-    QVERIFY(constraintRanges.contains({1, 2}));
-    QVERIFY(constraintRanges.contains({4, 5}));
-    QVERIFY(constraintRanges.contains({7, 8}));
+    QCOMPARE(ocetStringType->constraints().rangesTree().expression(),
+             QStringLiteral("((SIZE (((1 .. 2 | 4 .. 5) | 7 .. 8))))"));
 }
 
 void AstXmlParserTests::test_octetStringWithValueDefined()
@@ -2124,10 +2081,7 @@ void AstXmlParserTests::test_octetStringWithValueDefined()
         = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyOctetString");
 
     const auto ocetStringType = dynamic_cast<const Data::Types::OctetString *>(type->type());
-    const auto &constraintRanges = ocetStringType->stringConstraints().ranges();
-
-    QCOMPARE(constraintRanges.size(), 1);
-    QVERIFY(constraintRanges.contains({"599", "599"}));
+    QCOMPARE(ocetStringType->constraints().rangesTree().expression(), QStringLiteral("(\"599\")"));
 }
 
 void AstXmlParserTests::test_octetStringAcnParams()
@@ -2193,12 +2147,12 @@ void AstXmlParserTests::test_iA5StringWithSizeConstraint()
         R"(               <Constraints>)"
         R"(                 <SIZE>)"
         R"(                   <Range>)"
-        R"(                     <a>)"
+        R"(                     <Min>)"
         R"(                       <IntegerValue>1</IntegerValue>)"
-        R"(                     </a>)"
-        R"(                     <b>)"
+        R"(                     </Min>)"
+        R"(                     <Max>)"
         R"(                       <IntegerValue>10</IntegerValue>)"
-        R"(                     </b>)"
+        R"(                     </Max>)"
         R"(                   </Range>)"
         R"(                 </SIZE>)"
         R"(               </Constraints>)"
@@ -2216,10 +2170,8 @@ void AstXmlParserTests::test_iA5StringWithSizeConstraint()
         = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyIA5String");
     const auto myIA5String = dynamic_cast<const Data::Types::IA5String *>(type->type());
 
-    const auto &constraintRanges = myIA5String->integerConstraints().ranges();
-
-    QCOMPARE(constraintRanges.size(), 1);
-    QVERIFY(constraintRanges.contains({1, 10}));
+    QCOMPARE(myIA5String->constraints().rangesTree().expression(),
+             QStringLiteral("((SIZE (1 .. 10)))"));
 }
 
 void AstXmlParserTests::test_iA5StringWithValueConstraint()
@@ -2238,41 +2190,41 @@ void AstXmlParserTests::test_iA5StringWithValueConstraint()
         R"(                 <AND>)"
         R"(                   <SIZE>)"
         R"(                     <Range>)"
-        R"(                       <a>)"
+        R"(                       <Min>)"
         R"(                         <IntegerValue>1</IntegerValue>)"
-        R"(                       </a>)"
-        R"(                       <b>)"
+        R"(                       </Min>)"
+        R"(                       <Max>)"
         R"(                         <IntegerValue>10</IntegerValue>)"
-        R"(                       </b>)"
+        R"(                       </Max>)"
         R"(                     </Range>)"
         R"(                   </SIZE>)"
         R"(                   <ALPHA>)"
         R"(                     <OR>)"
         R"(                       <OR>)"
         R"(                         <Range>)"
-        R"(                           <a>)"
+        R"(                           <Min>)"
         R"(                             <StringValue>A</StringValue>)"
-        R"(                           </a>)"
-        R"(                           <b>)"
+        R"(                           </Min>)"
+        R"(                           <Max>)"
         R"(                             <StringValue>D</StringValue>)"
-        R"(                           </b>)"
+        R"(                           </Max>)"
         R"(                         </Range>)"
         R"(                         <Range>)"
-        R"(                           <a>)"
+        R"(                           <Min>)"
         R"(                             <StringValue>X</StringValue>)"
-        R"(                           </a>)"
-        R"(                           <b>)"
+        R"(                           </Min>)"
+        R"(                           <Max>)"
         R"(                             <StringValue>Z</StringValue>)"
-        R"(                           </b>)"
+        R"(                           </Max>)"
         R"(                         </Range>)"
         R"(                       </OR>)"
         R"(                       <Range>)"
-        R"(                         <a>)"
+        R"(                         <Min>)"
         R"(                           <StringValue>1</StringValue>)"
-        R"(                         </a>)"
-        R"(                         <b>)"
+        R"(                         </Min>)"
+        R"(                         <Max>)"
         R"(                           <StringValue>9</StringValue>)"
-        R"(                         </b>)"
+        R"(                         </Max>)"
         R"(                       </Range>)"
         R"(                     </OR>)"
         R"(                   </ALPHA>)"
@@ -2292,15 +2244,10 @@ void AstXmlParserTests::test_iA5StringWithValueConstraint()
         = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyIA5String");
     const auto myIA5String = dynamic_cast<const Data::Types::IA5String *>(type->type());
 
-    const auto &integerRanges = myIA5String->integerConstraints().ranges();
-    QCOMPARE(integerRanges.size(), 1);
-    QVERIFY(integerRanges.contains({1, 10}));
-
-    const auto &stringRanges = myIA5String->stringConstraints().ranges();
-    QCOMPARE(stringRanges.size(), 3);
-    QVERIFY(stringRanges.contains({QStringLiteral("A"), QStringLiteral("D")}));
-    QVERIFY(stringRanges.contains({QStringLiteral("X"), QStringLiteral("Z")}));
-    QVERIFY(stringRanges.contains({QStringLiteral("1"), QStringLiteral("9")}));
+    QCOMPARE(
+        myIA5String->constraints().rangesTree().expression(),
+        QStringLiteral(
+            "(((SIZE (1 .. 10)) ^ (FROM (((\"A\" .. \"D\" | \"X\" .. \"Z\") | \"1\" .. \"9\")))))"));
 }
 
 void AstXmlParserTests::test_iA5StringWithValueDefined()
@@ -2332,9 +2279,7 @@ void AstXmlParserTests::test_iA5StringWithValueDefined()
         = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyIA5String");
     const auto myIA5String = dynamic_cast<const Data::Types::IA5String *>(type->type());
 
-    const auto &stringRanges = myIA5String->stringConstraints().ranges();
-    QCOMPARE(stringRanges.size(), 1);
-    QVERIFY(stringRanges.contains({QStringLiteral("Text"), QStringLiteral("Text")}));
+    QCOMPARE(myIA5String->constraints().rangesTree().expression(), QStringLiteral("(\"Text\")"));
 }
 
 void AstXmlParserTests::test_iA5StringAcnParams()
@@ -2388,12 +2333,12 @@ void AstXmlParserTests::test_numericStringWithSizeConstraint()
         R"(                <Constraints>)"
         R"(                  <SIZE>)"
         R"(                    <Range>)"
-        R"(                      <a>)"
+        R"(                      <Min>)"
         R"(                        <IntegerValue>10</IntegerValue>)"
-        R"(                      </a>)"
-        R"(                      <b>)"
+        R"(                      </Min>)"
+        R"(                      <Max>)"
         R"(                        <IntegerValue>100</IntegerValue>)"
-        R"(                      </b>)"
+        R"(                      </Max>)"
         R"(                    </Range>)"
         R"(                  </SIZE>)"
         R"(                </Constraints>)"
@@ -2411,10 +2356,8 @@ void AstXmlParserTests::test_numericStringWithSizeConstraint()
         = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyNumericString");
     const auto numericString = dynamic_cast<const Data::Types::NumericString *>(type->type());
 
-    const auto &constraintRanges = numericString->integerConstraints().ranges();
-
-    QCOMPARE(constraintRanges.size(), 1);
-    QVERIFY(constraintRanges.contains({10, 100}));
+    QCOMPARE(numericString->constraints().rangesTree().expression(),
+             QStringLiteral("((SIZE (10 .. 100)))"));
 }
 
 void AstXmlParserTests::test_numericStringWithValueConstraint()
@@ -2437,29 +2380,29 @@ void AstXmlParserTests::test_numericStringWithValueConstraint()
         R"(                    <ALPHA>)"
         R"(                      <OR>)"
         R"(                        <Range>)"
-        R"(                          <a>)"
+        R"(                          <Min>)"
         R"(                            <StringValue>1</StringValue>)"
-        R"(                          </a>)"
-        R"(                          <b>)"
+        R"(                          </Min>)"
+        R"(                          <Max>)"
         R"(                            <StringValue>5</StringValue>)"
-        R"(                          </b>)"
+        R"(                          </Max>)"
         R"(                        </Range>)"
         R"(                        <AND>)"
         R"(                          <Range>)"
-        R"(                            <a>)"
+        R"(                            <Min>)"
         R"(                              <StringValue>6</StringValue>)"
-        R"(                            </a>)"
-        R"(                            <b>)"
+        R"(                            </Min>)"
+        R"(                            <Max>)"
         R"(                              <StringValue>9</StringValue>)"
-        R"(                            </b>)"
+        R"(                            </Max>)"
         R"(                          </Range>)"
         R"(                          <Range>)"
-        R"(                            <a>)"
+        R"(                            <Min>)"
         R"(                              <StringValue>1</StringValue>)"
-        R"(                            </a>)"
-        R"(                            <b>)"
+        R"(                            </Min>)"
+        R"(                            <Max>)"
         R"(                              <StringValue>8</StringValue>)"
-        R"(                            </b>)"
+        R"(                            </Max>)"
         R"(                          </Range>)"
         R"(                        </AND>)"
         R"(                      </OR>)"
@@ -2480,15 +2423,9 @@ void AstXmlParserTests::test_numericStringWithValueConstraint()
         = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyNumericString");
     const auto numericString = dynamic_cast<const Data::Types::NumericString *>(type->type());
 
-    const auto &integerRanges = numericString->integerConstraints().ranges();
-    QCOMPARE(integerRanges.size(), 1);
-    QVERIFY(integerRanges.contains({10, 10}));
-
-    const auto &stringRanges = numericString->stringConstraints().ranges();
-    QCOMPARE(stringRanges.size(), 3);
-    QVERIFY(stringRanges.contains({QStringLiteral("1"), QStringLiteral("5")}));
-    QVERIFY(stringRanges.contains({QStringLiteral("6"), QStringLiteral("9")}));
-    QVERIFY(stringRanges.contains({QStringLiteral("1"), QStringLiteral("8")}));
+    QCOMPARE(numericString->constraints().rangesTree().expression(),
+             QStringLiteral(
+                 "(((SIZE (10)) ^ (FROM ((\"1\" .. \"5\" | (\"6\" .. \"9\" ^ \"1\" .. \"8\"))))))"));
 }
 
 void AstXmlParserTests::test_numericStringWithValueDefined()
@@ -2520,9 +2457,8 @@ void AstXmlParserTests::test_numericStringWithValueDefined()
         = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyNumericString");
     const auto numericString = dynamic_cast<const Data::Types::NumericString *>(type->type());
 
-    const auto &stringRanges = numericString->stringConstraints().ranges();
-    QCOMPARE(stringRanges.size(), 1);
-    QVERIFY(stringRanges.contains({QStringLiteral("12345_ABCD"), QStringLiteral("12345_ABCD")}));
+    QCOMPARE(numericString->constraints().rangesTree().expression(),
+             QStringLiteral("(\"12345_ABCD\")"));
 }
 
 void AstXmlParserTests::test_numericStringAcnParams()
@@ -2591,10 +2527,7 @@ void AstXmlParserTests::test_bitStringWithSizeConstraint()
     const auto type
         = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyBitString");
     const auto bitString = dynamic_cast<const Data::Types::BitString *>(type->type());
-
-    const auto &integerRanges = bitString->integerConstraints().ranges();
-    QCOMPARE(integerRanges.size(), 1);
-    QVERIFY(integerRanges.contains({12, 12}));
+    QCOMPARE(bitString->constraints().rangesTree().expression(), QStringLiteral("((SIZE (12)))"));
 }
 
 void AstXmlParserTests::test_bitStringWithRangedSizeConstraint()
@@ -2614,29 +2547,29 @@ void AstXmlParserTests::test_bitStringWithRangedSizeConstraint()
         R"(                    <OR>)"
         R"(                      <OR>)"
         R"(                        <Range>)"
-        R"(                          <a>)"
+        R"(                          <Min>)"
         R"(                            <IntegerValue>10</IntegerValue>)"
-        R"(                          </a>)"
-        R"(                          <b>)"
+        R"(                          </Min>)"
+        R"(                          <Max>)"
         R"(                            <IntegerValue>20</IntegerValue>)"
-        R"(                          </b>)"
+        R"(                          </Max>)"
         R"(                        </Range>)"
         R"(                        <Range>)"
-        R"(                          <a>)"
+        R"(                          <Min>)"
         R"(                            <IntegerValue>40</IntegerValue>)"
-        R"(                          </a>)"
-        R"(                          <b>)"
+        R"(                          </Min>)"
+        R"(                          <Max>)"
         R"(                            <IntegerValue>50</IntegerValue>)"
-        R"(                          </b>)"
+        R"(                          </Max>)"
         R"(                        </Range>)"
         R"(                      </OR>)"
         R"(                      <Range>)"
-        R"(                        <a>)"
+        R"(                        <Min>)"
         R"(                          <IntegerValue>70</IntegerValue>)"
-        R"(                        </a>)"
-        R"(                        <b>)"
+        R"(                        </Min>)"
+        R"(                        <Max>)"
         R"(                          <IntegerValue>80</IntegerValue>)"
-        R"(                        </b>)"
+        R"(                        </Max>)"
         R"(                      </Range>)"
         R"(                    </OR>)"
         R"(                  </SIZE>)"
@@ -2654,14 +2587,8 @@ void AstXmlParserTests::test_bitStringWithRangedSizeConstraint()
     const auto type
         = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyBitString");
     const auto bitString = dynamic_cast<const Data::Types::BitString *>(type->type());
-
-    const auto &constraintRanges = bitString->integerConstraints().ranges();
-
-    QCOMPARE(constraintRanges.size(), 3);
-
-    QVERIFY(constraintRanges.contains({10, 20}));
-    QVERIFY(constraintRanges.contains({40, 50}));
-    QVERIFY(constraintRanges.contains({70, 80}));
+    QCOMPARE(bitString->constraints().rangesTree().expression(),
+             QStringLiteral("((SIZE (((10 .. 20 | 40 .. 50) | 70 .. 80))))"));
 }
 
 void AstXmlParserTests::test_bitStringWithValueDefined()
@@ -2692,10 +2619,7 @@ void AstXmlParserTests::test_bitStringWithValueDefined()
     const auto type
         = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyBitString");
     const auto bitString = dynamic_cast<const Data::Types::BitString *>(type->type());
-
-    const auto &stringRanges = bitString->stringConstraints().ranges();
-    QCOMPARE(stringRanges.size(), 1);
-    QVERIFY(stringRanges.contains({QStringLiteral("10101011"), QStringLiteral("10101011")}));
+    QCOMPARE(bitString->constraints().rangesTree().expression(), QStringLiteral("(\"10101011\")"));
 }
 
 void AstXmlParserTests::test_bitStringAcnParams()
@@ -2744,6 +2668,71 @@ void AstXmlParserTests::test_bitStringAcnParams()
     const auto &octetStringType = dynamic_cast<const Data::Types::BitString &>(
         userDefinedComponent->type());
     QCOMPARE(octetStringType.size(), QStringLiteral("number"));
+}
+
+void AstXmlParserTests::test_notRelatedConstraintsInNumericString()
+{
+    parse(
+        R"(<?xml version="1.0" encoding="utf-8"?>)"
+        R"(<AstRoot>)"
+        R"(  <Asn1File FileName="Test2File.asn">)"
+        R"(    <Modules>)"
+        R"(      <Module Name="TestDefinitions" Line="13" CharPositionInLine="42">)"
+        R"(        <TypeAssignments>)"
+        R"(          <TypeAssignment Name="MySeq" Line="55" CharPositionInLine="0">"
+        R"(            <Asn1Type id="MyModelToTestString.MySeq" Line="55" CharPositionInLine="23" ParameterizedTypeInstance="false">"
+        R"(              <NumericString>"
+        R"(                <Constraints>"
+        R"(                  <SIZE>"
+        R"(                    <IntegerValue>10</IntegerValue>"
+        R"(                  </SIZE>"
+        R"(                  <ALPHA>"
+        R"(                    <OR>"
+        R"(                      <Range>"
+        R"(                        <Min>"
+        R"(                          <StringValue>1</StringValue>"
+        R"(                        </Min>"
+        R"(                        <Max>"
+        R"(                          <StringValue>5</StringValue>"
+        R"(                        </Max>"
+        R"(                      </Range>"
+        R"(                      <AND>"
+        R"(                        <Range>"
+        R"(                          <Min>"
+        R"(                            <StringValue>6</StringValue>"
+        R"(                          </Min>"
+        R"(                          <Max>"
+        R"(                            <StringValue>9</StringValue>"
+        R"(                          </Max>"
+        R"(                        </Range>"
+        R"(                        <Range>"
+        R"(                          <Min>"
+        R"(                            <StringValue>1</StringValue>"
+        R"(                          </Min>"
+        R"(                          <Max>"
+        R"(                            <StringValue>8</StringValue>"
+        R"(                          </Max>"
+        R"(                        </Range>"
+        R"(                      </AND>"
+        R"(                    </OR>"
+        R"(                  </ALPHA>"
+        R"(                </Constraints>"
+        R"(                <WithComponentConstraints />"
+        R"(              </NumericString>"
+        R"(            </Asn1Type>"
+        R"(          </TypeAssignment>"
+        R"(        </TypeAssignments>)"
+        R"(      </Module>)"
+        R"(    </Modules>)"
+        R"(  </Asn1File>)"
+        R"(</AstRoot>)");
+
+    auto type = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MySeq");
+    auto numericString = dynamic_cast<const Data::Types::NumericString *>(type->type());
+
+    QCOMPARE(numericString->constraints().rangesTree().expression(),
+             QStringLiteral(
+                 "((SIZE (10)))((FROM ((\"1\" .. \"5\" | (\"6\" .. \"9\" ^ \"1\" .. \"8\")))))"));
 }
 
 void AstXmlParserTests::parsingFails(const QString &xmlData)

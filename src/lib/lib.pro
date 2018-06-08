@@ -37,6 +37,11 @@ SOURCES += \
     data/types/real.cpp \
     data/types/asciistringacnparameters.cpp \
     \
+    data/expressiontree/expressiontree.cpp \
+    data/expressiontree/constrainingoperator.cpp \
+    data/expressiontree/logicoperator.cpp \
+    data/expressiontree/ranges.cpp \
+    \
     astxmlparser.cpp \
     astfilegenerator.cpp \
     astfileprocessor.cpp \
@@ -62,11 +67,13 @@ HEADERS += \
     data/acnsequencecomponent.h \
     data/sequencecomponent.h \
     data/acnargument.h \
+    data/ranges.h \
     \
     data/types/typefactory.h \
     data/types/labeltype.h \
     data/types/type.h \
     data/types/typevisitor.h \
+    data/types/typevisitorwithvalue.h \
     data/types/userdefinedtype.h \
     data/types/integer.h \
     data/types/integeracnparams.h \
@@ -85,6 +92,12 @@ HEADERS += \
     data/types/string.h \
     data/types/acnparameterizablecomposite.h \
     data/types/asciistringacnparameters.h \
+    \
+    data/expressiontree/ranges.h \
+    data/expressiontree/expressiontree.h \
+    data/expressiontree/expressionnode.h \
+    data/expressiontree/logicoperator.h \
+    data/expressiontree/constrainingoperator.h \
     \
     astxmlparser.h \
     runparameters.h \

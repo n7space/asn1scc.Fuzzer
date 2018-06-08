@@ -67,7 +67,7 @@ std::unique_ptr<Type> TypeFactory::createBuiltinType(const QString &name)
     if (name == QStringLiteral("NumericString"))
         return std::make_unique<NumericString>();
 
-    if (name == QStringLiteral("Enumerated"))
+    if (name == QStringLiteral("ENUMERATED"))
         return std::make_unique<Enumerated>();
 
     if (name == QStringLiteral("CHOICE"))

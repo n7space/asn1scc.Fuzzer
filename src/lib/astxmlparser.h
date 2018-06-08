@@ -41,6 +41,15 @@
 
 namespace MalTester {
 
+namespace Data {
+namespace ExpressionTree {
+
+class ExpressionNode;
+class Range;
+
+} // namespace ExpressionTree
+} // namespace Data
+
 class AstXmlParser
 {
 public:
@@ -50,12 +59,11 @@ public:
 
     std::map<QString, std::unique_ptr<Data::File>> takeData() { return std::move(m_data); }
 
-    using ConstraintTypes = QStringList;
-    struct Constraint
-    {
-        QString value;
-        QString type;
-    };
+    using ConstraintType = QString;
+    using Constraint = QString;
+
+    using ExpressionNode = Data::ExpressionTree::ExpressionNode;
+    using Range = Data::ExpressionTree::Range;
 
 private:
     void readAstRoot();
@@ -128,12 +136,20 @@ private:
     void readNumericString(Data::Types::Type &type);
     void readBitString(Data::Types::Type &type);
 
-    void readConstraints(Data::Types::Type &type, const ConstraintTypes &valName);
-    void readConstraint(std::unique_ptr<Data::Types::Type> &type, const QString &valName);
+    void readConstraints(Data::Types::Type &type, const ConstraintType &constraintName);
 
-    void readRanges(Data::Types::Type &type, const ConstraintTypes &valName);
-    void readRange(Data::Types::Type &type, const ConstraintTypes &valName);
-    Constraint readValue(const ConstraintTypes &valName);
+    void readExpressionTree(Data::Types::Type &type, const ConstraintType &constraintName);
+    const ExpressionNode *readExpressionSubtree(Data::Types::Type &type,
+                                                const ConstraintType &constraintName);
+    const ExpressionNode *readNodeNextChild(Data::Types::Type &type,
+                                            const ConstraintType &constraintName);
+
+    Constraint readValue(const ConstraintType &valName);
+    Range *readRange(Data::Types::Type &type, const ConstraintType &constraintName);
+    Range *createRangeNode(Data::Types::Type &type,
+                           const Constraint &min,
+                           const Constraint &max,
+                           const ConstraintType &constraintName);
 
     QString readTypeAssignmentAttribute();
     QString readModuleAttribute();

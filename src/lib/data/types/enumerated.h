@@ -61,9 +61,7 @@ private:
     SourceLocation m_location;
 };
 
-class Enumerated : public Type,
-                   public WithConstraints<EnumeratedConstraints>,
-                   public IntegerAcnParameters
+class Enumerated : public Type, public WithConstraints, public IntegerAcnParameters
 {
 public:
     Enumerated();

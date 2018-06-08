@@ -33,35 +33,13 @@ namespace MalTester {
 namespace Data {
 namespace Types {
 
-class String : public Type,
-               public WithConstraints<IntegerConstraints>,
-               public WithConstraints<StringConstraints>
+class String : public Type, public WithConstraints
 {
 protected:
     String() = default;
     String(const String &other) = default;
 
 public:
-    IntegerConstraints &integerConstraints()
-    {
-        return WithConstraints<IntegerConstraints>::constraints();
-    }
-
-    const IntegerConstraints &integerConstraints() const
-    {
-        return WithConstraints<IntegerConstraints>::constraints();
-    }
-
-    StringConstraints &stringConstraints()
-    {
-        return WithConstraints<StringConstraints>::constraints();
-    }
-
-    const StringConstraints &stringConstraints() const
-    {
-        return WithConstraints<StringConstraints>::constraints();
-    }
-
     QString size() const { return m_size; }
     void setSize(const QString &size) { m_size = size; }
 

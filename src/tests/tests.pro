@@ -11,7 +11,9 @@ include(../../includelib.pri)
 SOURCES += \
     main.cpp \
     \
-    astxmlparser_tests.cpp
+    astxmlparser_tests.cpp \
+    expressiontree_tests.cpp
 
 HEADERS += \
-    astxmlparser_tests.h
+    astxmlparser_tests.h \
+    expressiontree_tests.h

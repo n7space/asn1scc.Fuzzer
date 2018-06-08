@@ -28,12 +28,11 @@
 #include <QtTest>
 
 #include <data/expressiontree/expressiontree.h>
-#include <data/ranges.h>
+#include <data/expressiontree/ranges.h>
 
 using namespace MalTester;
 using namespace MalTester::Tests;
-
-using Tree = Data::ExpressionTree::ExpressionTree<Data::Range *>;
+using namespace MalTester::Data::ExpressionTree;
 
 ExpressionTreeTests::ExpressionTreeTests(QObject *parent)
     : QObject(parent)
@@ -41,48 +40,54 @@ ExpressionTreeTests::ExpressionTreeTests(QObject *parent)
 
 void ExpressionTreeTests::test_emptyTree()
 {
-    Tree tree;
+    ExpressionTree tree;
+
     QCOMPARE(tree.expression(), QString());
 }
 
 void ExpressionTreeTests::test_singleValue()
 {
-    Tree tree;
-    tree.addRange(new Data::IntegerRange(1, 1));
+    ExpressionTree tree;
+
+    tree.appendSubtree(new Data::ExpressionTree::IntegerRange(1, 1));
 
     QCOMPARE(tree.expression(), QStringLiteral("(1)"));
 }
 
 void ExpressionTreeTests::test_alternativesExpression()
 {
-    Tree tree;
-    tree.addOperator(QStringLiteral("OR"));
-    tree.addOperator(QStringLiteral("OR"));
-    tree.addOperator(QStringLiteral("OR"));
-    tree.addOperator(QStringLiteral("OR"));
+    ExpressionTree tree;
 
-    tree.addRange(new Data::IntegerRange(1, 1));
-    tree.addRange(new Data::IntegerRange(2, 3));
-    tree.addRange(new Data::IntegerRange(4, 5));
-    tree.addRange(new Data::IntegerRange(6, 7));
-    tree.addRange(new Data::IntegerRange(8, 8));
+    // clang-format off
+    tree.appendSubtree(new LogicOperator(QStringLiteral("OR"),
+                                         new LogicOperator(QStringLiteral("OR"),
+                                                           new LogicOperator(QStringLiteral("OR"),
+                                                                             new LogicOperator(QStringLiteral("OR"),
+                                                                                               new IntegerRange(1, 1),
+                                                                                               new IntegerRange(2, 3)),
+                                                                             new IntegerRange(4, 5)),
+                                                           new IntegerRange(6, 7)),
+                                         new IntegerRange(8, 8)));
+    // clang-format on
 
     QCOMPARE(tree.expression(), QStringLiteral("(((((1 | 2 .. 3) | 4 .. 5) | 6 .. 7) | 8))"));
 }
 
 void ExpressionTreeTests::test_sumsExpression()
 {
-    Tree tree;
-    tree.addOperator(QStringLiteral("AND"));
-    tree.addOperator(QStringLiteral("AND"));
-    tree.addOperator(QStringLiteral("AND"));
-    tree.addOperator(QStringLiteral("AND"));
+    ExpressionTree tree;
 
-    tree.addRange(new Data::IntegerRange(1, 100));
-    tree.addRange(new Data::IntegerRange(1, 90));
-    tree.addRange(new Data::IntegerRange(1, 80));
-    tree.addRange(new Data::IntegerRange(1, 70));
-    tree.addRange(new Data::IntegerRange(1, 1));
+    // clang-format off
+    tree.appendSubtree(new LogicOperator(QStringLiteral("AND"),
+                                         new LogicOperator(QStringLiteral("AND"),
+                                                           new LogicOperator(QStringLiteral("AND"),
+                                                                             new LogicOperator(QStringLiteral("AND"),
+                                                                                               new IntegerRange(1, 100),
+                                                                                               new IntegerRange(1, 90)),
+                                                                             new IntegerRange(1, 80)),
+                                                           new IntegerRange(1, 70)),
+                                         new IntegerRange(1, 1)));
+    // clang-format on
 
     QCOMPARE(tree.expression(),
              QStringLiteral("(((((1 .. 100 ^ 1 .. 90) ^ 1 .. 80) ^ 1 .. 70) ^ 1))"));
@@ -90,24 +95,23 @@ void ExpressionTreeTests::test_sumsExpression()
 
 void ExpressionTreeTests::test_alternativesAndSumsExpression()
 {
-    Tree tree;
-    tree.addOperator(QStringLiteral("OR"));
-    tree.addOperator(QStringLiteral("AND"));
-    tree.addOperator(QStringLiteral("OR"));
-    tree.addOperator(QStringLiteral("AND"));
+    ExpressionTree tree;
 
-    tree.addRange(new Data::IntegerRange(1, 100));
-    tree.addRange(new Data::IntegerRange(1, 90));
-
-    tree.addOperator(QStringLiteral("AND"));
-    tree.addRange(new Data::IntegerRange(1, 80));
-    tree.addRange(new Data::IntegerRange(1, 70));
-
-    tree.addOperator(QStringLiteral("AND"));
-    tree.addRange(new Data::IntegerRange(1, 60));
-    tree.addRange(new Data::IntegerRange(1, 50));
-
-    tree.addRange(new Data::IntegerRange(100, 100));
+    // clang-format off
+    tree.appendSubtree(new LogicOperator(QStringLiteral("OR"),
+                                         new LogicOperator(QStringLiteral("AND"),
+                                                           new LogicOperator(QStringLiteral("OR"),
+                                                                             new LogicOperator(QStringLiteral("AND"),
+                                                                                               new IntegerRange(1, 100),
+                                                                                               new IntegerRange(1, 90)),
+                                                                             new LogicOperator(QStringLiteral("AND"),
+                                                                                               new IntegerRange(1, 80),
+                                                                                               new IntegerRange(1, 70))),
+                                                           new LogicOperator(QStringLiteral("AND"),
+                                                                             new IntegerRange(1, 60),
+                                                                             new IntegerRange(1, 50))),
+                                         new IntegerRange(100, 100)));
+    // clang-format on
 
     QCOMPARE(tree.expression(),
              QStringLiteral(
@@ -116,23 +120,29 @@ void ExpressionTreeTests::test_alternativesAndSumsExpression()
 
 void ExpressionTreeTests::test_sizeExpression()
 {
-    Tree tree;
-    tree.addOperator(QStringLiteral("SIZE"));
-    tree.addRange(new Data::IntegerRange(1, 30));
+    ExpressionTree tree;
+
+    // clang-format off
+    tree.appendSubtree(new ConstrainingOperator(QStringLiteral("SIZE"),
+                                                new IntegerRange(1, 30)));
+    // clang-format on
 
     QCOMPARE(tree.expression(), QStringLiteral("((SIZE (1 .. 30)))"));
 }
 
 void ExpressionTreeTests::test_sizeAndAlphabetExpression()
 {
-    Tree tree;
-    tree.addOperator(QStringLiteral("SIZE"));
-    tree.addRange(new Data::IntegerRange(20, 20));
+    ExpressionTree tree;
 
-    tree.addOperator(QStringLiteral("ALPHA"));
-    tree.addOperator(QStringLiteral("OR"));
-    tree.addRange(new Data::StringRange("A", "Z"));
-    tree.addRange(new Data::StringRange("1", "5"));
+    // clang-format off
+    tree.appendSubtree(new ConstrainingOperator(QStringLiteral("SIZE"),
+                                                new IntegerRange(20, 20)));
+
+    tree.appendSubtree(new ConstrainingOperator(QStringLiteral("ALPHA"),
+                                                new LogicOperator(QStringLiteral("OR"),
+                                                                  new StringRange("A", "Z"),
+                                                                  new StringRange("1", "5"))));
+    // clang-format on
 
     QCOMPARE(tree.expression(),
              QStringLiteral("((SIZE (20)))((FROM ((\"A\" .. \"Z\" | \"1\" .. \"5\"))))"));
@@ -140,31 +150,28 @@ void ExpressionTreeTests::test_sizeAndAlphabetExpression()
 
 void ExpressionTreeTests::test_logicalAndConstrainingOperators()
 {
-    Tree tree;
+    ExpressionTree tree;
 
-    tree.addOperator(QStringLiteral("OR"));
-    tree.addOperator(QStringLiteral("SIZE"));
-    tree.addOperator(QStringLiteral("OR"));
-    tree.addOperator(QStringLiteral("OR"));
-
-    tree.addRange(new Data::IntegerRange(1, 2));
-    tree.addRange(new Data::IntegerRange(4, 5));
-    tree.addRange(new Data::IntegerRange(7, 8));
-
-    tree.addOperator(QStringLiteral("AND"));
-    tree.addOperator(QStringLiteral("SIZE"));
-    tree.addOperator(QStringLiteral("OR"));
-
-    tree.addRange(new Data::IntegerRange(30, 50));
-    tree.addRange(new Data::IntegerRange(100, 150));
-
-    tree.addOperator(QStringLiteral("ALPHA"));
-    tree.addOperator(QStringLiteral("OR"));
-    tree.addOperator(QStringLiteral("OR"));
-
-    tree.addRange(new Data::StringRange("A", "Z"));
-    tree.addRange(new Data::StringRange("a", "z"));
-    tree.addRange(new Data::StringRange("1", "1"));
+    // clang-format off
+    tree.appendSubtree(new LogicOperator(QStringLiteral("OR"),
+                                         new ConstrainingOperator(QStringLiteral("SIZE"),
+                                                                  new LogicOperator(QStringLiteral("OR"),
+                                                                                    new LogicOperator(QStringLiteral("OR"),
+                                                                                                      new IntegerRange(1, 2),
+                                                                                                      new IntegerRange(4, 5)),
+                                                                                    new IntegerRange(7, 8))),
+                                         new LogicOperator(QStringLiteral("AND"),
+                                                           new ConstrainingOperator(QStringLiteral("SIZE"),
+                                                                                    new LogicOperator(QStringLiteral("OR"),
+                                                                                                      new IntegerRange(30, 50),
+                                                                                                      new IntegerRange(100, 150))),
+                                                           new ConstrainingOperator(QStringLiteral("ALPHA"),
+                                                                                    new LogicOperator(QStringLiteral("OR"),
+                                                                                                      new LogicOperator(QStringLiteral("OR"),
+                                                                                                                        new StringRange("A", "Z"),
+                                                                                                                        new StringRange("a", "z")),
+                                                                                                      new StringRange("1", "1"))))));
+    // clang-format on
 
     QCOMPARE(
         tree.expression(),

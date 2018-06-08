@@ -23,41 +23,43 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-#pragma once
 
-#include <memory>
+#include "constrainingoperator.h"
 
-#include <QString>
+using namespace MalTester::Data::ExpressionTree;
 
-#include <data/expressiontree/expressionnode.h>
+ConstrainingOperator::ConstrainingOperator(const QString &type, const ExpressionNode *child)
+    : m_type(stringToOperatorType(type))
+    , m_child(child)
+{}
 
-namespace MalTester {
-namespace Data {
-namespace ExpressionTree {
-
-template<typename T>
-class RangeNode : public ExpressionNode<T>
+ConstrainingOperator::ConstrainingOperator(const ConstrainingOperator &other)
 {
-public:
-    RangeNode(const T &range)
-        : m_range(range)
-    {}
+    m_child = other.m_child ? other.m_child->clone() : nullptr;
+}
 
-    ~RangeNode() override = default;
+std::unique_ptr<ExpressionNode> ConstrainingOperator::clone() const
+{
+    return std::make_unique<ConstrainingOperator>(*this);
+}
 
-    std::unique_ptr<ExpressionNode<T>> clone() const override
-    {
-        return std::make_unique<RangeNode<T>>(*this);
-    }
+QString ConstrainingOperator::asString() const
+{
+    if (m_type == NodeType::SIZE)
+        return QStringLiteral("(SIZE (") + m_child->asString() + QStringLiteral("))");
 
-    void appendChild(std::unique_ptr<ExpressionNode<T>> child) override { Q_UNUSED(child); }
-    bool isFull() const override { return true; }
-    QString asString() const override { return m_range->asString(); }
+    if (m_type == NodeType::FROM)
+        return QStringLiteral("(FROM (") + m_child->asString() + QStringLiteral("))");
 
-private:
-    const T m_range;
-};
+    return {};
+}
 
-} // namespace ExpressionTree
-} // namespace Data
-} // namespace MalTester
+ConstrainingOperator::NodeType ConstrainingOperator::stringToOperatorType(const QString &name)
+{
+    if (name == QStringLiteral("SIZE"))
+        return NodeType::SIZE;
+    if (name == QStringLiteral("ALPHA"))
+        return NodeType::FROM;
+
+    return NodeType::UNKNOWN;
+}

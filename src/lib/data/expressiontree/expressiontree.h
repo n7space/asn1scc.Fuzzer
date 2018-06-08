@@ -26,84 +26,34 @@
 #pragma once
 
 #include <memory>
-#include <stack>
 
 #include <QString>
 
-#include <data/expressiontree/constrainingoperatornode.h>
+#include <data/expressiontree/constrainingoperator.h>
 #include <data/expressiontree/expressionnode.h>
-#include <data/expressiontree/logicoperatornode.h>
-#include <data/expressiontree/rangenode.h>
-#include <data/expressiontree/rootnode.h>
+#include <data/expressiontree/logicoperator.h>
+#include <data/expressiontree/ranges.h>
 
 namespace MalTester {
 namespace Data {
 namespace ExpressionTree {
 
-template<typename T>
 class ExpressionTree
 {
 public:
-    ExpressionTree()
-        : m_root(new RootNode<T>)
-    {}
+    ExpressionTree();
+    ~ExpressionTree();
 
-    ExpressionTree(const ExpressionTree &other) { m_root = other.m_root->clone(); }
+    ExpressionTree(const ExpressionTree &other);
 
-    void addRange(const T &range);
-    void addOperator(const QString &type);
+    void appendSubtree(const ExpressionNode *node);
 
     QString expression() const;
 
 private:
-    std::unique_ptr<ExpressionNode<T>> m_root;
-    std::stack<ExpressionNode<T> *> m_stack;
+    class Root;
+    std::unique_ptr<Root> m_root;
 };
-
-template<typename T>
-inline void ExpressionTree<T>::addRange(const T &range)
-{
-    auto parent = m_stack.empty() ? m_root.get() : m_stack.top();
-
-    parent->appendChild(std::make_unique<RangeNode<T>>(range));
-
-    if (parent->isFull())
-        m_stack.pop();
-}
-
-template<typename T>
-static std::unique_ptr<ExpressionNode<T>> creatOperatorNode(const QString &type)
-{
-    if (type == QStringLiteral("OR") || type == QStringLiteral("AND"))
-        return std::make_unique<LogicOperatorNode<T>>(type);
-
-    if (type == QStringLiteral("SIZE") || type == QStringLiteral("ALPHA"))
-        return std::make_unique<ConstrainingOperatorNode<T>>(type);
-
-    return nullptr;
-}
-
-template<typename T>
-inline void ExpressionTree<T>::addOperator(const QString &type)
-{
-    auto parent = m_stack.empty() ? m_root.get() : m_stack.top();
-
-    auto child = creatOperatorNode<T>(type);
-    auto childRaw = child.get();
-
-    parent->appendChild(std::move(child));
-
-    if (parent->isFull())
-        m_stack.pop();
-
-    m_stack.push(childRaw);
-}
-
-template<typename T>
-inline QString ExpressionTree<T>::expression() const
-{
-    return m_root->asString();
-}
 
 } // namespace ExpressionTree
 } // namespace Data

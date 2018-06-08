@@ -25,9 +25,7 @@
 ****************************************************************************/
 #pragma once
 
-#include <memory>
-#include <vector>
-
+#include <QPair>
 #include <QString>
 
 #include <data/expressiontree/expressionnode.h>
@@ -36,51 +34,61 @@ namespace MalTester {
 namespace Data {
 namespace ExpressionTree {
 
-template<typename T>
-class RootNode : public ExpressionNode<T>
+class Range : public ExpressionTree::ExpressionNode
 {
 public:
-    RootNode() = default;
-    RootNode(const RootNode &other)
-    {
-        for (const auto &child : other.m_children)
-            appendChild(child->clone());
-    }
-
-    std::unique_ptr<ExpressionNode<T>> clone() const override
-    {
-        return std::make_unique<RootNode<T>>(*this);
-    }
-
-    void appendChild(std::unique_ptr<ExpressionNode<T>> child) override;
-    bool isFull() const override;
-    QString asString() const override;
-
-private:
-    std::vector<std::unique_ptr<ExpressionNode<T>>> m_children;
+    virtual ~Range() = default;
 };
 
 template<typename T>
-inline QString RootNode<T>::asString() const
+class TypedRange : public Range
 {
-    QString res;
-    for (const auto &child : m_children)
-        res += '(' + child->asString() + ')';
+public:
+    TypedRange(const T &begin, const T &end)
+        : m_data(begin, end)
+    {}
 
-    return res;
-}
+    ~TypedRange() override = default;
 
-template<typename T>
-inline void RootNode<T>::appendChild(std::unique_ptr<ExpressionNode<T>> child)
+protected:
+    QPair<T, T> m_data;
+};
+
+class IntegerRange : public TypedRange<int>
 {
-    m_children.push_back(std::move(child));
-}
+public:
+    IntegerRange(const int &begin, const int &end);
 
-template<typename T>
-inline bool RootNode<T>::isFull() const
+    std::unique_ptr<ExpressionNode> clone() const override;
+    QString asString() const override;
+};
+
+class RealRange : public TypedRange<double>
 {
-    return false;
-}
+public:
+    RealRange(const double &begin, const double &end);
+
+    std::unique_ptr<ExpressionNode> clone() const override;
+    QString asString() const override;
+};
+
+class EnumeratedRange : public TypedRange<int>
+{
+public:
+    EnumeratedRange(const int &begin, const int &end);
+
+    std::unique_ptr<ExpressionNode> clone() const override;
+    QString asString() const override;
+};
+
+class StringRange : public TypedRange<QString>
+{
+public:
+    StringRange(const QString &begin, const QString &end);
+
+    std::unique_ptr<ExpressionNode> clone() const override;
+    QString asString() const override;
+};
 
 } // namespace ExpressionTree
 } // namespace Data

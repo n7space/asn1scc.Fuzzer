@@ -25,60 +25,37 @@
 ****************************************************************************/
 #pragma once
 
-#include <QPair>
+#include <memory>
+
 #include <QString>
+
+#include <data/expressiontree/expressionnode.h>
 
 namespace MalTester {
 namespace Data {
+namespace ExpressionTree {
 
-class Range
+class LogicOperator : public ExpressionNode
 {
 public:
-    virtual ~Range() = default;
-    virtual QString asString() const = 0;
-};
+    LogicOperator(const QString &type,
+                  const ExpressionNode *leftChild,
+                  const ExpressionNode *rightChild);
 
-template<typename T>
-class TypedRange : public Range
-{
-public:
-    TypedRange(const T &begin, const T &end)
-        : m_data(begin, end)
-    {}
+    LogicOperator(const LogicOperator &other);
 
-    ~TypedRange() override = default;
-
-protected:
-    QPair<T, T> m_data;
-};
-
-class IntegerRange : public TypedRange<int>
-{
-public:
-    IntegerRange(const int &begin, const int &end);
+    std::unique_ptr<ExpressionNode> clone() const override;
     QString asString() const override;
+
+private:
+    enum class NodeType { AND, OR, UNKNOWN };
+    static NodeType stringToOperatorType(const QString &name);
+
+    NodeType m_type;
+    std::unique_ptr<const ExpressionNode> m_leftChild;
+    std::unique_ptr<const ExpressionNode> m_rightChild;
 };
 
-class RealRange : public TypedRange<double>
-{
-public:
-    RealRange(const double &begin, const double &end);
-    QString asString() const override;
-};
-
-class EnumeratedRange : public TypedRange<int>
-{
-public:
-    EnumeratedRange(const int &begin, const int &end);
-    QString asString() const override;
-};
-
-class StringRange : public TypedRange<QString>
-{
-public:
-    StringRange(const QString &begin, const QString &end);
-    QString asString() const override;
-};
-
+} // namespace ExpressionTree
 } // namespace Data
 } // namespace MalTester

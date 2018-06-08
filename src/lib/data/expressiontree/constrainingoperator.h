@@ -25,49 +25,33 @@
 ****************************************************************************/
 #pragma once
 
-#include <functional>
+#include <memory>
 
-#include <QList>
-#include <QPair>
+#include <QString>
 
 #include <data/expressiontree/expressionnode.h>
-#include <data/expressiontree/expressiontree.h>
-
-#include <data/expressiontree/ranges.h>
 
 namespace MalTester {
 namespace Data {
-namespace Types {
+namespace ExpressionTree {
 
-class RangeConstraints
+class ConstrainingOperator : public ExpressionNode
 {
 public:
-    using RangesTree = ExpressionTree::ExpressionTree;
+    ConstrainingOperator(const QString &type, const ExpressionNode *child);
+    ConstrainingOperator(const ConstrainingOperator &other);
 
-    const RangesTree &rangesTree() const { return m_rangesTree; }
-
-    void appendSubtree(const ExpressionTree::ExpressionNode *node)
-    {
-        m_rangesTree.appendSubtree(node);
-    }
+    std::unique_ptr<ExpressionNode> clone() const override;
+    QString asString() const override;
 
 private:
-    RangesTree m_rangesTree;
+    enum class NodeType { SIZE, FROM, UNKNOWN };
+    static NodeType stringToOperatorType(const QString &name);
+
+    NodeType m_type;
+    std::unique_ptr<const ExpressionNode> m_child;
 };
 
-class WithConstraints
-{
-public:
-    WithConstraints() = default;
-    WithConstraints(const WithConstraints &other) = default;
-
-    RangeConstraints &constraints() { return m_constraints; }
-    const RangeConstraints &constraints() const { return m_constraints; }
-
-private:
-    RangeConstraints m_constraints;
-};
-
-} // namespace Types
+} // namespace ExpressionTree
 } // namespace Data
 } // namespace MalTester

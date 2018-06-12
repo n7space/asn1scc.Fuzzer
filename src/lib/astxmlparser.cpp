@@ -597,13 +597,40 @@ void AstXmlParser::readTypeAssignment()
 void AstXmlParser::readValueAssignment()
 {
     Q_ASSERT(m_currentDefinitions != nullptr);
+
     const auto location = readLocationFromAttributes();
     const auto name = readNameAttribute();
+
     auto type = findAndReadType();
-    m_xmlReader.skipCurrentElement();
+    auto value = findAndReadValueAssignmentValue();
 
     m_currentDefinitions->addValue(
-        std::make_unique<Data::ValueAssignment>(name, location, std::move(type)));
+        std::make_unique<Data::ValueAssignment>(name, location, std::move(type), value));
+}
+
+static bool isValueName(const QStringRef &name)
+{
+    // clang-format off
+    return name == QStringLiteral("IntegerValue")
+           || name == QStringLiteral("RealValue")
+           || name == QStringLiteral("StringValue")
+           || name == QStringLiteral("EnumValue")
+           || name == QStringLiteral("OctetStringValue")
+           || name == QStringLiteral("BitStringValue")
+           || name == QStringLiteral("BooleanValue");
+    // clang-format on
+}
+
+QString AstXmlParser::findAndReadValueAssignmentValue()
+{
+    while (m_xmlReader.readNextStartElement()) {
+        if (isValueName(m_xmlReader.name()))
+            return m_xmlReader.readElementText();
+        else
+            m_xmlReader.skipCurrentElement();
+    }
+
+    return {};
 }
 
 QString AstXmlParser::readTypeAssignmentAttribute()

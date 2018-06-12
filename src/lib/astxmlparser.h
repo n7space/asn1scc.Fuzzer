@@ -97,6 +97,8 @@ private:
     Data::SourceLocation readLocationFromAttributes();
     QStringRef readIsAlignedToNext();
 
+    QString findAndReadValueAssignmentValue();
+
     std::unique_ptr<Data::Types::Type> findAndReadType();
     std::unique_ptr<Data::Types::Type> readType();
     std::unique_ptr<Data::Types::Type> readTypeDetails(const QString &name,

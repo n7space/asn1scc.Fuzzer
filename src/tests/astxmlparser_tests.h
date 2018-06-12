@@ -65,14 +65,17 @@ private slots:
     void test_enumeratedItems();
     void test_enumeratedConstraints();
     void test_enumeratedWithAcnParams();
+    void test_enumeratedValueAssignment();
 
     void test_singleIntegerTypeAssignmentWithSimpleConstraint();
     void test_singleIntegerTypeAssignmentWithRangedConstraints();
     void test_singleIntegerTypeAssignmentWithAcnParams();
+    void test_singleIntegerValueAssignment();
 
     void test_singleRealTypeAssignmentWithSimpleConstraint();
     void test_singleRealTypeAssignmentWithRangedConstraints();
     void test_singleRealTypeAssignmentWithAcnParams();
+    void test_singleRealValueAssignment();
 
     void test_sequenceOfAssignmentWithSimpleConstraint();
     void test_sequenceOfAssignmentWithMultipleRangeConstraints();
@@ -84,6 +87,8 @@ private slots:
     void test_choiceAlternativesWithAcnParams();
 
     void test_booleanWithAcnParams();
+    void test_booleanValueAssignment();
+
     void test_nullWithAcnParams();
 
     void test_sequnceWithAcnParams();
@@ -95,11 +100,13 @@ private slots:
     void test_octetStringWithRangedSizeConstraint();
     void test_octetStringWithValueDefined();
     void test_octetStringAcnParams();
+    void test_octetStringValueAssignment();
 
     void test_iA5StringWithSizeConstraint();
     void test_iA5StringWithValueConstraint();
     void test_iA5StringWithValueDefined();
     void test_iA5StringAcnParams();
+    void test_iA5StringValueAssignment();
 
     void test_numericStringWithSizeConstraint();
     void test_numericStringWithValueConstraint();
@@ -110,6 +117,7 @@ private slots:
     void test_bitStringWithRangedSizeConstraint();
     void test_bitStringWithValueDefined();
     void test_bitStringAcnParams();
+    void test_bitStringValueAssignment();
 
     void test_notRelatedConstraintsInNumericString();
 

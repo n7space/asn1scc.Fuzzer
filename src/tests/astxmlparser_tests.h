@@ -120,6 +120,7 @@ private slots:
     void test_bitStringValueAssignment();
 
     void test_notRelatedConstraintsInNumericString();
+    void test_parametrizedInstances();
 
 private:
     template<typename Collection>

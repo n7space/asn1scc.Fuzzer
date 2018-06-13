@@ -583,6 +583,9 @@ void AstXmlParser::readTypeAssignments()
 void AstXmlParser::readTypeAssignment()
 {
     Q_ASSERT(m_currentDefinitions != nullptr);
+
+    m_inParametrizedBranch = false;
+
     const auto location = readLocationFromAttributes();
     const auto name = readNameAttribute();
     auto type = findAndReadType();
@@ -590,6 +593,7 @@ void AstXmlParser::readTypeAssignment()
 
     m_currentDefinitions->addType(
         std::make_unique<Data::TypeAssignment>(name, location, std::move(type)));
+
     m_data[m_currentFile]->addTypeReference(
         std::make_unique<Data::TypeReference>(name, m_currentDefinitions->name(), location));
 }
@@ -623,14 +627,18 @@ static bool isValueName(const QStringRef &name)
 
 QString AstXmlParser::findAndReadValueAssignmentValue()
 {
+    QString value;
     while (m_xmlReader.readNextStartElement()) {
-        if (isValueName(m_xmlReader.name()))
-            return m_xmlReader.readElementText();
-        else
+        if (isValueName(m_xmlReader.name())) {
+            value = m_xmlReader.readElementText();
             m_xmlReader.skipCurrentElement();
+            break;
+        } else {
+            m_xmlReader.skipCurrentElement();
+        }
     }
 
-    return {};
+    return value;
 }
 
 QString AstXmlParser::readTypeAssignmentAttribute()
@@ -833,10 +841,8 @@ std::unique_ptr<Data::Types::Type> AstXmlParser::buildTypeFromName(
                     ? createReferenceType(location)
                     : Data::Types::TypeFactory::createBuiltinType(name);
 
-    if (isParametrized) {
-        m_xmlReader.skipCurrentElement();
-        return type;
-    }
+    if (isParametrized)
+        m_inParametrizedBranch = true;
 
     readTypeAttributes(*type);
     readTypeContents(name, *type);
@@ -856,9 +862,10 @@ std::unique_ptr<Data::Types::Type> AstXmlParser::createReferenceType(
     const QString refName = readTypeAssignmentAttribute();
     const QString module = readModuleAttribute();
 
-    auto ref = std::make_unique<Data::TypeReference>(refName, module, location);
-
-    m_data[m_currentFile]->addTypeReference(std::move(ref));
+    if (!m_inParametrizedBranch) {
+        auto ref = std::make_unique<Data::TypeReference>(refName, module, location);
+        m_data[m_currentFile]->addTypeReference(std::move(ref));
+    }
 
     auto userDefinedType = std::make_unique<Data::Types::UserdefinedType>(refName, module);
 

@@ -2973,6 +2973,130 @@ void AstXmlParserTests::test_notRelatedConstraintsInNumericString()
                  "((SIZE (10)))((FROM ((\"1\" .. \"5\" | (\"6\" .. \"9\" ^ \"1\" .. \"8\")))))"));
 }
 
+void AstXmlParserTests::test_parametrizedInstances()
+{
+    parse(
+        R"(<?xml version="1.0" encoding="utf-8"?>)"
+        R"(<AstRoot>)"
+        R"(  <Asn1File FileName="TestFile.asn">)"
+        R"(    <Modules>)"
+        R"(      <Module Name="TestDefinitions" Line="13" CharPositionInLine="42">)"
+        R"(        <TypeAssignments>)"
+        R"(          <TypeAssignment Name="MyInt" Line="3" CharPositionInLine="0">)"
+        R"(            <Asn1Type id="Model.MyInt" Line="3" CharPositionInLine="10" ParameterizedTypeInstance="false">)"
+        R"(              <INTEGER acnMaxSizeInBits="72" acnMinSizeInBits="8" uperMaxSizeInBits="72" uperMinSizeInBits="8">)"
+        R"(                <Constraints />)"
+        R"(                <WithComponentConstraints />)"
+        R"(              </INTEGER>)"
+        R"(            </Asn1Type>)"
+        R"(          </TypeAssignment>)"
+        R"(          <TypeAssignment Name="MyParametrizedSequenceInstance" Line="5" CharPositionInLine="0">)"
+        R"(            <Asn1Type id="Model.MyParametrizedSequenceInstance" Line="7" CharPositionInLine="39" ParameterizedTypeInstance="true">)"
+        R"(              <SEQUENCE acnMaxSizeInBits="144" acnMinSizeInBits="80" uperMaxSizeInBits="144" uperMinSizeInBits="16">)"
+        R"(                <SEQUENCE_COMPONENT Name="seqVal" Line="9" CharPositionInLine="4">)"
+        R"(                  <Asn1Type id="Model.MyParametrizedSequenceInstance.seqVal" Line="9" CharPositionInLine="11" ParameterizedTypeInstance="false">)"
+        R"(                    <REFERENCE_TYPE Module="Model" TypeAssignment="MyInt">)"
+        R"(                      <Asn1Type id="Model.MyParametrizedSequenceInstance.seqVal" Line="3" CharPositionInLine="10" ParameterizedTypeInstance="false" tasInfoModule="Model" tasInfoName="MyInt">)"
+        R"(                        <INTEGER acnMaxSizeInBits="72" acnMinSizeInBits="8" uperMaxSizeInBits="72" uperMinSizeInBits="8">)"
+        R"(                          <Constraints />)"
+        R"(                          <WithComponentConstraints />)"
+        R"(                        </INTEGER>)"
+        R"(                      </Asn1Type>)"
+        R"(                    </REFERENCE_TYPE>)"
+        R"(                  </Asn1Type>)"
+        R"(                </SEQUENCE_COMPONENT>)"
+        R"(                <SEQUENCE_COMPONENT Name="choice" Line="10" CharPositionInLine="4">)"
+        R"(                  <Asn1Type id="Model.MyParametrizedSequenceInstance.choice" Line="10" CharPositionInLine="11" ParameterizedTypeInstance="false">)"
+        R"(                    <CHOICE acnMaxSizeInBits="72" acnMinSizeInBits="72" uperMaxSizeInBits="72" uperMinSizeInBits="8">)"
+        R"(                      <CHOICE_ALTERNATIVE Name="choiceVal" Line="15" CharPositionInLine="5" PresentWhenName="choiceVal" AdaName="choiceVal" CName="choiceVal">)"
+        R"(                        <Asn1Type id="Model.MyParametrizedSequenceInstance.choice.choiceVal" Line="15" CharPositionInLine="15" ParameterizedTypeInstance="false">)"
+        R"(                          <REFERENCE_TYPE Module="Model" TypeAssignment="MyInt">)"
+        R"(                            <Asn1Type id="Model.MyParametrizedSequenceInstance.choice.choiceVal" Line="3" CharPositionInLine="10" ParameterizedTypeInstance="false" tasInfoModule="Model" tasInfoName="MyInt">)"
+        R"(                              <INTEGER acnMaxSizeInBits="72" acnMinSizeInBits="8" uperMaxSizeInBits="72" uperMinSizeInBits="8">)"
+        R"(                                <Constraints />)"
+        R"(                                <WithComponentConstraints />)"
+        R"(                              </INTEGER>)"
+        R"(                            </Asn1Type>)"
+        R"(                          </REFERENCE_TYPE>)"
+        R"(                        </Asn1Type>)"
+        R"(                      </CHOICE_ALTERNATIVE>)"
+        R"(                      <Constraints />)"
+        R"(                      <WithComponentConstraints />)"
+        R"(                    </CHOICE>)"
+        R"(                  </Asn1Type>)"
+        R"(                </SEQUENCE_COMPONENT>)"
+        R"(                <Constraints />)"
+        R"(                <WithComponentConstraints />)"
+        R"(              </SEQUENCE>)"
+        R"(            </Asn1Type>)"
+        R"(          </TypeAssignment>)"
+        R"(          <TypeAssignment Name="PureSequence" Line="18" CharPositionInLine="0">)"
+        R"(            <Asn1Type id="Model.PureSequence" Line="18" CharPositionInLine="17" ParameterizedTypeInstance="false">)"
+        R"(              <SEQUENCE acnMaxSizeInBits="72" acnMinSizeInBits="8" uperMaxSizeInBits="72" uperMinSizeInBits="8">)"
+        R"(                <SEQUENCE_COMPONENT Name="pureInt" Line="20" CharPositionInLine="4">)"
+        R"(                  <Asn1Type id="Model.PureSequence.pureInt" Line="20" CharPositionInLine="12" ParameterizedTypeInstance="false">)"
+        R"(                    <REFERENCE_TYPE Module="Model" TypeAssignment="MyInt">)"
+        R"(                      <Asn1Type id="Model.PureSequence.pureInt" Line="3" CharPositionInLine="10" ParameterizedTypeInstance="false" tasInfoModule="Model" tasInfoName="MyInt">)"
+        R"(                        <INTEGER acnMaxSizeInBits="72" acnMinSizeInBits="8" uperMaxSizeInBits="72" uperMinSizeInBits="8">)"
+        R"(                          <Constraints />)"
+        R"(                          <WithComponentConstraints />)"
+        R"(                        </INTEGER>)"
+        R"(                      </Asn1Type>)"
+        R"(                    </REFERENCE_TYPE>)"
+        R"(                  </Asn1Type>)"
+        R"(                </SEQUENCE_COMPONENT>)"
+        R"(                <Constraints />)"
+        R"(                <WithComponentConstraints />)"
+        R"(              </SEQUENCE>)"
+        R"(            </Asn1Type>)"
+        R"(          </TypeAssignment>)"
+        R"(          <TypeAssignment Name="OtherInt" Line="23" CharPositionInLine="0">)"
+        R"(            <Asn1Type id="Model.OtherInt" Line="23" CharPositionInLine="13" ParameterizedTypeInstance="false">)"
+        R"(              <REFERENCE_TYPE Module="Model" TypeAssignment="MyInt">)"
+        R"(                <Asn1Type id="Model.OtherInt" Line="3" CharPositionInLine="10" ParameterizedTypeInstance="false" tasInfoModule="Model" tasInfoName="MyInt">)"
+        R"(                  <INTEGER acnMaxSizeInBits="72" acnMinSizeInBits="8" uperMaxSizeInBits="72" uperMinSizeInBits="8">)"
+        R"(                    <Constraints />)"
+        R"(                    <WithComponentConstraints />)"
+        R"(                  </INTEGER>)"
+        R"(                </Asn1Type>)"
+        R"(              </REFERENCE_TYPE>)"
+        R"(            </Asn1Type>)"
+        R"(          </TypeAssignment>)"
+        R"(        </TypeAssignments>)"
+        R"(      </Module>)"
+        R"(    </Modules>)"
+        R"(  </Asn1File>)"
+        R"(</AstRoot>)");
+
+    const auto refs = m_parsedData["TestFile.asn"]->referencesMap();
+    const auto refsEnd = refs.end();
+
+    QCOMPARE(m_parsedData["TestFile.asn"]->referencesMap().size(), std::size_t{6});
+
+    QVERIFY(refs.find(3) != refsEnd);
+    QVERIFY(refs.find(5) != refsEnd);
+    QVERIFY(refs.find(18) != refsEnd);
+    QVERIFY(refs.find(20) != refsEnd);
+    QVERIFY(refs.find(23) != refsEnd);
+
+    QVERIFY(refs.find(9) == refsEnd);
+    QVERIFY(refs.find(15) == refsEnd);
+
+    auto type = m_parsedData["TestFile.asn"]
+                    ->definitions("TestDefinitions")
+                    ->type("MyParametrizedSequenceInstance");
+
+    auto parametrizedSeq = dynamic_cast<const Data::Types::Sequence *>(type->type());
+    QCOMPARE(parametrizedSeq->components().size(), std::size_t{2});
+
+    type = m_parsedData["TestFile.asn"]->definitions("TestDefinitions")->type("PureSequence");
+
+    auto seq = dynamic_cast<const Data::Types::Sequence *>(type->type());
+    QCOMPARE(seq->components().size(), std::size_t{1});
+
+    type = m_parsedData["TestFile.asn"]->definitions("TestDefinitions")->type("OtherInt");
+}
+
 void AstXmlParserTests::parsingFails(const QString &xmlData)
 {
     setXmlData(xmlData);

@@ -163,7 +163,9 @@ private:
     std::map<QString, std::unique_ptr<Data::File>> m_data;
     QString m_currentFile;
     QString m_currentModule;
+
     Data::Definitions *m_currentDefinitions;
+    bool m_inParametrizedBranch;
 };
 
 } // namespace MalTester

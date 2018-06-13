@@ -583,6 +583,9 @@ void AstXmlParser::readTypeAssignments()
 void AstXmlParser::readTypeAssignment()
 {
     Q_ASSERT(m_currentDefinitions != nullptr);
+
+    m_inParametrizedBranch = false;
+
     const auto location = readLocationFromAttributes();
     const auto name = readNameAttribute();
     auto type = findAndReadType();
@@ -590,6 +593,7 @@ void AstXmlParser::readTypeAssignment()
 
     m_currentDefinitions->addType(
         std::make_unique<Data::TypeAssignment>(name, location, std::move(type)));
+
     m_data[m_currentFile]->addTypeReference(
         std::make_unique<Data::TypeReference>(name, m_currentDefinitions->name(), location));
 }
@@ -597,13 +601,44 @@ void AstXmlParser::readTypeAssignment()
 void AstXmlParser::readValueAssignment()
 {
     Q_ASSERT(m_currentDefinitions != nullptr);
+
     const auto location = readLocationFromAttributes();
     const auto name = readNameAttribute();
+
     auto type = findAndReadType();
-    m_xmlReader.skipCurrentElement();
+    auto value = findAndReadValueAssignmentValue();
 
     m_currentDefinitions->addValue(
-        std::make_unique<Data::ValueAssignment>(name, location, std::move(type)));
+        std::make_unique<Data::ValueAssignment>(name, location, std::move(type), value));
+}
+
+static bool isValueName(const QStringRef &name)
+{
+    // clang-format off
+    return name == QStringLiteral("IntegerValue")
+           || name == QStringLiteral("RealValue")
+           || name == QStringLiteral("StringValue")
+           || name == QStringLiteral("EnumValue")
+           || name == QStringLiteral("OctetStringValue")
+           || name == QStringLiteral("BitStringValue")
+           || name == QStringLiteral("BooleanValue");
+    // clang-format on
+}
+
+QString AstXmlParser::findAndReadValueAssignmentValue()
+{
+    QString value;
+    while (m_xmlReader.readNextStartElement()) {
+        if (isValueName(m_xmlReader.name())) {
+            value = m_xmlReader.readElementText();
+            m_xmlReader.skipCurrentElement();
+            break;
+        } else {
+            m_xmlReader.skipCurrentElement();
+        }
+    }
+
+    return value;
 }
 
 QString AstXmlParser::readTypeAssignmentAttribute()
@@ -806,10 +841,8 @@ std::unique_ptr<Data::Types::Type> AstXmlParser::buildTypeFromName(
                     ? createReferenceType(location)
                     : Data::Types::TypeFactory::createBuiltinType(name);
 
-    if (isParametrized) {
-        m_xmlReader.skipCurrentElement();
-        return type;
-    }
+    if (isParametrized)
+        m_inParametrizedBranch = true;
 
     readTypeAttributes(*type);
     readTypeContents(name, *type);
@@ -829,9 +862,10 @@ std::unique_ptr<Data::Types::Type> AstXmlParser::createReferenceType(
     const QString refName = readTypeAssignmentAttribute();
     const QString module = readModuleAttribute();
 
-    auto ref = std::make_unique<Data::TypeReference>(refName, module, location);
-
-    m_data[m_currentFile]->addTypeReference(std::move(ref));
+    if (!m_inParametrizedBranch) {
+        auto ref = std::make_unique<Data::TypeReference>(refName, module, location);
+        m_data[m_currentFile]->addTypeReference(std::move(ref));
+    }
 
     auto userDefinedType = std::make_unique<Data::Types::UserdefinedType>(refName, module);
 

@@ -97,6 +97,8 @@ private:
     Data::SourceLocation readLocationFromAttributes();
     QStringRef readIsAlignedToNext();
 
+    QString findAndReadValueAssignmentValue();
+
     std::unique_ptr<Data::Types::Type> findAndReadType();
     std::unique_ptr<Data::Types::Type> readType();
     std::unique_ptr<Data::Types::Type> readTypeDetails(const QString &name,
@@ -161,7 +163,9 @@ private:
     std::map<QString, std::unique_ptr<Data::File>> m_data;
     QString m_currentFile;
     QString m_currentModule;
+
     Data::Definitions *m_currentDefinitions;
+    bool m_inParametrizedBranch;
 };
 
 } // namespace MalTester

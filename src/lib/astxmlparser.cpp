@@ -27,6 +27,9 @@
 #include "astxmlparser.h"
 
 #include <data/asnsequencecomponent.h>
+#include <data/multiplevalue.h>
+#include <data/namedvalue.h>
+#include <data/singlevalue.h>
 #include <data/sourcelocation.h>
 
 #include <data/types/acnparameterizablecomposite.h>
@@ -609,10 +612,21 @@ void AstXmlParser::readValueAssignment()
     auto value = findAndReadValueAssignmentValue();
 
     m_currentDefinitions->addValue(
-        std::make_unique<Data::ValueAssignment>(name, location, std::move(type), value));
+        std::make_unique<Data::ValueAssignment>(name, location, std::move(type), std::move(value)));
 }
 
-static bool isValueName(const QStringRef &name)
+Data::ValuePtr AstXmlParser::findAndReadValueAssignmentValue()
+{
+    if (!m_xmlReader.readNextStartElement())
+        return nullptr;
+
+    auto val = readValueAssignmentValue();
+    m_xmlReader.skipCurrentElement();
+
+    return val;
+}
+
+static bool isSingleValueName(const QStringRef &name)
 {
     // clang-format off
     return name == QStringLiteral("IntegerValue")
@@ -625,17 +639,60 @@ static bool isValueName(const QStringRef &name)
     // clang-format on
 }
 
-QString AstXmlParser::findAndReadValueAssignmentValue()
+static bool isMultipleValueName(const QStringRef &name)
 {
-    QString value;
-    while (m_xmlReader.readNextStartElement()) {
-        if (isValueName(m_xmlReader.name())) {
-            value = m_xmlReader.readElementText();
-            m_xmlReader.skipCurrentElement();
+    return name == QStringLiteral("SequenceOfValue");
+}
+
+static bool isNamedValueName(const QStringRef &name)
+{
+    return name == QStringLiteral("SequenceValue");
+}
+
+Data::ValuePtr AstXmlParser::readValueAssignmentValue()
+{
+    Data::ValuePtr value = nullptr;
+
+    const auto name = m_xmlReader.name();
+    if (isSingleValueName(name))
+        value = readSimpleValue();
+    else if (isMultipleValueName(name))
+        value = readMultipleValue();
+    else if (isNamedValueName(name))
+        value = readNamedValue();
+    else
+        m_xmlReader.skipCurrentElement();
+
+    return value;
+}
+
+Data::ValuePtr AstXmlParser::readSimpleValue()
+{
+    return std::make_unique<Data::SingleValue>(m_xmlReader.readElementText());
+}
+
+Data::ValuePtr AstXmlParser::readMultipleValue()
+{
+    auto value = std::make_unique<Data::MultipleValue>();
+
+    while (m_xmlReader.readNextStartElement())
+        value->addValue(readValueAssignmentValue());
+
+    return value;
+}
+
+Data::ValuePtr AstXmlParser::readNamedValue()
+{
+    auto value = std::make_unique<Data::NamedValue>();
+
+    while (skipToChildElement(QStringLiteral("NamedValue"))) {
+        const auto name = readNameAttribute();
+
+        if (!m_xmlReader.readNextStartElement())
             break;
-        } else {
-            m_xmlReader.skipCurrentElement();
-        }
+
+        value->addValue(name, readValueAssignmentValue());
+        m_xmlReader.skipCurrentElement();
     }
 
     return value;

@@ -26,36 +26,26 @@
 #pragma once
 
 #include <memory>
+#include <vector>
+
+#include <data/value.h>
 
 #include <QString>
-
-#include "node.h"
-#include "sourcelocation.h"
-#include "types/type.h"
-
-#include "value.h"
 
 namespace MalTester {
 namespace Data {
 
-class ValueAssignment : public Node
+class SingleValue : public Value
 {
 public:
-    ValueAssignment(const QString &name,
-                    const SourceLocation &location,
-                    std::unique_ptr<Types::Type> type,
-                    ValuePtr value);
-    ValueAssignment(const ValueAssignment &other);
-    ~ValueAssignment() override;
+    SingleValue(const QString &value);
+    SingleValue(const SingleValue &other) = default;
 
-    void accept(Visitor &visitor) const override;
-
-    const Types::Type *type() const { return m_type.get(); }
-    const ValuePtr &value() const { return m_value; }
+    QString asString() const override;
+    virtual ValuePtr clone() const override;
 
 private:
-    std::unique_ptr<Types::Type> m_type;
-    ValuePtr m_value;
+    QString m_value;
 };
 
 } // namespace Data

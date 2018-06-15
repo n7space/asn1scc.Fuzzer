@@ -16,6 +16,9 @@ SOURCES += \
     data/typereference.cpp \
     data/valueassignment.cpp \
     data/visitor.cpp \
+    data/singlevalue.cpp \
+    data/multiplevalue.cpp \
+    data/namedvalue.cpp \
     \
     data/types/type.cpp \
     data/types/typevisitor.cpp \
@@ -67,6 +70,10 @@ HEADERS += \
     data/acnsequencecomponent.h \
     data/sequencecomponent.h \
     data/acnargument.h \
+    data/value.h \
+    data/singlevalue.h \
+    data/multiplevalue.h \
+    data/namedvalue.h \
     \
     data/types/typefactory.h \
     data/types/labeltype.h \

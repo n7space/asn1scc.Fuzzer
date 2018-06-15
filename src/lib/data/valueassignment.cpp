@@ -32,14 +32,14 @@ using namespace MalTester::Data;
 ValueAssignment::ValueAssignment(const QString &name,
                                  const SourceLocation &location,
                                  std::unique_ptr<Types::Type> type,
-                                 const QString &value)
+                                 ValuePtr value)
     : Node(name, location)
     , m_type(std::move(type))
-    , m_value(value)
+    , m_value(std::move(value))
 {}
 
 ValueAssignment::ValueAssignment(const ValueAssignment &other)
-    : ValueAssignment(other.name(), other.location(), other.type()->clone(), other.value())
+    : ValueAssignment(other.name(), other.location(), other.type()->clone(), other.m_value->clone())
 {}
 
 ValueAssignment::~ValueAssignment() {}

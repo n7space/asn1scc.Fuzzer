@@ -23,40 +23,36 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-#pragma once
 
-#include <memory>
+#include "multiplevalue.h"
 
-#include <QString>
+using namespace MalTester::Data;
 
-#include "node.h"
-#include "sourcelocation.h"
-#include "types/type.h"
-
-#include "value.h"
-
-namespace MalTester {
-namespace Data {
-
-class ValueAssignment : public Node
+MultipleValue::MultipleValue(const MultipleValue &other)
 {
-public:
-    ValueAssignment(const QString &name,
-                    const SourceLocation &location,
-                    std::unique_ptr<Types::Type> type,
-                    ValuePtr value);
-    ValueAssignment(const ValueAssignment &other);
-    ~ValueAssignment() override;
+    for (const auto &item : other.m_values)
+        addValue(item->clone());
+}
 
-    void accept(Visitor &visitor) const override;
+QString MultipleValue::asString() const
+{
+    QString ret = QStringLiteral("{");
 
-    const Types::Type *type() const { return m_type.get(); }
-    const ValuePtr &value() const { return m_value; }
+    for (auto it = m_values.begin(); it != m_values.end(); it++) {
+        ret += (*it)->asString();
+        if (std::next(it, 1) != m_values.end())
+            ret += QStringLiteral(", ");
+    }
 
-private:
-    std::unique_ptr<Types::Type> m_type;
-    ValuePtr m_value;
-};
+    return ret + QStringLiteral("}");
+}
 
-} // namespace Data
-} // namespace MalTester
+ValuePtr MultipleValue::clone() const
+{
+    return std::make_unique<MultipleValue>(*this);
+}
+
+void MultipleValue::addValue(ValuePtr value)
+{
+    m_values.push_back(std::move(value));
+}

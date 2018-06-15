@@ -81,6 +81,7 @@ private slots:
     void test_sequenceOfAssignmentWithMultipleRangeConstraints();
     void test_sequenceOfAssignmentWithRangeConstraintInsideSizeConstraint();
     void test_sequenceOfAssignmentWithAcnParams();
+    void test_sequenceOfValueAssignment();
 
     void test_choiceWithAcnParams();
     void test_choiceAlternatives();
@@ -95,6 +96,7 @@ private slots:
     void test_sequenceComponents();
     void test_sequenceComponentsWithAcnParams();
     void test_sequenceAcnComponents();
+    void test_sequenceValueAssignment();
 
     void test_octetStringWithSizeConstraint();
     void test_octetStringWithRangedSizeConstraint();
@@ -120,6 +122,7 @@ private slots:
     void test_bitStringValueAssignment();
 
     void test_notRelatedConstraintsInNumericString();
+    void test_nestedValueAssignments();
     void test_parametrizedInstances();
 
 private:

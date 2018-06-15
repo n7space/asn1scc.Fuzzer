@@ -23,40 +23,21 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-#pragma once
 
-#include <memory>
+#include "singlevalue.h"
 
-#include <QString>
+using namespace MalTester::Data;
 
-#include "node.h"
-#include "sourcelocation.h"
-#include "types/type.h"
+SingleValue::SingleValue(const QString &value)
+    : m_value(value)
+{}
 
-#include "value.h"
-
-namespace MalTester {
-namespace Data {
-
-class ValueAssignment : public Node
+QString SingleValue::asString() const
 {
-public:
-    ValueAssignment(const QString &name,
-                    const SourceLocation &location,
-                    std::unique_ptr<Types::Type> type,
-                    ValuePtr value);
-    ValueAssignment(const ValueAssignment &other);
-    ~ValueAssignment() override;
+    return m_value;
+}
 
-    void accept(Visitor &visitor) const override;
-
-    const Types::Type *type() const { return m_type.get(); }
-    const ValuePtr &value() const { return m_value; }
-
-private:
-    std::unique_ptr<Types::Type> m_type;
-    ValuePtr m_value;
-};
-
-} // namespace Data
-} // namespace MalTester
+ValuePtr SingleValue::clone() const
+{
+    return std::make_unique<SingleValue>(*this);
+}

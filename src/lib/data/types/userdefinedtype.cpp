@@ -38,6 +38,8 @@ UserdefinedType::UserdefinedType(const QString &name, const QString &module)
 
 UserdefinedType::UserdefinedType(const UserdefinedType &other)
     : Type()
+    , m_name(other.m_name)
+    , m_module(other.m_module)
 {
     m_type = (other.m_type != nullptr) ? other.m_type->clone() : nullptr;
 

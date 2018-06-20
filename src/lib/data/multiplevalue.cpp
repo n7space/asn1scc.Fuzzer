@@ -30,8 +30,11 @@ using namespace MalTester::Data;
 
 MultipleValue::MultipleValue(const MultipleValue &other)
 {
-    for (const auto &item : other.m_values)
-        addValue(item->clone());
+    for (const auto &item : other.m_values) {
+        // TODO when proper SequenceValue will be used
+        if (item != nullptr)
+            addValue(item->clone());
+    }
 }
 
 QString MultipleValue::asString() const

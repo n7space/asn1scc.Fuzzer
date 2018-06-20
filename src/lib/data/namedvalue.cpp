@@ -30,8 +30,13 @@ using namespace MalTester::Data;
 
 NamedValue::NamedValue(const NamedValue &other)
 {
-    for (const auto &item : other.m_values)
-        addValue(item.first, item.second->clone());
+    for (const auto &item : other.m_values) {
+        // TODO when proper SequenceValue will be used
+        if (item.second != nullptr)
+            addValue(item.first, item.second->clone());
+        else
+            addValue(item.first, nullptr);
+    }
 }
 
 QString NamedValue::asString() const

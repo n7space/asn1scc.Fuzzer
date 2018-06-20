@@ -39,8 +39,12 @@ ValueAssignment::ValueAssignment(const QString &name,
 {}
 
 ValueAssignment::ValueAssignment(const ValueAssignment &other)
-    : ValueAssignment(other.name(), other.location(), other.type()->clone(), other.m_value->clone())
-{}
+    : Node(other.name(), other.location())
+    , m_type(other.type()->clone())
+{
+    if (other.m_value != nullptr)
+        m_value = other.m_value->clone();
+}
 
 ValueAssignment::~ValueAssignment() {}
 

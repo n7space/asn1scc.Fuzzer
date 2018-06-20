@@ -37,6 +37,7 @@ LogicOperator::LogicOperator(const QString &type,
 {}
 
 LogicOperator::LogicOperator(const LogicOperator &other)
+    : m_type(other.m_type)
 {
     m_leftChild = other.m_leftChild ? other.m_leftChild->clone() : nullptr;
     m_rightChild = other.m_rightChild ? other.m_rightChild->clone() : nullptr;

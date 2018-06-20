@@ -49,8 +49,6 @@ public:
         , m_location(location)
     {}
 
-    EnumeratedItem(const EnumeratedItem &other) = default;
-
     const QString &name() const { return m_name; }
     int value() const { return m_value; }
     const SourceLocation &location() const { return m_location; }

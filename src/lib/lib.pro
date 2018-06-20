@@ -67,7 +67,6 @@ HEADERS += \
     data/acnsequencecomponent.h \
     data/sequencecomponent.h \
     data/acnargument.h \
-    data/ranges.h \
     \
     data/types/typefactory.h \
     data/types/labeltype.h \

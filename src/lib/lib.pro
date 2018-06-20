@@ -113,6 +113,8 @@ HEADERS += \
     data/expressiontree/logicoperator.h \
     data/expressiontree/constrainingoperator.h \
     \
+    data/constraints/range.h \
+    \
     astxmlparser.h \
     runparameters.h \
     astfilegenerator.h \

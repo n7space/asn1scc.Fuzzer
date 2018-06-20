@@ -15,11 +15,16 @@ SOURCES += \
     nodereconstructingvisitor_tests.cpp \
     reconstructor_tests.cpp \
     \
-    data/expressiontree/expressiontree_tests.cpp
+    data/expressiontree/expressiontree_tests.cpp \
+    \
+    data/constraints/range_tests.cpp
 
 HEADERS += \
     astxmlparser_tests.h \
     nodereconstructingvisitor_tests.h \
     reconstructor_tests.h \
     \
-    data/expressiontree/expressiontree_tests.h
+    data/expressiontree/expressiontree_tests.h \
+    \
+    data/constraints/range_tests.h
+

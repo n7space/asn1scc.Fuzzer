@@ -23,35 +23,29 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
+#pragma once
 
-#include <QObject>
-#include <QTest>
+#include <memory>
 
-#include "astxmlparser_tests.h"
-#include "nodereconstructingvisitor_tests.h"
-#include "reconstructor_tests.h"
+#include <QString>
 
-#include "data/constraints/logicoperators_tests.h"
-#include "data/constraints/range_tests.h"
-#include "data/constraints/rangelist_tests.h"
+#include "rangelist.h"
 
-#include "data/expressiontree/expressiontree_tests.h"
+namespace MalTester {
+namespace Data {
+namespace Constraints {
 
-int main(int argc, char *argv[])
+template<typename T>
+class RangeConstraint
 {
-    int ret = 0;
-    const auto runTest = [&ret, argc, argv](QObject *obj) {
-        ret += QTest::qExec(obj, argc, argv);
-        delete obj;
-    };
+public:
+    virtual ~RangeConstraint() = default;
 
-    runTest(new MalTester::Tests::AstXmlParserTests);
-    runTest(new MalTester::Tests::NodeReconstructingVisitorTests);
-    runTest(new MalTester::Tests::ReconstructorTests);
-    runTest(new MalTester::Data::ExpressionTree::Tests::ExpressionTreeTests);
-    runTest(new MalTester::Data::Constraints::Tests::RangeTests);
-    runTest(new MalTester::Data::Constraints::Tests::RangeListTests);
-    runTest(new MalTester::Data::Constraints::Tests::LogicOperatorsTests);
+    virtual QString asString() const = 0;
+    virtual RangeList<T> asRangeList() const = 0;
+    virtual std::unique_ptr<RangeConstraint<T>> clone() const = 0;
+};
 
-    return ret;
-}
+} // namespace Constraints
+} // namespace Data
+} // namespace MalTester

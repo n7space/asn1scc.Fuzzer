@@ -23,35 +23,37 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
+#pragma once
 
-#include <QObject>
-#include <QTest>
+#include <QString>
 
-#include "astxmlparser_tests.h"
-#include "nodereconstructingvisitor_tests.h"
-#include "reconstructor_tests.h"
+#include "range.h"
+#include "rangeconstraint.h"
 
-#include "data/constraints/logicoperators_tests.h"
-#include "data/constraints/range_tests.h"
-#include "data/constraints/rangelist_tests.h"
+namespace MalTester {
+namespace Data {
+namespace Constraints {
 
-#include "data/expressiontree/expressiontree_tests.h"
-
-int main(int argc, char *argv[])
+template<typename T>
+class RangeConstraintLiteral : public RangeConstraint<T>
 {
-    int ret = 0;
-    const auto runTest = [&ret, argc, argv](QObject *obj) {
-        ret += QTest::qExec(obj, argc, argv);
-        delete obj;
-    };
+public:
+    explicit RangeConstraintLiteral(const Range<T> &range)
+        : m_range(range)
+    {}
+    ~RangeConstraintLiteral() override = default;
 
-    runTest(new MalTester::Tests::AstXmlParserTests);
-    runTest(new MalTester::Tests::NodeReconstructingVisitorTests);
-    runTest(new MalTester::Tests::ReconstructorTests);
-    runTest(new MalTester::Data::ExpressionTree::Tests::ExpressionTreeTests);
-    runTest(new MalTester::Data::Constraints::Tests::RangeTests);
-    runTest(new MalTester::Data::Constraints::Tests::RangeListTests);
-    runTest(new MalTester::Data::Constraints::Tests::LogicOperatorsTests);
+    QString asString() const override { return m_range.asString(); }
+    RangeList<T> asRangeList() const override { return {m_range}; }
+    std::unique_ptr<RangeConstraint<T>> clone() const override
+    {
+        return std::make_unique<RangeConstraintLiteral>(m_range);
+    }
 
-    return ret;
-}
+private:
+    Range<T> m_range;
+};
+
+} // namespace Constraints
+} // namespace Data
+} // namespace MalTester

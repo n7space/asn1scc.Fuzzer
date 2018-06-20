@@ -23,35 +23,36 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
+#include "logicoperators_tests.h"
 
-#include <QObject>
-#include <QTest>
+#include <QtTest>
 
-#include "astxmlparser_tests.h"
-#include "nodereconstructingvisitor_tests.h"
-#include "reconstructor_tests.h"
+#include <data/constraints/logicoperators.h>
+#include <data/constraints/rangeconstraintliteral.h>
 
-#include "data/constraints/logicoperators_tests.h"
-#include "data/constraints/range_tests.h"
-#include "data/constraints/rangelist_tests.h"
+using namespace MalTester::Data::Constraints::Tests;
+using namespace MalTester::Data::Constraints;
 
-#include "data/expressiontree/expressiontree_tests.h"
+LogicOperatorsTests::LogicOperatorsTests(QObject *parent)
+    : QObject(parent)
+{}
 
-int main(int argc, char *argv[])
+void LogicOperatorsTests::test_andAsString()
 {
-    int ret = 0;
-    const auto runTest = [&ret, argc, argv](QObject *obj) {
-        ret += QTest::qExec(obj, argc, argv);
-        delete obj;
-    };
+    auto l = std::make_unique<RangeConstraintLiteral<int>>(Range<int>{10, 20});
+    auto r = std::make_unique<RangeConstraintLiteral<int>>(Range<int>{50, 60});
 
-    runTest(new MalTester::Tests::AstXmlParserTests);
-    runTest(new MalTester::Tests::NodeReconstructingVisitorTests);
-    runTest(new MalTester::Tests::ReconstructorTests);
-    runTest(new MalTester::Data::ExpressionTree::Tests::ExpressionTreeTests);
-    runTest(new MalTester::Data::Constraints::Tests::RangeTests);
-    runTest(new MalTester::Data::Constraints::Tests::RangeListTests);
-    runTest(new MalTester::Data::Constraints::Tests::LogicOperatorsTests);
+    AndConstraint<int> a(std::move(l), std::move(r));
 
-    return ret;
+    QCOMPARE(a.asString(), QLatin1Literal("(10 .. 20 ^ 50 .. 60)"));
+}
+
+void LogicOperatorsTests::test_orAsString()
+{
+    auto l = std::make_unique<RangeConstraintLiteral<int>>(Range<int>{10, 20});
+    auto r = std::make_unique<RangeConstraintLiteral<int>>(Range<int>{50, 60});
+
+    OrConstraint<int> o(std::move(l), std::move(r));
+
+    QCOMPARE(o.asString(), QLatin1Literal("(10 .. 20 | 50 .. 60)"));
 }

@@ -9,8 +9,6 @@ CONFIG -= app_bundle
 include(../../includelib.pri)
 
 SOURCES += \
-    main.cpp \
-    \
     astxmlparser_tests.cpp \
     nodereconstructingvisitor_tests.cpp \
     reconstructor_tests.cpp \
@@ -18,7 +16,10 @@ SOURCES += \
     data/expressiontree/expressiontree_tests.cpp \
     \
     data/constraints/range_tests.cpp \
-    data/constraints/rangelist_tests.cpp
+    data/constraints/rangelist_tests.cpp \
+    data/constraints/logicoperators_tests.cpp \
+    \
+    main.cpp
 
 HEADERS += \
     astxmlparser_tests.h \
@@ -28,5 +29,5 @@ HEADERS += \
     data/expressiontree/expressiontree_tests.h \
     \
     data/constraints/range_tests.h \
-    data/constraints/rangelist_tests.h
-
+    data/constraints/rangelist_tests.h \
+    data/constraints/logicoperators_tests.h

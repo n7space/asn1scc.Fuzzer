@@ -12,8 +12,10 @@ SOURCES += \
     main.cpp \
     \
     astxmlparser_tests.cpp \
-    expressiontree_tests.cpp
+    \
+    data/expressiontree/expressiontree_tests.cpp
 
 HEADERS += \
     astxmlparser_tests.h \
-    expressiontree_tests.h
+    \
+    data/expressiontree/expressiontree_tests.h

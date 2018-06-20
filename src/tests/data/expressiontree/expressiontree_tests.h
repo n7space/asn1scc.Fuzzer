@@ -28,6 +28,8 @@
 #include <QObject>
 
 namespace MalTester {
+namespace Data {
+namespace ExpressionTree {
 namespace Tests {
 
 class ExpressionTreeTests : public QObject
@@ -51,4 +53,6 @@ private slots:
 };
 
 } // namespace Tests
+} // namespace ExpressionTree
+} // namespace Data
 } // namespace MalTester

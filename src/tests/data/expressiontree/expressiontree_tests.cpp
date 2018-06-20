@@ -30,9 +30,7 @@
 #include <data/expressiontree/expressiontree.h>
 #include <data/expressiontree/ranges.h>
 
-using namespace MalTester;
-using namespace MalTester::Tests;
-using namespace MalTester::Data::ExpressionTree;
+using namespace MalTester::Data::ExpressionTree::Tests;
 
 ExpressionTreeTests::ExpressionTreeTests(QObject *parent)
     : QObject(parent)

@@ -27,19 +27,19 @@
 #include <QObject>
 #include <QTest>
 
-#include <astxmlparser_tests.h>
-#include <expressiontree_tests.h>
+#include "astxmlparser_tests.h"
+#include "data/expressiontree/expressiontree_tests.h"
 
 int main(int argc, char *argv[])
 {
-    Q_UNUSED(argc);
-    Q_UNUSED(argv);
-
     int ret = 0;
-    const auto runTest = [&ret](QObject *obj) { ret |= QTest::qExec(obj); };
+    const auto runTest = [&ret, argc, argv](QObject *obj) {
+        ret += QTest::qExec(obj, argc, argv);
+        delete obj;
+    };
 
     runTest(new MalTester::Tests::AstXmlParserTests);
-    runTest(new MalTester::Tests::ExpressionTreeTests);
+    runTest(new MalTester::Data::ExpressionTree::Tests::ExpressionTreeTests);
 
     return ret;
 }

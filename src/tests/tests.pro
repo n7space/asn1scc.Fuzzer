@@ -17,7 +17,8 @@ SOURCES += \
     \
     data/expressiontree/expressiontree_tests.cpp \
     \
-    data/constraints/range_tests.cpp
+    data/constraints/range_tests.cpp \
+    data/constraints/rangelist_tests.cpp
 
 HEADERS += \
     astxmlparser_tests.h \
@@ -26,5 +27,6 @@ HEADERS += \
     \
     data/expressiontree/expressiontree_tests.h \
     \
-    data/constraints/range_tests.h
+    data/constraints/range_tests.h \
+    data/constraints/rangelist_tests.h
 

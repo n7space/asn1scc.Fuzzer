@@ -43,6 +43,7 @@ public:
         , m_end(qMax(begin, end))
     {}
     Range(const Range &other) = default;
+    Range &operator=(const Range &other) = default;
 
     bool isSingleItem() const { return begin() == end(); }
     const T &begin() const { return m_begin; }

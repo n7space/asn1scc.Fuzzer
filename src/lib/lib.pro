@@ -114,6 +114,7 @@ HEADERS += \
     data/expressiontree/constrainingoperator.h \
     \
     data/constraints/range.h \
+    data/constraints/rangelist.h \
     \
     astxmlparser.h \
     runparameters.h \

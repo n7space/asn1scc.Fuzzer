@@ -27,31 +27,23 @@
 
 #include <memory>
 
-#include <QString>
-
-#include "node.h"
-#include "sourcelocation.h"
-#include "types/type.h"
+#include <data/value.h>
 
 namespace MalTester {
 namespace Data {
 
-class TypeAssignment : public Node
+class ChoiceValue : public Value
 {
 public:
-    TypeAssignment(const QString &name,
-                   const SourceLocation &location,
-                   std::unique_ptr<Types::Type> type);
-    TypeAssignment(const TypeAssignment &other);
-    ~TypeAssignment() override;
+    ChoiceValue(const QString &name, ValuePtr value);
+    ChoiceValue(const ChoiceValue &other);
 
-    void accept(Visitor &visitor) const override;
-
-    const Types::Type *type() const { return m_type.get(); }
-    Types::Type *type() { return m_type.get(); }
+    QString asString() const override;
+    ValuePtr clone() const override;
 
 private:
-    std::unique_ptr<Types::Type> m_type;
+    QString m_name;
+    ValuePtr m_value;
 };
 
 } // namespace Data

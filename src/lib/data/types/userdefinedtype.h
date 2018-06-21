@@ -51,6 +51,7 @@ public:
     const QString &module() const { return m_module; }
 
     const Type &type() const { return *m_type; }
+    Type &type() { return *m_type; }
     void setType(std::unique_ptr<Type> type);
 
     const AcnArgumentPtrs &acnArguments() const { return m_arguments; }

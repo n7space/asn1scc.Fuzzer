@@ -36,6 +36,7 @@
 #include <data/acnsequencecomponent.h>
 #include <data/definitions.h>
 #include <data/file.h>
+#include <data/namedvalue.h>
 #include <data/value.h>
 
 #include <data/types/type.h>
@@ -101,9 +102,11 @@ private:
     Data::ValuePtr findAndReadValueAssignmentValue();
     Data::ValuePtr readValueAssignmentValue();
 
-    Data::ValuePtr readSimpleValue();
+    Data::ValuePtr readSimpleValue(const QStringRef &name);
     Data::ValuePtr readMultipleValue();
-    Data::ValuePtr readNamedValue();
+    Data::ValuePtr readSequenceValues();
+    std::pair<QString, Data::ValuePtr> readNamedValue();
+    Data::ValuePtr readChoiceValue();
 
     std::unique_ptr<Data::Types::Type> findAndReadType();
     std::unique_ptr<Data::Types::Type> readType();

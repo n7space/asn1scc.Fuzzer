@@ -80,8 +80,11 @@ std::unique_ptr<ExpressionNode> EnumeratedRange::clone() const
     return std::make_unique<EnumeratedRange>(*this);
 }
 
-StringRange::StringRange(const QString &begin, const QString &end)
+StringRange::StringRange(const QString &begin,
+                         const QString &end,
+                         std::function<QString(const QString &)> printer)
     : TypedRange(begin, end)
+    , m_printer(printer)
 {}
 
 std::unique_ptr<ExpressionNode> StringRange::clone() const
@@ -92,7 +95,7 @@ std::unique_ptr<ExpressionNode> StringRange::clone() const
 QString StringRange::asString() const
 {
     if (m_data.first != m_data.second)
-        return '"' + m_data.first + "\" .. \"" + m_data.second + '"';
+        return m_printer(m_data.first) + " .. " + m_printer(m_data.second);
     else
-        return '"' + m_data.first + '"';
+        return m_printer(m_data.first);
 }

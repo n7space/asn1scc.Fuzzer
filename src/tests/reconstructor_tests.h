@@ -27,32 +27,34 @@
 
 #include <memory>
 
-#include <QString>
+#include <QObject>
 
-#include "node.h"
-#include "sourcelocation.h"
-#include "types/type.h"
+#include <data/definitions.h>
+#include <data/file.h>
+#include <data/project.h>
 
 namespace MalTester {
-namespace Data {
+namespace Tests {
 
-class TypeAssignment : public Node
+class ReconstructorTests : public QObject
 {
+    Q_OBJECT
 public:
-    TypeAssignment(const QString &name,
-                   const SourceLocation &location,
-                   std::unique_ptr<Types::Type> type);
-    TypeAssignment(const TypeAssignment &other);
-    ~TypeAssignment() override;
+    explicit ReconstructorTests(QObject *parent = 0);
 
-    void accept(Visitor &visitor) const override;
+private slots:
+    void test_emptyProject();
 
-    const Types::Type *type() const { return m_type.get(); }
-    Types::Type *type() { return m_type.get(); }
+    void test_emptyFile();
+    void test_singleFileWithSingleModule();
+    void test_singleFileWithMultipleModules();
+    void test_multipleFiles();
 
 private:
-    std::unique_ptr<Types::Type> m_type;
+    std::unique_ptr<Data::File> createFile(const QString &path) const;
+    std::unique_ptr<Data::Project> createProject(const QString &name) const;
+    std::unique_ptr<Data::Definitions> createDefinitions(const QString &name) const;
 };
 
-} // namespace Data
+} // namespace Tests
 } // namespace MalTester

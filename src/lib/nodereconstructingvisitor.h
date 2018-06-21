@@ -25,34 +25,31 @@
 ****************************************************************************/
 #pragma once
 
-#include <memory>
-
+#include <data/visitorwithvalue.h>
 #include <QString>
 
-#include "node.h"
-#include "sourcelocation.h"
-#include "types/type.h"
-
 namespace MalTester {
-namespace Data {
 
-class TypeAssignment : public Node
+class NodeReconstructingVisitor : public Data::VisitorWithValue<QString>
 {
 public:
-    TypeAssignment(const QString &name,
-                   const SourceLocation &location,
-                   std::unique_ptr<Types::Type> type);
-    TypeAssignment(const TypeAssignment &other);
-    ~TypeAssignment() override;
-
-    void accept(Visitor &visitor) const override;
-
-    const Types::Type *type() const { return m_type.get(); }
-    Types::Type *type() { return m_type.get(); }
+    ~NodeReconstructingVisitor() override = default;
 
 private:
-    std::unique_ptr<Types::Type> m_type;
+    QString valueFor(const Data::Definitions &defs) const override;
+    QString valueFor(const Data::File &file) const override;
+    QString valueFor(const Data::TypeAssignment &type) const override;
+    QString valueFor(const Data::ValueAssignment &value) const override;
+    QString valueFor(const Data::Project &project) const override;
+    QString valueFor(const Data::Root &root) const override;
+
+    QString importsAsString(const Data::Definitions &defs) const;
+
+    template<typename T>
+    QString importedCollectionAsString(const T &types) const;
+
+    QString typesAsString(const Data::Definitions &defs) const;
+    QString valuesAsString(const Data::Definitions &defs) const;
 };
 
-} // namespace Data
 } // namespace MalTester

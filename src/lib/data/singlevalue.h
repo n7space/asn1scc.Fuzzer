@@ -25,10 +25,11 @@
 ****************************************************************************/
 #pragma once
 
+#include <functional>
 #include <memory>
-#include <vector>
 
 #include <data/value.h>
+#include <data/valueprinters.h>
 
 #include <QString>
 
@@ -38,14 +39,15 @@ namespace Data {
 class SingleValue : public Value
 {
 public:
-    SingleValue(const QString &value);
+    SingleValue(const QString &value, std::function<QString(const QString &)> printer = printAsSelf);
     SingleValue(const SingleValue &other) = default;
 
     QString asString() const override;
-    virtual ValuePtr clone() const override;
+    ValuePtr clone() const override;
 
 private:
     QString m_value;
+    std::function<QString(const QString &)> m_printer;
 };
 
 } // namespace Data

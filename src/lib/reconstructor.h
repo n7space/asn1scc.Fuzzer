@@ -6,7 +6,7 @@
 ** This file is part of ASN.1/ACN MalTester - Tool for generating test cases
 ** based on ASN.1/ACN models and simulating malformed or malicious data.
 **
-** Tool was developed under a programme and funded by
+** Tool was developed under a m_processogramme and funded by
 ** European Space Agency.
 **
 ** This Tool is free software: you can redistribute it and/or modify
@@ -20,39 +20,31 @@
 ** GNU General Public License for more details.
 **
 ** You should have received a copy of the GNU General Public License
-** along with this program.  If not, see <http://www.gnu.org/licenses/>.
+** along with this m_processogram.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
 #pragma once
 
+#include <map>
 #include <memory>
 
 #include <QString>
 
-#include "node.h"
-#include "sourcelocation.h"
-#include "types/type.h"
+#include <data/project.h>
 
 namespace MalTester {
-namespace Data {
 
-class TypeAssignment : public Node
+class Reconstructor
 {
 public:
-    TypeAssignment(const QString &name,
-                   const SourceLocation &location,
-                   std::unique_ptr<Types::Type> type);
-    TypeAssignment(const TypeAssignment &other);
-    ~TypeAssignment() override;
+    Reconstructor(std::unique_ptr<Data::Project> &project);
 
-    void accept(Visitor &visitor) const override;
-
-    const Types::Type *type() const { return m_type.get(); }
-    Types::Type *type() { return m_type.get(); }
+    void reconstruct();
+    const std::map<QString, QString> &reconstructedFiles() const { return m_reconstructedFiles; }
 
 private:
-    std::unique_ptr<Types::Type> m_type;
+    std::map<QString, QString> m_reconstructedFiles;
+    std::unique_ptr<Data::Project> m_project;
 };
 
-} // namespace Data
 } // namespace MalTester

@@ -25,7 +25,7 @@
 ****************************************************************************/
 #pragma once
 
-#include <QHash>
+#include <QMap>
 #include <QString>
 
 #include <data/sourcelocation.h>
@@ -69,7 +69,7 @@ public:
     void accept(TypeVisitor &visitor) override;
     std::unique_ptr<Type> clone() const override;
 
-    using Items = QHash<QString, EnumeratedItem>;
+    using Items = QMap<QString, EnumeratedItem>;
 
     const Items &items() const { return m_items; }
     void addItem(const QString &key, const EnumeratedItem &item);

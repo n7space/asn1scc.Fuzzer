@@ -27,10 +27,12 @@
 #include "astxmlparser.h"
 
 #include <data/asnsequencecomponent.h>
+#include <data/choicevalue.h>
 #include <data/multiplevalue.h>
 #include <data/namedvalue.h>
 #include <data/singlevalue.h>
 #include <data/sourcelocation.h>
+#include <data/valueprinters.h>
 
 #include <data/types/acnparameterizablecomposite.h>
 #include <data/types/bitstring.h>
@@ -54,6 +56,20 @@
 #include <data/expressiontree/ranges.h>
 
 using namespace MalTester;
+
+static std::function<QString(QString)> getPrinterFunction(const QString &name)
+{
+    if (name == QStringLiteral("StringValue"))
+        return Data::printAsASCIIString;
+    if (name == QStringLiteral("OctetStringValue"))
+        return Data::printAsHexString;
+    if (name == QStringLiteral("BitStringValue"))
+        return Data::printAsBitString;
+    if (name == QStringLiteral("BooleanValue"))
+        return Data::printInBooleanFormat;
+
+    return Data::printAsSelf;
+}
 
 namespace {
 class TypeAttributesAssigningVisitor : public Data::Types::TypeVisitor
@@ -320,7 +336,9 @@ private:
             return createIntegerRange("Incorrect range for string type");
 
         if (m_constraintType == stringConstraintName)
-            return new Data::ExpressionTree::StringRange(m_begin, m_end);
+            return new Data::ExpressionTree::StringRange(m_begin,
+                                                         m_end,
+                                                         getPrinterFunction(stringConstraintName));
 
         return nullptr;
     }
@@ -644,9 +662,19 @@ static bool isMultipleValueName(const QStringRef &name)
     return name == QStringLiteral("SequenceOfValue");
 }
 
-static bool isNamedValueName(const QStringRef &name)
+static bool isSequenceValue(const QStringRef &name)
 {
     return name == QStringLiteral("SequenceValue");
+}
+
+static bool isChoiceValue(const QStringRef &name)
+{
+    return name == QStringLiteral("ChoiceValue");
+}
+
+static bool isNullValue(const QStringRef &name)
+{
+    return name == QStringLiteral("NullValue");
 }
 
 Data::ValuePtr AstXmlParser::readValueAssignmentValue()
@@ -654,21 +682,29 @@ Data::ValuePtr AstXmlParser::readValueAssignmentValue()
     Data::ValuePtr value = nullptr;
 
     const auto name = m_xmlReader.name();
+
     if (isSingleValueName(name))
-        value = readSimpleValue();
+        value = readSimpleValue(name);
     else if (isMultipleValueName(name))
         value = readMultipleValue();
-    else if (isNamedValueName(name))
-        value = readNamedValue();
-    else
+    else if (isSequenceValue(name))
+        value = readSequenceValues();
+    else if (isChoiceValue(name)) {
+        value = readChoiceValue();
+        m_xmlReader.skipCurrentElement();
+    } else if (isNullValue(name)) {
+        value = std::make_unique<Data::SingleValue>(QStringLiteral("NULL"));
+        m_xmlReader.skipCurrentElement();
+    } else
         m_xmlReader.skipCurrentElement();
 
     return value;
 }
 
-Data::ValuePtr AstXmlParser::readSimpleValue()
+Data::ValuePtr AstXmlParser::readSimpleValue(const QStringRef &name)
 {
-    return std::make_unique<Data::SingleValue>(m_xmlReader.readElementText());
+    return std::make_unique<Data::SingleValue>(m_xmlReader.readElementText(),
+                                               getPrinterFunction(name.toString()));
 }
 
 Data::ValuePtr AstXmlParser::readMultipleValue()
@@ -678,24 +714,40 @@ Data::ValuePtr AstXmlParser::readMultipleValue()
     while (m_xmlReader.readNextStartElement())
         value->addValue(readValueAssignmentValue());
 
-    return value;
+    return std::move(value);
 }
 
-Data::ValuePtr AstXmlParser::readNamedValue()
+Data::ValuePtr AstXmlParser::readSequenceValues()
 {
     auto value = std::make_unique<Data::NamedValue>();
-
     while (skipToChildElement(QStringLiteral("NamedValue"))) {
-        const auto name = readNameAttribute();
-
-        if (!m_xmlReader.readNextStartElement())
-            break;
-
-        value->addValue(name, readValueAssignmentValue());
-        m_xmlReader.skipCurrentElement();
+        auto v = readNamedValue();
+        value->addValue(v.first, std::move(v.second));
     }
 
-    return value;
+    return std::move(value);
+}
+
+Data::ValuePtr AstXmlParser::readChoiceValue()
+{
+    if (!skipToChildElement(QStringLiteral("NamedValue")))
+        return nullptr;
+
+    auto v = readNamedValue();
+
+    return std::make_unique<Data::ChoiceValue>(v.first, std::move(v.second));
+}
+
+std::pair<QString, Data::ValuePtr> AstXmlParser::readNamedValue()
+{
+    auto name = readNameAttribute();
+    if (!m_xmlReader.readNextStartElement())
+        return {};
+
+    auto value = readValueAssignmentValue();
+    m_xmlReader.skipCurrentElement();
+
+    return std::make_pair(name, std::move(value));
 }
 
 QString AstXmlParser::readTypeAssignmentAttribute()
@@ -924,9 +976,7 @@ std::unique_ptr<Data::Types::Type> AstXmlParser::createReferenceType(
         m_data[m_currentFile]->addTypeReference(std::move(ref));
     }
 
-    auto userDefinedType = std::make_unique<Data::Types::UserdefinedType>(refName, module);
-
-    return userDefinedType;
+    return std::make_unique<Data::Types::UserdefinedType>(refName, module);
 }
 
 void AstXmlParser::readReferredTypeDetails(Data::Types::Type &type)

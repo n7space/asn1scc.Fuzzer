@@ -6,7 +6,7 @@
 ** This file is part of ASN.1/ACN MalTester - Tool for generating test cases
 ** based on ASN.1/ACN models and simulating malformed or malicious data.
 **
-** Tool was developed under a programme and funded by
+** Tool was developed under a m_processogramme and funded by
 ** European Space Agency.
 **
 ** This Tool is free software: you can redistribute it and/or modify
@@ -20,46 +20,41 @@
 ** GNU General Public License for more details.
 **
 ** You should have received a copy of the GNU General Public License
-** along with this program.  If not, see <http://www.gnu.org/licenses/>.
+** along with this m_processogram.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
 
-#include "testgenerator.h"
+#include "reconstructor.h"
 
-#include <astfilegenerator.h>
-#include <astfileprocessor.h>
-#include <reconstructor.h>
+#include <nodereconstructingvisitor.h>
+
+#include <iostream>
 
 using namespace MalTester;
 
-TestGenerator::TestGenerator(const RunParameters &params)
-    : m_params(params)
+Reconstructor::Reconstructor(std::unique_ptr<Data::Project> &project)
+    : m_project(std::move(project))
 {}
 
-void TestGenerator::run() const
+void printToStdOut(const QString &name, const QString &content)
 {
-    auto ast = createDataTree();
-    if (ast == nullptr)
-        return;
-
-    auto astCpy = std::make_unique<Data::Project>(*ast);
-
-    Reconstructor r(astCpy);
-    r.reconstruct();
+    std::cout << std::endl;
+    std::cout << "=========" + name.toStdString() + "=========" << std::endl;
+    std::cout << content.toStdString() << std::endl;
+    std::cout << "=========" + name.toStdString() + "=========" << std::endl;
+    std::cout << std::endl;
 }
 
-std::unique_ptr<Data::Project> TestGenerator::createDataTree() const
+void Reconstructor::reconstruct()
 {
-    const QTemporaryDir dir;
-    if (!dir.isValid())
-        return nullptr;
+    for (const auto &file : m_project->files()) {
+        NodeReconstructingVisitor visitor;
+        visitor.visit(*file);
 
-    const QString outPath = dir.filePath(QLatin1String("ast.xml"));
+        // TODO: remove when not needed any more
+        if (0)
+            printToStdOut(file->name(), visitor.value());
 
-    AstFileGenerator astGen(m_params, outPath);
-    if (astGen.generate() != AstFileGenerator::Result::BuildSuccess)
-        return nullptr;
-
-    AstFileProcessor astProc(outPath);
-    return astProc.process();
+        m_reconstructedFiles[file->name()] = visitor.value();
+    }
 }

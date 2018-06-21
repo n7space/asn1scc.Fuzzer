@@ -12,10 +12,14 @@ SOURCES += \
     main.cpp \
     \
     astxmlparser_tests.cpp \
+    nodereconstructingvisitor_tests.cpp \
+    reconstructor_tests.cpp \
     \
     data/expressiontree/expressiontree_tests.cpp
 
 HEADERS += \
     astxmlparser_tests.h \
+    nodereconstructingvisitor_tests.h \
+    reconstructor_tests.h \
     \
     data/expressiontree/expressiontree_tests.h

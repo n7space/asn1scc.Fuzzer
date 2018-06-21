@@ -48,6 +48,8 @@ public:
     void setSize(const QString &size) { m_size = size; }
 
     const Type &itemsType() const { return *m_itemsType; }
+    Type &itemsType() { return *m_itemsType; }
+
     void setItemsType(std::unique_ptr<Type> itemsType) { m_itemsType = std::move(itemsType); }
 
 private:

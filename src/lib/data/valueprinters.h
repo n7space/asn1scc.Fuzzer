@@ -25,34 +25,39 @@
 ****************************************************************************/
 #pragma once
 
-#include <memory>
-
 #include <QString>
 
-#include "node.h"
-#include "sourcelocation.h"
-#include "types/type.h"
+#include <data/value.h>
 
 namespace MalTester {
 namespace Data {
 
-class TypeAssignment : public Node
+inline QString printAsSelf(const QString &value)
 {
-public:
-    TypeAssignment(const QString &name,
-                   const SourceLocation &location,
-                   std::unique_ptr<Types::Type> type);
-    TypeAssignment(const TypeAssignment &other);
-    ~TypeAssignment() override;
+    return value;
+}
 
-    void accept(Visitor &visitor) const override;
+inline QString printAsASCIIString(const QString &value)
+{
+    return QLatin1Char('\"') + value + QLatin1Char('\"');
+}
 
-    const Types::Type *type() const { return m_type.get(); }
-    Types::Type *type() { return m_type.get(); }
+inline QString printAsBitString(const QString &value)
+{
+    // TODO: convert to bits here?
+    return QLatin1Char('\'') + value + QLatin1String("\'B");
+}
 
-private:
-    std::unique_ptr<Types::Type> m_type;
-};
+inline QString printAsHexString(const QString &value)
+{
+    // TODO: convert to hex here?
+    return QLatin1Char('\'') + value + QLatin1String("\'H");
+}
+
+inline QString printInBooleanFormat(const QString &value)
+{
+    return value.toUpper();
+}
 
 } // namespace Data
 } // namespace MalTester

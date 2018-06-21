@@ -31,7 +31,7 @@ using namespace MalTester::Data;
 MultipleValue::MultipleValue(const MultipleValue &other)
 {
     for (const auto &item : other.m_values) {
-        // TODO when proper SequenceValue will be used
+        // TODO remove condition when proper SequenceValue will be used
         if (item != nullptr)
             addValue(item->clone());
     }
@@ -46,8 +46,9 @@ QString MultipleValue::asString() const
         if (std::next(it, 1) != m_values.end())
             ret += QStringLiteral(", ");
     }
+    ret += QStringLiteral("}");
 
-    return ret + QStringLiteral("}");
+    return ret;
 }
 
 ValuePtr MultipleValue::clone() const

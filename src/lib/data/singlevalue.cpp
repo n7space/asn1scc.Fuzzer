@@ -28,13 +28,14 @@
 
 using namespace MalTester::Data;
 
-SingleValue::SingleValue(const QString &value)
+SingleValue::SingleValue(const QString &value, std::function<QString(const QString &)> printer)
     : m_value(value)
+    , m_printer(printer)
 {}
 
 QString SingleValue::asString() const
 {
-    return m_value;
+    return m_printer(m_value);
 }
 
 ValuePtr SingleValue::clone() const

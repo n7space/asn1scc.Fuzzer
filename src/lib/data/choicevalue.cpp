@@ -23,36 +23,26 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-#pragma once
 
-#include <memory>
+#include "choicevalue.h"
 
-#include <QString>
+using namespace MalTester::Data;
 
-#include "node.h"
-#include "sourcelocation.h"
-#include "types/type.h"
+ChoiceValue::ChoiceValue(const QString &name, ValuePtr value)
+    : m_name(name)
+    , m_value(std::move(value))
+{}
 
-namespace MalTester {
-namespace Data {
+ChoiceValue::ChoiceValue(const ChoiceValue &other)
+    : m_name(other.m_name)
+    , m_value(other.m_value->clone())
+{}
 
-class TypeAssignment : public Node
+QString ChoiceValue::asString() const
 {
-public:
-    TypeAssignment(const QString &name,
-                   const SourceLocation &location,
-                   std::unique_ptr<Types::Type> type);
-    TypeAssignment(const TypeAssignment &other);
-    ~TypeAssignment() override;
-
-    void accept(Visitor &visitor) const override;
-
-    const Types::Type *type() const { return m_type.get(); }
-    Types::Type *type() { return m_type.get(); }
-
-private:
-    std::unique_ptr<Types::Type> m_type;
-};
-
-} // namespace Data
-} // namespace MalTester
+    return m_name + QLatin1Char(':') + m_value->asString();
+}
+ValuePtr ChoiceValue::clone() const
+{
+    return std::make_unique<ChoiceValue>(*this);
+}

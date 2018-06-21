@@ -31,7 +31,7 @@ using namespace MalTester::Data;
 NamedValue::NamedValue(const NamedValue &other)
 {
     for (const auto &item : other.m_values) {
-        // TODO when proper SequenceValue will be used
+        // TODO condition shall be removed when proper SequenceValue will be used
         if (item.second != nullptr)
             addValue(item.first, item.second->clone());
         else
@@ -48,8 +48,9 @@ QString NamedValue::asString() const
         if (std::next(it, 1) != m_values.end())
             ret += QStringLiteral(", ");
     }
+    ret += QStringLiteral("}");
 
-    return ret + QStringLiteral("}");
+    return ret;
 }
 
 ValuePtr NamedValue::clone() const

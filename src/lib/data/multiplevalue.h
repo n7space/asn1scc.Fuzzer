@@ -42,7 +42,7 @@ public:
     MultipleValue(const MultipleValue &other);
 
     QString asString() const override;
-    virtual ValuePtr clone() const override;
+    ValuePtr clone() const override;
 
     void addValue(ValuePtr value);
 

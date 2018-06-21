@@ -42,7 +42,7 @@ public:
     NamedValue(const NamedValue &other);
 
     QString asString() const override;
-    virtual ValuePtr clone() const override;
+    ValuePtr clone() const override;
 
     void addValue(const QString &name, ValuePtr value);
 

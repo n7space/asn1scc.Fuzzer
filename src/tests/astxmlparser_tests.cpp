@@ -1628,6 +1628,50 @@ void AstXmlParserTests::test_choiceAlternativesWithAcnParams()
     QCOMPARE(alternative->presentWhen(), QStringLiteral("type = 1"));
 }
 
+void AstXmlParserTests::test_choiceValueAssignment()
+{
+    parse(
+        R"(<?xml version="1.0" encoding="utf-8"?>)"
+        R"(<AstRoot>)"
+        R"(  <Asn1File FileName="Test2File.asn">)"
+        R"(    <Modules>)"
+        R"(      <Module Name="Defs" Line="13" CharPositionInLine="42">)"
+        R"(        <ValueAssignments>)"
+        R"(          <ValueAssignment Name="myChoiceValue" Line="33" CharPositionInLine="0">)"
+        R"(            <Asn1Type id="MyModel.myChoiceValue" Line="33" CharPositionInLine="14" ParameterizedTypeInstance="false">)"
+        R"(              <REFERENCE_TYPE Module="MyModel" TypeAssignment="MyChoice">)"
+        R"(                <Asn1Type id="MyModel.myChoiceValue" Line="9" CharPositionInLine="13" ParameterizedTypeInstance="false" tasInfoModule="MyModel" tasInfoName="MyChoice">)"
+        R"(                  <CHOICE acnMaxSizeInBits="72" acnMinSizeInBits="72" uperMaxSizeInBits="72" uperMinSizeInBits="8">)"
+        R"(                    <CHOICE_ALTERNATIVE Name="ic1" Line="9" CharPositionInLine="22" PresentWhenName="ic1" AdaName="ic1" CName="ic1">)"
+        R"(                      <Asn1Type id="MyModel.myChoiceValue.ic1" Line="9" CharPositionInLine="26" ParameterizedTypeInstance="false">)"
+        R"(                        <INTEGER acnMaxSizeInBits="72" acnMinSizeInBits="8" uperMaxSizeInBits="72" uperMinSizeInBits="8">)"
+        R"(                          <Constraints />)"
+        R"(                          <WithComponentConstraints />)"
+        R"(                        </INTEGER>)"
+        R"(                      </Asn1Type>)"
+        R"(                    </CHOICE_ALTERNATIVE>)"
+        R"(                    <Constraints />)"
+        R"(                    <WithComponentConstraints />)"
+        R"(                  </CHOICE>)"
+        R"(                </Asn1Type>)"
+        R"(              </REFERENCE_TYPE>)"
+        R"(            </Asn1Type>)"
+        R"(            <ChoiceValue>)"
+        R"(              <NamedValue Name="ic1">)"
+        R"(                <IntegerValue>10</IntegerValue>)"
+        R"(              </NamedValue>)"
+        R"(            </ChoiceValue>)"
+        R"(          </ValueAssignment>)"
+        R"(        </ValueAssignments>)"
+        R"(      </Module>)"
+        R"(    </Modules>)"
+        R"(  </Asn1File>)"
+        R"(</AstRoot>)");
+
+    auto type = m_parsedData["Test2File.asn"]->definitions("Defs")->value("myChoiceValue");
+    QCOMPARE(type->value()->asString(), QStringLiteral("ic1:10"));
+}
+
 void AstXmlParserTests::test_booleanWithAcnParams()
 {
     parse(
@@ -1696,7 +1740,7 @@ void AstXmlParserTests::test_booleanValueAssignment()
         R"(</AstRoot>)");
 
     auto type = m_parsedData["Test2File.asn"]->definitions("Defs")->value("myBool");
-    QCOMPARE(type->value()->asString(), QStringLiteral("true"));
+    QCOMPARE(type->value()->asString(), QStringLiteral("TRUE"));
 }
 
 void AstXmlParserTests::test_nullWithAcnParams()
@@ -1723,6 +1767,31 @@ void AstXmlParserTests::test_nullWithAcnParams()
     auto nullType = dynamic_cast<const Data::Types::Null *>(type->type());
 
     QCOMPARE(nullType->pattern(), QStringLiteral("1001"));
+}
+
+void AstXmlParserTests::test_nullValueAssignment()
+{
+    parse(
+        R"(<?xml version="1.0" encoding="utf-8"?>)"
+        R"(<AstRoot>)"
+        R"(  <Asn1File FileName="Test2File.asn">)"
+        R"(    <Modules>)"
+        R"(      <Module Name="Defs" Line="13" CharPositionInLine="42">)"
+        R"(        <ValueAssignments>)"
+        R"(          <ValueAssignment Name="myNullValue" Line="18" CharPositionInLine="0">)"
+        R"(            <Asn1Type id="MyModel.myNullValue" Line="18" CharPositionInLine="12" ParameterizedTypeInstance="false">)"
+        R"(              <NULL acnMaxSizeInBits="0" acnMinSizeInBits="0" uperMaxSizeInBits="0" uperMinSizeInBits="0" />)"
+        R"(            </Asn1Type>)"
+        R"(            <NullValue />)"
+        R"(          </ValueAssignment>)"
+        R"(        </ValueAssignments>)"
+        R"(      </Module>)"
+        R"(    </Modules>)"
+        R"(  </Asn1File>)"
+        R"(</AstRoot>)");
+
+    const auto type = m_parsedData["Test2File.asn"]->definitions("Defs")->value("myNullValue");
+    QCOMPARE(type->value()->asString(), QStringLiteral("NULL"));
 }
 
 void AstXmlParserTests::test_sequnceWithAcnParams()
@@ -2314,7 +2383,7 @@ void AstXmlParserTests::test_octetStringWithValueDefined()
         = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyOctetString");
 
     const auto ocetStringType = dynamic_cast<const Data::Types::OctetString *>(type->type());
-    QCOMPARE(ocetStringType->constraints().rangesTree().expression(), QStringLiteral("(\"599\")"));
+    QCOMPARE(ocetStringType->constraints().rangesTree().expression(), QStringLiteral("('599'H)"));
 }
 
 void AstXmlParserTests::test_octetStringAcnParams()
@@ -2399,7 +2468,7 @@ void AstXmlParserTests::test_octetStringValueAssignment()
 
     auto octetStringType
         = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->value("myOctet");
-    QCOMPARE(octetStringType->value()->asString(), QStringLiteral("01"));
+    QCOMPARE(octetStringType->value()->asString(), QStringLiteral("'01'H"));
 }
 
 void AstXmlParserTests::test_iA5StringWithSizeConstraint()
@@ -2621,7 +2690,7 @@ void AstXmlParserTests::test_iA5StringValueAssignment()
         R"(</AstRoot>)");
 
     const auto type = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->value("myIA5");
-    QCOMPARE(type->value()->asString(), QStringLiteral("value"));
+    QCOMPARE(type->value()->asString(), QStringLiteral("\"value\""));
 }
 
 void AstXmlParserTests::test_numericStringWithSizeConstraint()
@@ -2925,7 +2994,7 @@ void AstXmlParserTests::test_bitStringWithValueDefined()
     const auto type
         = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyBitString");
     const auto bitString = dynamic_cast<const Data::Types::BitString *>(type->type());
-    QCOMPARE(bitString->constraints().rangesTree().expression(), QStringLiteral("(\"10101011\")"));
+    QCOMPARE(bitString->constraints().rangesTree().expression(), QStringLiteral("('10101011'B)"));
 }
 
 void AstXmlParserTests::test_bitStringAcnParams()
@@ -3009,7 +3078,7 @@ void AstXmlParserTests::test_bitStringValueAssignment()
         R"(</AstRoot>)");
 
     auto type = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->value("myBit");
-    QCOMPARE(type->value()->asString(), QStringLiteral("101"));
+    QCOMPARE(type->value()->asString(), QStringLiteral("'101'B"));
 }
 
 void AstXmlParserTests::test_notRelatedConstraintsInNumericString()

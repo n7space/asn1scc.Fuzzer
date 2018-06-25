@@ -94,19 +94,19 @@ public:
 
     void visit(Data::Types::BitString &type) override
     {
-        type.setSize(m_attributes.value(QStringLiteral("size")).toString());
+        type.setAcnSize(m_attributes.value(QStringLiteral("size")).toString());
     }
 
     void visit(Data::Types::OctetString &type) override
     {
-        type.setSize(m_attributes.value(QStringLiteral("size")).toString());
+        type.setAcnSize(m_attributes.value(QStringLiteral("size")).toString());
     }
 
     void visit(Data::Types::IA5String &type) override
     {
         using namespace Data::Types;
 
-        type.setSize(m_attributes.value(QStringLiteral("size")).toString());
+        type.setAcnSize(m_attributes.value(QStringLiteral("size")).toString());
         type.setTerminationPattern(
             m_attributes.value(QStringLiteral("termination-pattern")).toString());
         type.setEncoding(IA5String::mapEncoding(m_attributes.value(QStringLiteral("encoding"))));
@@ -116,7 +116,7 @@ public:
     {
         using namespace Data::Types;
 
-        type.setSize(m_attributes.value(QStringLiteral("size")).toString());
+        type.setAcnSize(m_attributes.value(QStringLiteral("size")).toString());
         type.setTerminationPattern(
             m_attributes.value(QStringLiteral("termination-pattern")).toString());
         type.setEncoding(NumericString::mapEncoding(m_attributes.value(QStringLiteral("encoding"))));
@@ -143,7 +143,7 @@ public:
 
     void visit(Data::Types::SequenceOf &type) override
     {
-        type.setSize(m_attributes.value(QLatin1String("size")).toString());
+        type.setAcnSize(m_attributes.value(QLatin1String("size")).toString());
     }
 
     void visit(Data::Types::Real &type) override

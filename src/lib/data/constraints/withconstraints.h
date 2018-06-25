@@ -25,41 +25,52 @@
 ****************************************************************************/
 #pragma once
 
-#include <QString>
+#include <memory>
 
-#include "constraints.h"
-#include "type.h"
-
-#include <data/constraints/withconstraints.h>
+#include "rangeconstraint.h"
 
 namespace MalTester {
 namespace Data {
-namespace Types {
+namespace Constraints {
 
-class SequenceOf : public Type, public WithConstraints, public Constraints::WithSizeConstraints
+template<typename T>
+class WithValueConstraints
 {
 public:
-    SequenceOf() = default;
-    SequenceOf(const SequenceOf &other);
+    WithValueConstraints() = default;
+    WithValueConstraints(const WithValueConstraints &other);
 
-    QString name() const override { return QLatin1String("SEQUENCE OF"); }
-    void accept(TypeMutatingVisitor &visitor) override;
-    void accept(TypeReadingVisitor &visitor) const override;
-    std::unique_ptr<Type> clone() const override;
-
-    QString acnSize() const { return m_acnSize; }
-    void setAcnSize(const QString &size) { m_acnSize = size; }
-
-    const Type &itemsType() const { return *m_itemsType; }
-    Type &itemsType() { return *m_itemsType; }
-
-    void setItemsType(std::unique_ptr<Type> itemsType) { m_itemsType = std::move(itemsType); }
+    void setValueConstraints(std::unique_ptr<RangeConstraint<T>> c)
+    {
+        m_constraints = std::move(c);
+    }
+    const RangeConstraint<T> *valueConstraints() const { return m_constraints.get(); }
 
 private:
-    QString m_acnSize;
-    std::unique_ptr<Type> m_itemsType;
+    std::unique_ptr<RangeConstraint<T>> m_constraints;
 };
 
-} // namespace Types
+class WithSizeConstraints
+{
+public:
+    WithSizeConstraints() = default;
+    WithSizeConstraints(const WithSizeConstraints &other) = default;
+
+    void setSizeConstraints(std::unique_ptr<RangeConstraint<int>> c)
+    {
+        m_constraints.setValueConstraints(std::move(c));
+    }
+    const RangeConstraint<int> *sizeConstraints() const { return m_constraints.valueConstraints(); }
+
+private:
+    WithValueConstraints<int> m_constraints;
+};
+
+template<typename T>
+WithValueConstraints<T>::WithValueConstraints(const WithValueConstraints &other)
+    : m_constraints(other.m_constraints ? other.m_constraints->clone() : nullptr)
+{}
+
+} // namespace Constraints
 } // namespace Data
 } // namespace MalTester

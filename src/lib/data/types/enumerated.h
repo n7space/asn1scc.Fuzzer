@@ -34,6 +34,8 @@
 #include <data/types/integeracnparams.h>
 #include <data/types/type.h>
 
+#include <data/constraints/withconstraints.h>
+
 namespace MalTester {
 namespace Data {
 namespace Types {
@@ -59,7 +61,10 @@ private:
     SourceLocation m_location;
 };
 
-class Enumerated : public Type, public WithConstraints, public IntegerAcnParameters
+class Enumerated : public Type,
+                   public WithConstraints,
+                   public IntegerAcnParameters,
+                   public Constraints::WithValueConstraints<int>
 {
 public:
     Enumerated();

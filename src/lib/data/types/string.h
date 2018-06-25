@@ -29,22 +29,27 @@
 
 #include <data/types/type.h>
 
+#include <data/constraints/withconstraints.h>
+
 namespace MalTester {
 namespace Data {
 namespace Types {
 
-class String : public Type, public WithConstraints
+class String : public Type,
+               public WithConstraints,
+               public Constraints::WithSizeConstraints,
+               public Constraints::WithValueConstraints<QString>
 {
 protected:
     String() = default;
     String(const String &other) = default;
 
 public:
-    QString size() const { return m_size; }
-    void setSize(const QString &size) { m_size = size; }
+    QString acnSize() const { return m_acnSize; }
+    void setAcnSize(const QString &size) { m_acnSize = size; }
 
 private:
-    QString m_size;
+    QString m_acnSize;
 };
 
 } // namespace Types

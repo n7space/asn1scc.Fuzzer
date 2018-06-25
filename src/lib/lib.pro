@@ -118,6 +118,7 @@ HEADERS += \
     data/constraints/rangeconstraint.h \
     data/constraints/rangeconstraintliteral.h \
     data/constraints/logicoperators.h \
+    data/constraints/withconstraints.h \
     \
     astxmlparser.h \
     runparameters.h \

@@ -27,6 +27,8 @@
 
 #include <QString>
 
+#include <data/constraints/withconstraints.h>
+
 #include "constraints.h"
 #include "type.h"
 
@@ -36,7 +38,7 @@ namespace Types {
 
 enum class RealEncoding { IEEE754_1985_32, IEEE754_1985_64, unspecified };
 
-class Real : public Type, public WithConstraints
+class Real : public Type, public WithConstraints, public Constraints::WithValueConstraints<double>
 {
 public:
     Real();

@@ -1371,7 +1371,7 @@ void AstXmlParserTests::test_sequenceOfAssignmentWithAcnParams()
     const auto sequenceOfType = dynamic_cast<const Data::Types::SequenceOf *>(type->type());
 
     QVERIFY(sequenceOfType != nullptr);
-    QCOMPARE(sequenceOfType->size(), QStringLiteral("n"));
+    QCOMPARE(sequenceOfType->acnSize(), QStringLiteral("n"));
 }
 
 void AstXmlParserTests::test_sequenceOfValueAssignment()
@@ -2431,7 +2431,7 @@ void AstXmlParserTests::test_octetStringAcnParams()
 
     const auto &octetStringType = dynamic_cast<const Data::Types::OctetString &>(
         userDefinedComponent->type());
-    QCOMPARE(octetStringType.size(), QStringLiteral("number"));
+    QCOMPARE(octetStringType.acnSize(), QStringLiteral("number"));
 }
 
 void AstXmlParserTests::test_octetStringValueAssignment()
@@ -2652,7 +2652,7 @@ void AstXmlParserTests::test_iA5StringAcnParams()
         = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyIA5String");
     const auto myIA5String = dynamic_cast<const Data::Types::IA5String *>(type->type());
 
-    QCOMPARE(myIA5String->size(), QStringLiteral("null-terminated"));
+    QCOMPARE(myIA5String->acnSize(), QStringLiteral("null-terminated"));
     QCOMPARE(myIA5String->encoding(), Data::Types::AsciiStringEncoding::ASCII);
     QCOMPARE(myIA5String->terminationPattern(), QStringLiteral("186"));
 }
@@ -2867,7 +2867,7 @@ void AstXmlParserTests::test_numericStringAcnParams()
         = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyNumericString");
     const auto numericString = dynamic_cast<const Data::Types::NumericString *>(type->type());
 
-    QCOMPARE(numericString->size(), QStringLiteral("null-terminated"));
+    QCOMPARE(numericString->acnSize(), QStringLiteral("null-terminated"));
     QCOMPARE(numericString->encoding(), Data::Types::AsciiStringEncoding::ASCII);
     QCOMPARE(numericString->terminationPattern(), QStringLiteral("254"));
 }
@@ -3042,7 +3042,7 @@ void AstXmlParserTests::test_bitStringAcnParams()
 
     const auto &octetStringType = dynamic_cast<const Data::Types::BitString &>(
         userDefinedComponent->type());
-    QCOMPARE(octetStringType.size(), QStringLiteral("number"));
+    QCOMPARE(octetStringType.acnSize(), QStringLiteral("number"));
 }
 
 void AstXmlParserTests::test_bitStringValueAssignment()

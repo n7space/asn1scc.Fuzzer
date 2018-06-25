@@ -25,6 +25,8 @@
 ****************************************************************************/
 #pragma once
 
+#include <data/constraints/withconstraints.h>
+
 #include "constraints.h"
 #include "integeracnparams.h"
 #include "type.h"
@@ -33,7 +35,10 @@ namespace MalTester {
 namespace Data {
 namespace Types {
 
-class Integer : public Type, public WithConstraints, public IntegerAcnParameters
+class Integer : public Type,
+                public WithConstraints,
+                public IntegerAcnParameters,
+                public Constraints::WithValueConstraints<int>
 {
 public:
     Integer() = default;

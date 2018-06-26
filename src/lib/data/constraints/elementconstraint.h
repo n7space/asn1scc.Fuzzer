@@ -47,7 +47,7 @@ public:
     QString asString() const override;
     std::unique_ptr<RangeConstraint<T>> clone() const override;
 
-    RangeList<T> asRangeList() const override
+    RangeList<typename RangeConstraint<T>::ValueType> asRangeList() const override
     {
         throw std::runtime_error("Unable to flatten element constaint");
     }

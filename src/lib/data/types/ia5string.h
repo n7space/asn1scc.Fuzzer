@@ -35,7 +35,9 @@ namespace MalTester {
 namespace Data {
 namespace Types {
 
-class IA5String : public String, public AsciiStringAcnParameters
+class IA5String : public String,
+                  public AsciiStringAcnParameters,
+                  public Constraints::WithValueConstraints<Data::StringValue>
 {
 public:
     IA5String() = default;

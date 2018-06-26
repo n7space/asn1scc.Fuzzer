@@ -38,7 +38,7 @@ namespace Types {
 class Integer : public Type,
                 public WithConstraints,
                 public IntegerAcnParameters,
-                public Constraints::WithValueConstraints<int>
+                public Constraints::WithValueConstraints<Data::IntegerValue>
 {
 public:
     Integer() = default;

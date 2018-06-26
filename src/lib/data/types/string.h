@@ -35,10 +35,7 @@ namespace MalTester {
 namespace Data {
 namespace Types {
 
-class String : public Type,
-               public WithConstraints,
-               public Constraints::WithSizeConstraints,
-               public Constraints::WithValueConstraints<QString>
+class String : public Type, public WithConstraints, public Constraints::WithSizeConstraints
 {
 protected:
     String() = default;

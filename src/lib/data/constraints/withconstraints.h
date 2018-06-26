@@ -27,6 +27,8 @@
 
 #include <memory>
 
+#include <data/values.h>
+
 #include "rangeconstraint.h"
 
 namespace MalTester {
@@ -37,14 +39,17 @@ template<typename T>
 class WithValueConstraints
 {
 public:
+    using ValueConstraintsType = RangeConstraint<T>;
+
     WithValueConstraints() = default;
     WithValueConstraints(const WithValueConstraints &other);
 
-    void setValueConstraints(std::unique_ptr<RangeConstraint<T>> c)
+    void setValueConstraints(std::unique_ptr<ValueConstraintsType> c)
     {
         m_constraints = std::move(c);
     }
-    const RangeConstraint<T> *valueConstraints() const { return m_constraints.get(); }
+    bool hasValueConstraints() const { return m_constraints != nullptr; }
+    const ValueConstraintsType &valueConstraints() const { return *m_constraints; }
 
 private:
     std::unique_ptr<RangeConstraint<T>> m_constraints;
@@ -56,14 +61,18 @@ public:
     WithSizeConstraints() = default;
     WithSizeConstraints(const WithSizeConstraints &other) = default;
 
-    void setSizeConstraints(std::unique_ptr<RangeConstraint<int>> c)
+    void setSizeConstraints(std::unique_ptr<RangeConstraint<Data::IntegerValue>> c)
     {
         m_constraints.setValueConstraints(std::move(c));
     }
-    const RangeConstraint<int> *sizeConstraints() const { return m_constraints.valueConstraints(); }
+    bool hasSizeConstraints() const { return m_constraints.hasValueConstraints(); }
+    const RangeConstraint<Data::IntegerValue> &sizeConstraints() const
+    {
+        return m_constraints.valueConstraints();
+    }
 
 private:
-    WithValueConstraints<int> m_constraints;
+    WithValueConstraints<Data::IntegerValue> m_constraints;
 };
 
 template<typename T>

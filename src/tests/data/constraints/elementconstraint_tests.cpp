@@ -27,11 +27,14 @@
 
 #include <QtTest>
 
+#include <data/values.h>
+
 #include <data/constraints/elementconstraint.h>
 #include <data/constraints/rangeconstraintliteral.h>
 
 using namespace MalTester::Data::Constraints::Tests;
 using namespace MalTester::Data::Constraints;
+using namespace MalTester::Data;
 
 ElementConstraintTests::ElementConstraintTests(QObject *parent)
     : QObject(parent)
@@ -39,9 +42,9 @@ ElementConstraintTests::ElementConstraintTests(QObject *parent)
 
 void ElementConstraintTests::test_asString()
 {
-    auto c = std::make_unique<RangeConstraintLiteral<int>>(Range<int>{10, 20});
+    auto c = std::make_unique<RangeConstraintLiteral<IntegerValue>>(Range<int>{10, 20});
 
-    ElementConstraint<int> a(std::move(c));
+    ElementConstraint<IntegerValue> a(std::move(c));
 
     QCOMPARE(a.asString(), QLatin1Literal("FROM(10 .. 20)"));
 }

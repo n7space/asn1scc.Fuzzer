@@ -75,6 +75,7 @@ HEADERS += \
     data/acnsequencecomponent.h \
     data/sequencecomponent.h \
     data/acnargument.h \
+    data/values.h \
     data/value.h \
     data/singlevalue.h \
     data/multiplevalue.h \

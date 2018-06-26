@@ -34,7 +34,7 @@ namespace MalTester {
 namespace Data {
 namespace Types {
 
-class OctetString : public String
+class OctetString : public String, public Constraints::WithValueConstraints<Data::OctetStringValue>
 {
 public:
     OctetString() = default;

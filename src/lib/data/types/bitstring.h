@@ -34,7 +34,7 @@ namespace MalTester {
 namespace Data {
 namespace Types {
 
-class BitString : public String
+class BitString : public String, public Constraints::WithValueConstraints<Data::BitStringValue>
 {
 public:
     BitString() = default;

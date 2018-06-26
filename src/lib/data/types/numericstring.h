@@ -35,7 +35,9 @@ namespace MalTester {
 namespace Data {
 namespace Types {
 
-class NumericString : public String, public AsciiStringAcnParameters
+class NumericString : public String,
+                      public AsciiStringAcnParameters,
+                      public Constraints::WithValueConstraints<Data::StringValue>
 {
 public:
     NumericString() = default;

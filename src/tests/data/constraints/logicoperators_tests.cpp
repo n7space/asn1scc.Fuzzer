@@ -27,11 +27,14 @@
 
 #include <QtTest>
 
+#include <data/values.h>
+
 #include <data/constraints/logicoperators.h>
 #include <data/constraints/rangeconstraintliteral.h>
 
 using namespace MalTester::Data::Constraints::Tests;
 using namespace MalTester::Data::Constraints;
+using namespace MalTester::Data;
 
 LogicOperatorsTests::LogicOperatorsTests(QObject *parent)
     : QObject(parent)
@@ -39,20 +42,20 @@ LogicOperatorsTests::LogicOperatorsTests(QObject *parent)
 
 void LogicOperatorsTests::test_andAsString()
 {
-    auto l = std::make_unique<RangeConstraintLiteral<int>>(Range<int>{10, 20});
-    auto r = std::make_unique<RangeConstraintLiteral<int>>(Range<int>{50, 60});
+    auto l = std::make_unique<RangeConstraintLiteral<IntegerValue>>(Range<int>{10, 20});
+    auto r = std::make_unique<RangeConstraintLiteral<IntegerValue>>(Range<int>{50, 60});
 
-    AndConstraint<int> a(std::move(l), std::move(r));
+    AndConstraint<IntegerValue> a(std::move(l), std::move(r));
 
     QCOMPARE(a.asString(), QLatin1Literal("(10 .. 20 ^ 50 .. 60)"));
 }
 
 void LogicOperatorsTests::test_orAsString()
 {
-    auto l = std::make_unique<RangeConstraintLiteral<int>>(Range<int>{10, 20});
-    auto r = std::make_unique<RangeConstraintLiteral<int>>(Range<int>{50, 60});
+    auto l = std::make_unique<RangeConstraintLiteral<IntegerValue>>(Range<int>{10, 20});
+    auto r = std::make_unique<RangeConstraintLiteral<IntegerValue>>(Range<int>{50, 60});
 
-    OrConstraint<int> o(std::move(l), std::move(r));
+    OrConstraint<IntegerValue> o(std::move(l), std::move(r));
 
     QCOMPARE(o.asString(), QLatin1Literal("(10 .. 20 | 50 .. 60)"));
 }

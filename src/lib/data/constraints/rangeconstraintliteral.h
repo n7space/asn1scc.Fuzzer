@@ -38,20 +38,23 @@ template<typename T>
 class RangeConstraintLiteral : public RangeConstraint<T>
 {
 public:
-    explicit RangeConstraintLiteral(const Range<T> &range)
+    explicit RangeConstraintLiteral(const Range<typename RangeConstraint<T>::ValueType> &range)
         : m_range(range)
     {}
     ~RangeConstraintLiteral() override = default;
 
     QString asString() const override { return m_range.asString(); }
-    RangeList<T> asRangeList() const override { return {m_range}; }
+    RangeList<typename RangeConstraint<T>::ValueType> asRangeList() const override
+    {
+        return {m_range};
+    }
     std::unique_ptr<RangeConstraint<T>> clone() const override
     {
         return std::make_unique<RangeConstraintLiteral>(m_range);
     }
 
 private:
-    Range<T> m_range;
+    Range<typename RangeConstraint<T>::ValueType> m_range;
 };
 
 } // namespace Constraints

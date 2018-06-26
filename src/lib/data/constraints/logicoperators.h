@@ -47,7 +47,7 @@ public:
         return QStringLiteral("(%1 ^ %2)").arg(m_leftChild->asString()).arg(m_rightChild->asString());
     }
 
-    RangeList<T> asRangeList() const override
+    RangeList<typename RangeConstraint<T>::ValueType> asRangeList() const override
     {
         auto list = m_leftChild->asRangeList();
         list.intersect(m_rightChild->asRangeList());
@@ -80,7 +80,7 @@ public:
         return QStringLiteral("(%1 | %2)").arg(m_leftChild->asString()).arg(m_rightChild->asString());
     }
 
-    RangeList<T> asRangeList() const override
+    RangeList<typename RangeConstraint<T>::ValueType> asRangeList() const override
     {
         auto list = m_leftChild->asRangeList();
         list.merge(m_rightChild->asRangeList());

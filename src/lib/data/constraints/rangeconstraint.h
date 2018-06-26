@@ -39,10 +39,11 @@ template<typename T>
 class RangeConstraint
 {
 public:
+    using ValueType = typename T::Type;
     virtual ~RangeConstraint() = default;
 
     virtual QString asString() const = 0;
-    virtual RangeList<T> asRangeList() const = 0;
+    virtual RangeList<ValueType> asRangeList() const = 0;
     virtual std::unique_ptr<RangeConstraint<T>> clone() const = 0;
 };
 

@@ -23,37 +23,26 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
+#pragma once
 
 #include <QObject>
-#include <QTest>
 
-#include "astxmlconstraintparser_tests.h"
-#include "astxmlparser_tests.h"
-#include "nodereconstructingvisitor_tests.h"
-#include "reconstructor_tests.h"
+namespace MalTester {
+namespace Data {
+namespace Constraints {
+namespace Tests {
 
-#include "data/constraints/printingvisitor_tests.h"
-#include "data/constraints/range_tests.h"
-#include "data/constraints/rangelist_tests.h"
-
-#include "data/expressiontree/expressiontree_tests.h"
-
-int main(int argc, char *argv[])
+class RangeContraintLiteralTests : public QObject
 {
-    int ret = 0;
-    const auto runTest = [&ret, argc, argv](QObject *obj) {
-        ret += QTest::qExec(obj, argc, argv);
-        delete obj;
-    };
+    Q_OBJECT
+public:
+    explicit RangeContraintLiteralTests(QObject *parent = 0);
 
-    runTest(new MalTester::Tests::AstXmlParserTests);
-    runTest(new MalTester::Tests::NodeReconstructingVisitorTests);
-    runTest(new MalTester::Tests::ReconstructorTests);
-    runTest(new MalTester::Tests::AstXmlConstraintParserTests);
-    runTest(new MalTester::Data::ExpressionTree::Tests::ExpressionTreeTests);
-    runTest(new MalTester::Data::Constraints::Tests::RangeTests);
-    runTest(new MalTester::Data::Constraints::Tests::RangeListTests);
-    runTest(new MalTester::Data::Constraints::Tests::PrintingVisitorTests);
+private slots:
+    void test_asString();
+};
 
-    return ret;
-}
+} // namespace Tests
+} // namespace Constraints
+} // namespace Data
+} // namespace MalTester

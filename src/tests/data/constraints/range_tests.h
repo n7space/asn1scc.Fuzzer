@@ -39,8 +39,6 @@ public:
     explicit RangeTests(QObject *parent = 0);
 
 private slots:
-    void test_asString();
-
     void test_intersects();
     void test_intersection();
 

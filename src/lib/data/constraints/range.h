@@ -47,8 +47,6 @@ public:
     const T &begin() const { return m_begin; }
     const T &end() const { return m_end; }
 
-    QString asString() const;
-
     bool intersects(const Range &other) const;
     Range intersection(const Range &other) const;
 
@@ -70,22 +68,6 @@ template<typename T>
 inline bool operator!=(const Range<T> &a, const Range<T> &b)
 {
     return !(a == b);
-}
-
-template<typename T>
-QString Range<T>::asString() const
-{
-    if (isSingleItem())
-        return QString::number(begin());
-    return QString::number(begin()) + " .. " + QString::number(end());
-}
-
-template<>
-inline QString Range<QString>::asString() const
-{
-    if (isSingleItem())
-        return '"' + begin() + '"';
-    return '"' + begin() + '"' + " .. " + '"' + end() + '"';
 }
 
 template<typename T>

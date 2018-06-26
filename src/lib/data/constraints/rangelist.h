@@ -70,11 +70,15 @@ QString RangeList<T>::asString() const
 {
     if (isEmpty())
         return {};
+    const auto rangeStr = [](const Range<T> &r) {
+        return r.isSingleItem() ? QString("%1").arg(r.begin())
+                                : QString("%1 .. %2").arg(r.begin()).arg(r.end());
+    };
     return std::accumulate(begin() + 1,
                            end(),
-                           m_ranges.first().asString(),
-                           [](const QString &a, const Range<T> &b) {
-                               return a + " | " + b.asString();
+                           rangeStr(m_ranges.first()),
+                           [rangeStr](const QString &a, const Range<T> &b) {
+                               return a + " | " + rangeStr(b);
                            });
 }
 

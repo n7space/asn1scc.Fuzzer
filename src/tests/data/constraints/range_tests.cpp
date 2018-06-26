@@ -35,15 +35,6 @@ RangeTests::RangeTests(QObject *parent)
     : QObject(parent)
 {}
 
-void RangeTests::test_asString()
-{
-    QCOMPARE(Range<int>(10).asString(), QStringLiteral("10"));
-    QCOMPARE(Range<int>(10, 20).asString(), QStringLiteral("10 .. 20"));
-
-    QCOMPARE(Range<QString>("abc").asString(), QStringLiteral(R"("abc")"));
-    QCOMPARE(Range<QString>("A", "Z").asString(), QStringLiteral(R"("A" .. "Z")"));
-}
-
 void RangeTests::test_intersects()
 {
     const int begin = 10;

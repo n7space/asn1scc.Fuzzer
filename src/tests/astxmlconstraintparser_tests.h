@@ -24,36 +24,59 @@
 **
 ****************************************************************************/
 
+#pragma once
+
 #include <QObject>
-#include <QTest>
 
-#include "astxmlconstraintparser_tests.h"
-#include "astxmlparser_tests.h"
-#include "nodereconstructingvisitor_tests.h"
-#include "reconstructor_tests.h"
+#include <astxmlconstraintparser.h>
 
-#include "data/constraints/printingvisitor_tests.h"
-#include "data/constraints/range_tests.h"
-#include "data/constraints/rangelist_tests.h"
+namespace MalTester {
+namespace Tests {
 
-#include "data/expressiontree/expressiontree_tests.h"
-
-int main(int argc, char *argv[])
+class AstXmlConstraintParserTests : public QObject
 {
-    int ret = 0;
-    const auto runTest = [&ret, argc, argv](QObject *obj) {
-        ret += QTest::qExec(obj, argc, argv);
-        delete obj;
-    };
+    Q_OBJECT
+public:
+    explicit AstXmlConstraintParserTests(QObject *parent = 0);
 
-    runTest(new MalTester::Tests::AstXmlParserTests);
-    runTest(new MalTester::Tests::NodeReconstructingVisitorTests);
-    runTest(new MalTester::Tests::ReconstructorTests);
-    runTest(new MalTester::Tests::AstXmlConstraintParserTests);
-    runTest(new MalTester::Data::ExpressionTree::Tests::ExpressionTreeTests);
-    runTest(new MalTester::Data::Constraints::Tests::RangeTests);
-    runTest(new MalTester::Data::Constraints::Tests::RangeListTests);
-    runTest(new MalTester::Data::Constraints::Tests::PrintingVisitorTests);
+private slots:
+    void test_emptyXml();
 
-    return ret;
-}
+    void test_simpleIntegerValue();
+    void test_simpleRealValue();
+    void test_simpleBooleanValue();
+    void test_simpleEnumValue();
+    void test_simpleStringValue();
+    void test_simpleBitStringValue();
+    void test_simpleOctetStringValue();
+
+    void test_range();
+    void test_rangeWithoutMinOrMax();
+
+    void test_multipleValues();
+
+    void test_or();
+    void test_and();
+
+    void test_nestedLogicalOperators();
+
+    void test_from();
+
+    void test_size();
+    void test_mixed();
+    void test_mixedInReverseOrder();
+
+    void test_complex();
+
+private:
+    template<typename T>
+    void parsingFails(const QString &xmlData);
+
+    template<typename T>
+    void parse(const QString &xmlData);
+
+    QString m_dumpedConstraint;
+};
+
+} // namespace Tests
+} // namespace MalTester

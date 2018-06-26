@@ -34,20 +34,14 @@ struct IntegerValue
 {
     using Type = int;
     static QLatin1String astNodeName() { return QLatin1Literal("IntegerValue"); }
-    static Type fromAstValue(const QStringRef &value)
-    {
-        return value.toInt(); /* TODO error check?*/
-    }
+    static Type fromAstValue(const QString &value) { return value.toInt(); /* TODO error check?*/ }
     static QString asString(Type t) { return QString::number(t); }
 };
 struct RealValue
 {
     using Type = double;
     static QLatin1String astNodeName() { return QLatin1Literal("RealValue"); }
-    static Type fromAstValue(const QStringRef &value)
-    {
-        return value.toDouble(); /* TODO error check?*/
-    }
+    static Type fromAstValue(const QString &value) { return value.toDouble(); /* TODO error?*/ }
     static QString asString(Type t) { return QString::number(t); }
 };
 
@@ -55,17 +49,14 @@ struct EnumValue
 {
     using Type = QString;
     static QLatin1String astNodeName() { return QLatin1Literal("EnumValue"); }
-    static Type fromAstValue(const QStringRef &value) { return value.toString(); }
+    static Type fromAstValue(const QString &value) { return value; }
     static QString asString(Type t) { return t; }
 };
 struct BooleanValue
 {
     using Type = bool;
     static QLatin1String astNodeName() { return QLatin1Literal("BooleanValue"); }
-    static Type fromAstValue(const QStringRef &value)
-    {
-        return value.toString().toUpper() == "TRUE";
-    }
+    static Type fromAstValue(const QString &value) { return value.toUpper() == "TRUE"; }
     static QString asString(Type t) { return t ? "TRUE" : "FALSE"; }
 };
 
@@ -73,7 +64,7 @@ struct StringValue
 {
     using Type = QString;
     static QLatin1String astNodeName() { return QLatin1Literal("StringValue"); }
-    static Type fromAstValue(const QStringRef &value) { return value.toString(); }
+    static Type fromAstValue(const QString &value) { return value; }
     static QString asString(Type t) { return '"' + t + '"'; }
 };
 
@@ -81,14 +72,14 @@ struct BitStringValue
 {
     using Type = QString;
     static QLatin1String astNodeName() { return QLatin1Literal("BitStringValue"); }
-    static Type fromAstValue(const QStringRef &value) { return value.toString(); }
+    static Type fromAstValue(const QString &value) { return value; }
     static QString asString(Type t) { return '"' + t + "\"B"; }
 };
 struct OctetStringValue
 {
     using Type = QString;
     static QLatin1String astNodeName() { return QLatin1Literal("OctetStringValue"); }
-    static Type fromAstValue(const QStringRef &value) { return value.toString(); }
+    static Type fromAstValue(const QString &value) { return value; }
     static QString asString(Type t)
     {
         return '"' + t + "\"H"; /* TODO value is not really hex right now */

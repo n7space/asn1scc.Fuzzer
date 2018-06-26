@@ -128,6 +128,7 @@ HEADERS += \
     data/constraints/rangelistingvisitor.h \
     \
     astxmlparser.h \
+    astxmlconstraintparser.h \
     runparameters.h \
     astfilegenerator.h \
     astfileprocessor.h \

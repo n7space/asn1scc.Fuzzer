@@ -23,37 +23,29 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
+#include "rangeconstraintliteral_tests.h"
 
-#include <QObject>
-#include <QTest>
+#include <QtTest>
 
-#include "astxmlconstraintparser_tests.h"
-#include "astxmlparser_tests.h"
-#include "nodereconstructingvisitor_tests.h"
-#include "reconstructor_tests.h"
+#include <data/constraints/rangeconstraintliteral.h>
 
-#include "data/constraints/printingvisitor_tests.h"
-#include "data/constraints/range_tests.h"
-#include "data/constraints/rangelist_tests.h"
+#include <data/values.h>
 
-#include "data/expressiontree/expressiontree_tests.h"
+using namespace MalTester::Data::Constraints::Tests;
 
-int main(int argc, char *argv[])
+RangeContraintLiteralTests::RangeContraintLiteralTests(QObject *parent)
+    : QObject(parent)
+{}
+
+void RangeContraintLiteralTests::test_asString()
 {
-    int ret = 0;
-    const auto runTest = [&ret, argc, argv](QObject *obj) {
-        ret += QTest::qExec(obj, argc, argv);
-        delete obj;
-    };
+    QCOMPARE(RangeConstraintLiteral<Data::IntegerValue>(Range<int>(10)).asString(),
+             QStringLiteral("10"));
+    QCOMPARE(RangeConstraintLiteral<Data::IntegerValue>(Range<int>(10, 20)).asString(),
+             QStringLiteral("10 .. 20"));
 
-    runTest(new MalTester::Tests::AstXmlParserTests);
-    runTest(new MalTester::Tests::NodeReconstructingVisitorTests);
-    runTest(new MalTester::Tests::ReconstructorTests);
-    runTest(new MalTester::Tests::AstXmlConstraintParserTests);
-    runTest(new MalTester::Data::ExpressionTree::Tests::ExpressionTreeTests);
-    runTest(new MalTester::Data::Constraints::Tests::RangeTests);
-    runTest(new MalTester::Data::Constraints::Tests::RangeListTests);
-    runTest(new MalTester::Data::Constraints::Tests::PrintingVisitorTests);
-
-    return ret;
+    QCOMPARE(RangeConstraintLiteral<Data::StringValue>(Range<QString>("abc")).asString(),
+             QStringLiteral(R"("abc")"));
+    QCOMPARE(RangeConstraintLiteral<Data::EnumValue>(Range<QString>("A", "Z")).asString(),
+             QStringLiteral(R"(A .. Z)"));
 }

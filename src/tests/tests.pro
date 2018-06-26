@@ -18,6 +18,7 @@ SOURCES += \
     data/constraints/range_tests.cpp \
     data/constraints/rangelist_tests.cpp \
     data/constraints/logicoperators_tests.cpp \
+    data/constraints/elementconstraint_tests.cpp \
     \
     main.cpp
 
@@ -30,4 +31,5 @@ HEADERS += \
     \
     data/constraints/range_tests.h \
     data/constraints/rangelist_tests.h \
-    data/constraints/logicoperators_tests.h
+    data/constraints/logicoperators_tests.h \
+    data/constraints/elementconstraint_tests.h

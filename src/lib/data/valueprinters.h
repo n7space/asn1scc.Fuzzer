@@ -44,7 +44,6 @@ inline QString printAsASCIIString(const QString &value)
 
 inline QString printAsBitString(const QString &value)
 {
-    // TODO: convert to bits here?
     return QLatin1Char('\'') + value + QLatin1String("\'B");
 }
 

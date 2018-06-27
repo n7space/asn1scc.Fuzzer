@@ -78,7 +78,10 @@ public:
     Choice(const Choice &other);
 
     QString name() const override { return QLatin1String("CHOICE"); }
-    void accept(TypeVisitor &visitor) override;
+
+    void accept(TypeMutatingVisitor &visitor) override;
+    void accept(TypeReadingVisitor &visitor) const override;
+
     std::unique_ptr<Type> clone() const override;
 
     void setDeterminant(const QString &determinant) { m_determinant = determinant; }

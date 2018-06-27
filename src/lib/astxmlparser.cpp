@@ -49,7 +49,7 @@
 #include <data/types/sequence.h>
 #include <data/types/sequenceof.h>
 #include <data/types/typefactory.h>
-#include <data/types/typevisitor.h>
+#include <data/types/typemutatingvisitor.h>
 #include <data/types/typevisitorwithvalue.h>
 #include <data/types/userdefinedtype.h>
 
@@ -72,7 +72,7 @@ static std::function<QString(QString)> getPrinterFunction(const QString &name)
 }
 
 namespace {
-class TypeAttributesAssigningVisitor : public Data::Types::TypeVisitor
+class TypeAttributesAssigningVisitor : public Data::Types::TypeMutatingVisitor
 {
 public:
     TypeAttributesAssigningVisitor(const QXmlStreamAttributes &attributes)
@@ -173,7 +173,7 @@ private:
     const QXmlStreamAttributes &m_attributes;
 };
 
-class SubtreeAddingVisitor : public Data::Types::TypeVisitor
+class SubtreeAddingVisitor : public Data::Types::TypeMutatingVisitor
 {
 public:
     SubtreeAddingVisitor(const Data::ExpressionTree::ExpressionNode *node)
@@ -230,43 +230,43 @@ public:
 
     ~RangeCreatingVisitor() override {}
 
-    Range *valueFor(Data::Types::Boolean &type) const override
+    Range *valueFor(const Data::Types::Boolean &type) const override
     {
         Q_UNUSED(type);
         return nullptr;
     }
 
-    Range *valueFor(Data::Types::Null &type) const override
+    Range *valueFor(const Data::Types::Null &type) const override
     {
         Q_UNUSED(type);
         return nullptr;
     }
 
-    Range *valueFor(Data::Types::BitString &type) const override
+    Range *valueFor(const Data::Types::BitString &type) const override
     {
         Q_UNUSED(type);
         return createStringRange(QStringLiteral("IntegerValue"), QStringLiteral("BitStringValue"));
     }
 
-    Range *valueFor(Data::Types::OctetString &type) const override
+    Range *valueFor(const Data::Types::OctetString &type) const override
     {
         Q_UNUSED(type);
         return createStringRange(QStringLiteral("IntegerValue"), QStringLiteral("OctetStringValue"));
     }
 
-    Range *valueFor(Data::Types::IA5String &type) const override
+    Range *valueFor(const Data::Types::IA5String &type) const override
     {
         Q_UNUSED(type);
         return createStringRange(QStringLiteral("IntegerValue"), QStringLiteral("StringValue"));
     }
 
-    Range *valueFor(Data::Types::NumericString &type) const override
+    Range *valueFor(const Data::Types::NumericString &type) const override
     {
         Q_UNUSED(type);
         return createStringRange(QStringLiteral("IntegerValue"), QStringLiteral("StringValue"));
     }
 
-    Range *valueFor(Data::Types::Enumerated &type) const override
+    Range *valueFor(const Data::Types::Enumerated &type) const override
     {
         const auto &items = type.items();
         if (!items.contains(m_begin)) {
@@ -278,24 +278,24 @@ public:
         return new Data::ExpressionTree::EnumeratedRange(val, val);
     }
 
-    Range *valueFor(Data::Types::Choice &type) const override
+    Range *valueFor(const Data::Types::Choice &type) const override
     {
         Q_UNUSED(type);
         return nullptr;
     }
-    Range *valueFor(Data::Types::Sequence &type) const override
+    Range *valueFor(const Data::Types::Sequence &type) const override
     {
         Q_UNUSED(type);
         return nullptr;
     }
 
-    Range *valueFor(Data::Types::SequenceOf &type) const override
+    Range *valueFor(const Data::Types::SequenceOf &type) const override
     {
         Q_UNUSED(type);
         return createIntegerRange("Incorrect SIZE range for SEQUENCE OF");
     }
 
-    Range *valueFor(Data::Types::Real &type) const override
+    Range *valueFor(const Data::Types::Real &type) const override
     {
         Q_UNUSED(type);
         bool beginOk = false;
@@ -310,19 +310,19 @@ public:
         return range;
     }
 
-    Range *valueFor(Data::Types::LabelType &type) const override
+    Range *valueFor(const Data::Types::LabelType &type) const override
     {
         Q_UNUSED(type);
         return nullptr;
     }
 
-    Range *valueFor(Data::Types::Integer &type) const override
+    Range *valueFor(const Data::Types::Integer &type) const override
     {
         Q_UNUSED(type);
         return createIntegerRange("Incorrect range for INTEGER");
     }
 
-    Range *valueFor(Data::Types::UserdefinedType &type) const override
+    Range *valueFor(const Data::Types::UserdefinedType &type) const override
     {
         Q_UNUSED(type);
         return nullptr;
@@ -365,7 +365,7 @@ private:
     const AstXmlParser::ConstraintType m_constraintType;
 };
 
-class ChildItemAddingVisitor : public Data::Types::TypeVisitor
+class ChildItemAddingVisitor : public Data::Types::TypeMutatingVisitor
 {
 public:
     ChildItemAddingVisitor(const QXmlStreamAttributes &attributes,
@@ -457,7 +457,7 @@ private:
     std::unique_ptr<Data::Types::Type> m_childType;
 };
 
-class AcnDefinedItemsAddingVisitor : public Data::Types::TypeVisitor
+class AcnDefinedItemsAddingVisitor : public Data::Types::TypeMutatingVisitor
 {
 public:
     AcnDefinedItemsAddingVisitor(Data::AcnParameterPtrs acnParameters)

@@ -22,7 +22,7 @@ SOURCES += \
     data/choicevalue.cpp \
     \
     data/types/type.cpp \
-    data/types/typevisitor.cpp \
+    data/types/typemutatingvisitor.cpp \
     data/types/typefactory.cpp \
     data/types/labeltype.cpp \
     data/types/userdefinedtype.cpp \
@@ -85,7 +85,8 @@ HEADERS += \
     data/types/typefactory.h \
     data/types/labeltype.h \
     data/types/type.h \
-    data/types/typevisitor.h \
+    data/types/typemutatingvisitor.h \
+    data/types/typereadingvisitor.h \
     data/types/typevisitorwithvalue.h \
     data/types/userdefinedtype.h \
     data/types/integer.h \

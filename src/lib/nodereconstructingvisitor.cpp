@@ -62,8 +62,10 @@ QString NodeReconstructingVisitor::valueFor(const Data::File &file) const
 
 QString NodeReconstructingVisitor::valueFor(const Data::TypeAssignment &type) const
 {
-    Q_UNUSED(type);
-    return {};
+    TypeComponentReconstructingVisitor visitor;
+    type.type()->accept(visitor);
+
+    return type.name() + QStringLiteral(" ::= ") + visitor.value() + QStringLiteral("\n");
 }
 
 QString NodeReconstructingVisitor::valueFor(const Data::ValueAssignment &assignment) const
@@ -129,12 +131,11 @@ QString NodeReconstructingVisitor::valuesAsString(const Data::Definitions &defs)
 QString NodeReconstructingVisitor::typesAsString(const Data::Definitions &defs) const
 {
     QString ret;
-    for (auto &typeAssignment : defs.types()) {
-        TypeComponentReconstructingVisitor visitor;
-        typeAssignment->type()->accept(visitor);
+    for (const auto &typeAssignment : defs.types()) {
+        NodeReconstructingVisitor visitor;
+        typeAssignment->accept(visitor);
 
-        ret += typeAssignment->name() + QStringLiteral(" ::= ") + visitor.value()
-               + QStringLiteral("\n");
+        ret += visitor.value();
     }
 
     return ret;

@@ -25,7 +25,8 @@
 ****************************************************************************/
 #include "integer.h"
 
-#include "typevisitor.h"
+#include "typemutatingvisitor.h"
+#include "typereadingvisitor.h"
 
 using namespace MalTester::Data;
 using namespace MalTester::Data::Types;
@@ -40,7 +41,12 @@ QString Integer::name() const
     return QLatin1String("INTEGER");
 }
 
-void Integer::accept(TypeVisitor &visitor)
+void Integer::accept(TypeMutatingVisitor &visitor)
+{
+    visitor.visit(*this);
+}
+
+void Integer::accept(TypeReadingVisitor &visitor) const
 {
     visitor.visit(*this);
 }

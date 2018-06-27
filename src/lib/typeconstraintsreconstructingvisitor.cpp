@@ -28,76 +28,76 @@
 
 using namespace MalTester;
 
-QString TypeConstraintsReconstructingVisitor::valueFor(Data::Types::Boolean &type) const
+QString TypeConstraintsReconstructingVisitor::valueFor(const Data::Types::Boolean &type) const
 {
     Q_UNUSED(type);
     return {};
 }
-QString TypeConstraintsReconstructingVisitor::valueFor(Data::Types::Null &type) const
-{
-    Q_UNUSED(type);
-    return {};
-}
-
-QString TypeConstraintsReconstructingVisitor::valueFor(Data::Types::BitString &type) const
-{
-    return type.constraints().rangesTree().expression();
-}
-
-QString TypeConstraintsReconstructingVisitor::valueFor(Data::Types::OctetString &type) const
-{
-    return type.constraints().rangesTree().expression();
-}
-
-QString TypeConstraintsReconstructingVisitor::valueFor(Data::Types::IA5String &type) const
-{
-    return type.constraints().rangesTree().expression();
-}
-
-QString TypeConstraintsReconstructingVisitor::valueFor(Data::Types::NumericString &type) const
-{
-    return type.constraints().rangesTree().expression();
-}
-
-QString TypeConstraintsReconstructingVisitor::valueFor(Data::Types::Enumerated &type) const
-{
-    return type.constraints().rangesTree().expression();
-}
-
-QString TypeConstraintsReconstructingVisitor::valueFor(Data::Types::Choice &type) const
+QString TypeConstraintsReconstructingVisitor::valueFor(const Data::Types::Null &type) const
 {
     Q_UNUSED(type);
     return {};
 }
 
-QString TypeConstraintsReconstructingVisitor::valueFor(Data::Types::Sequence &type) const
+QString TypeConstraintsReconstructingVisitor::valueFor(const Data::Types::BitString &type) const
+{
+    return type.constraints().rangesTree().expression();
+}
+
+QString TypeConstraintsReconstructingVisitor::valueFor(const Data::Types::OctetString &type) const
+{
+    return type.constraints().rangesTree().expression();
+}
+
+QString TypeConstraintsReconstructingVisitor::valueFor(const Data::Types::IA5String &type) const
+{
+    return type.constraints().rangesTree().expression();
+}
+
+QString TypeConstraintsReconstructingVisitor::valueFor(const Data::Types::NumericString &type) const
+{
+    return type.constraints().rangesTree().expression();
+}
+
+QString TypeConstraintsReconstructingVisitor::valueFor(const Data::Types::Enumerated &type) const
+{
+    return type.constraints().rangesTree().expression();
+}
+
+QString TypeConstraintsReconstructingVisitor::valueFor(const Data::Types::Choice &type) const
 {
     Q_UNUSED(type);
     return {};
 }
 
-QString TypeConstraintsReconstructingVisitor::valueFor(Data::Types::SequenceOf &type) const
-{
-    return type.constraints().rangesTree().expression();
-}
-
-QString TypeConstraintsReconstructingVisitor::valueFor(Data::Types::Real &type) const
-{
-    return type.constraints().rangesTree().expression();
-}
-
-QString TypeConstraintsReconstructingVisitor::valueFor(Data::Types::LabelType &type) const
+QString TypeConstraintsReconstructingVisitor::valueFor(const Data::Types::Sequence &type) const
 {
     Q_UNUSED(type);
     return {};
 }
 
-QString TypeConstraintsReconstructingVisitor::valueFor(Data::Types::Integer &type) const
+QString TypeConstraintsReconstructingVisitor::valueFor(const Data::Types::SequenceOf &type) const
 {
     return type.constraints().rangesTree().expression();
 }
 
-QString TypeConstraintsReconstructingVisitor::valueFor(Data::Types::UserdefinedType &type) const
+QString TypeConstraintsReconstructingVisitor::valueFor(const Data::Types::Real &type) const
+{
+    return type.constraints().rangesTree().expression();
+}
+
+QString TypeConstraintsReconstructingVisitor::valueFor(const Data::Types::LabelType &type) const
+{
+    Q_UNUSED(type);
+    return {};
+}
+
+QString TypeConstraintsReconstructingVisitor::valueFor(const Data::Types::Integer &type) const
+{
+    return type.constraints().rangesTree().expression();
+}
+
+QString TypeConstraintsReconstructingVisitor::valueFor(const Data::Types::UserdefinedType &type) const
 {
     TypeConstraintsReconstructingVisitor visitor;
     type.type().accept(visitor);

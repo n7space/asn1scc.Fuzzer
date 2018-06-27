@@ -53,20 +53,20 @@ public:
     TypeComponentReconstructingVisitor(int indent = 0);
     ~TypeComponentReconstructingVisitor() override = default;
 
-    QString valueFor(Data::Types::Boolean &type) const override;
-    QString valueFor(Data::Types::Null &type) const override;
-    QString valueFor(Data::Types::BitString &type) const override;
-    QString valueFor(Data::Types::OctetString &type) const override;
-    QString valueFor(Data::Types::IA5String &type) const override;
-    QString valueFor(Data::Types::NumericString &type) const override;
-    QString valueFor(Data::Types::Enumerated &type) const override;
-    QString valueFor(Data::Types::Choice &type) const override;
-    QString valueFor(Data::Types::Sequence &type) const override;
-    QString valueFor(Data::Types::SequenceOf &type) const override;
-    QString valueFor(Data::Types::Real &type) const override;
-    QString valueFor(Data::Types::LabelType &type) const override;
-    QString valueFor(Data::Types::Integer &type) const override;
-    QString valueFor(Data::Types::UserdefinedType &type) const override;
+    QString valueFor(const Data::Types::Boolean &type) const override;
+    QString valueFor(const Data::Types::Null &type) const override;
+    QString valueFor(const Data::Types::BitString &type) const override;
+    QString valueFor(const Data::Types::OctetString &type) const override;
+    QString valueFor(const Data::Types::IA5String &type) const override;
+    QString valueFor(const Data::Types::NumericString &type) const override;
+    QString valueFor(const Data::Types::Enumerated &type) const override;
+    QString valueFor(const Data::Types::Choice &type) const override;
+    QString valueFor(const Data::Types::Sequence &type) const override;
+    QString valueFor(const Data::Types::SequenceOf &type) const override;
+    QString valueFor(const Data::Types::Real &type) const override;
+    QString valueFor(const Data::Types::LabelType &type) const override;
+    QString valueFor(const Data::Types::Integer &type) const override;
+    QString valueFor(const Data::Types::UserdefinedType &type) const override;
 
 private:
     int m_indent;

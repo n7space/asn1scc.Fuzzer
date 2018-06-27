@@ -25,11 +25,17 @@
 ****************************************************************************/
 #include "octetstring.h"
 
-#include "typevisitor.h"
+#include "typemutatingvisitor.h"
+#include "typereadingvisitor.h"
 
 using namespace MalTester::Data::Types;
 
-void OctetString::accept(TypeVisitor &visitor)
+void OctetString::accept(TypeMutatingVisitor &visitor)
+{
+    visitor.visit(*this);
+}
+
+void OctetString::accept(TypeReadingVisitor &visitor) const
 {
     visitor.visit(*this);
 }

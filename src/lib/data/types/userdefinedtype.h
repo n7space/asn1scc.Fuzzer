@@ -45,7 +45,9 @@ public:
     UserdefinedType(const UserdefinedType &other);
 
     QString name() const override;
-    void accept(TypeVisitor &visitor) override;
+    void accept(TypeMutatingVisitor &visitor) override;
+    void accept(TypeReadingVisitor &visitor) const override;
+
     std::unique_ptr<Type> clone() const override;
 
     const QString &module() const { return m_module; }

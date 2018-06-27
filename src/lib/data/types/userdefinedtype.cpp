@@ -25,7 +25,8 @@
 ****************************************************************************/
 #include "userdefinedtype.h"
 
-#include "typevisitor.h"
+#include "typemutatingvisitor.h"
+#include "typereadingvisitor.h"
 
 using namespace MalTester::Data;
 using namespace MalTester::Data::Types;
@@ -52,7 +53,12 @@ QString UserdefinedType::name() const
     return m_name;
 }
 
-void UserdefinedType::accept(TypeVisitor &visitor)
+void UserdefinedType::accept(TypeMutatingVisitor &visitor)
+{
+    visitor.visit(*this);
+}
+
+void UserdefinedType::accept(TypeReadingVisitor &visitor) const
 {
     visitor.visit(*this);
 }

@@ -58,7 +58,7 @@ void addLine(QString &in, QString line, int indent = 0)
     finishLine(in);
 }
 
-QString valueForStraightType(Data::Types::Type &type)
+QString valueForStraightType(const Data::Types::Type &type)
 {
     TypeConstraintsReconstructingVisitor visitor;
     type.accept(visitor);
@@ -100,36 +100,36 @@ TypeComponentReconstructingVisitor::TypeComponentReconstructingVisitor(int inden
     : m_indent(indent)
 {}
 
-QString TypeComponentReconstructingVisitor::valueFor(Data::Types::Boolean &type) const
+QString TypeComponentReconstructingVisitor::valueFor(const Data::Types::Boolean &type) const
 {
     return valueForStraightType(type);
 }
-QString TypeComponentReconstructingVisitor::valueFor(Data::Types::Null &type) const
-{
-    return valueForStraightType(type);
-}
-
-QString TypeComponentReconstructingVisitor::valueFor(Data::Types::BitString &type) const
+QString TypeComponentReconstructingVisitor::valueFor(const Data::Types::Null &type) const
 {
     return valueForStraightType(type);
 }
 
-QString TypeComponentReconstructingVisitor::valueFor(Data::Types::OctetString &type) const
+QString TypeComponentReconstructingVisitor::valueFor(const Data::Types::BitString &type) const
 {
     return valueForStraightType(type);
 }
 
-QString TypeComponentReconstructingVisitor::valueFor(Data::Types::IA5String &type) const
+QString TypeComponentReconstructingVisitor::valueFor(const Data::Types::OctetString &type) const
 {
     return valueForStraightType(type);
 }
 
-QString TypeComponentReconstructingVisitor::valueFor(Data::Types::NumericString &type) const
+QString TypeComponentReconstructingVisitor::valueFor(const Data::Types::IA5String &type) const
 {
     return valueForStraightType(type);
 }
 
-QString TypeComponentReconstructingVisitor::valueFor(Data::Types::Enumerated &type) const
+QString TypeComponentReconstructingVisitor::valueFor(const Data::Types::NumericString &type) const
+{
+    return valueForStraightType(type);
+}
+
+QString TypeComponentReconstructingVisitor::valueFor(const Data::Types::Enumerated &type) const
 {
     QString out;
     addLine(out, type.name());
@@ -155,17 +155,17 @@ QString TypeComponentReconstructingVisitor::valueFor(Data::Types::Enumerated &ty
     return out;
 }
 
-QString TypeComponentReconstructingVisitor::valueFor(Data::Types::Choice &type) const
+QString TypeComponentReconstructingVisitor::valueFor(const Data::Types::Choice &type) const
 {
     return valueForComplexType<Data::Types::Choice>(type, m_indent);
 }
 
-QString TypeComponentReconstructingVisitor::valueFor(Data::Types::Sequence &type) const
+QString TypeComponentReconstructingVisitor::valueFor(const Data::Types::Sequence &type) const
 {
     return valueForComplexType<Data::Types::Sequence>(type, m_indent);
 }
 
-QString TypeComponentReconstructingVisitor::valueFor(Data::Types::SequenceOf &type) const
+QString TypeComponentReconstructingVisitor::valueFor(const Data::Types::SequenceOf &type) const
 {
     TypeComponentReconstructingVisitor visitor(m_indent);
     type.itemsType().accept(visitor);
@@ -174,23 +174,23 @@ QString TypeComponentReconstructingVisitor::valueFor(Data::Types::SequenceOf &ty
            + QStringLiteral(" OF ") + visitor.value();
 }
 
-QString TypeComponentReconstructingVisitor::valueFor(Data::Types::Real &type) const
+QString TypeComponentReconstructingVisitor::valueFor(const Data::Types::Real &type) const
 {
     return valueForStraightType(type);
 }
 
-QString TypeComponentReconstructingVisitor::valueFor(Data::Types::LabelType &type) const
+QString TypeComponentReconstructingVisitor::valueFor(const Data::Types::LabelType &type) const
 {
     Q_UNUSED(type);
     return {};
 }
 
-QString TypeComponentReconstructingVisitor::valueFor(Data::Types::Integer &type) const
+QString TypeComponentReconstructingVisitor::valueFor(const Data::Types::Integer &type) const
 {
     return valueForStraightType(type);
 }
 
-QString TypeComponentReconstructingVisitor::valueFor(Data::Types::UserdefinedType &type) const
+QString TypeComponentReconstructingVisitor::valueFor(const Data::Types::UserdefinedType &type) const
 {
     return valueForStraightType(type);
 }

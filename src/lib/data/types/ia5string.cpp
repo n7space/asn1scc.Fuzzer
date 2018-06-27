@@ -25,7 +25,8 @@
 ****************************************************************************/
 #include "ia5string.h"
 
-#include "typevisitor.h"
+#include "typemutatingvisitor.h"
+#include "typereadingvisitor.h"
 
 using namespace MalTester::Data::Types;
 
@@ -34,7 +35,12 @@ std::unique_ptr<Type> IA5String::clone() const
     return std::make_unique<IA5String>(*this);
 }
 
-void IA5String::accept(TypeVisitor &visitor)
+void IA5String::accept(TypeMutatingVisitor &visitor)
+{
+    visitor.visit(*this);
+}
+
+void IA5String::accept(TypeReadingVisitor &visitor) const
 {
     visitor.visit(*this);
 }

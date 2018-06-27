@@ -25,39 +25,44 @@
 ****************************************************************************/
 #pragma once
 
-#include <QString>
-
-#include "constraints.h"
-#include "type.h"
-
 namespace MalTester {
 namespace Data {
 namespace Types {
 
-enum class RealEncoding { IEEE754_1985_32, IEEE754_1985_64, unspecified };
+class Boolean;
+class Null;
+class BitString;
+class OctetString;
+class IA5String;
+class NumericString;
+class Enumerated;
+class Choice;
+class Sequence;
+class SequenceOf;
+class Real;
+class LabelType;
+class Integer;
+class UserdefinedType;
 
-class Real : public Type, public WithConstraints
+class TypeReadingVisitor
 {
 public:
-    Real();
-    Real(const Real &other) = default;
+    virtual ~TypeReadingVisitor() = default;
 
-    QString name() const override { return QLatin1String("REAL"); }
-    void accept(TypeMutatingVisitor &visitor) override;
-    void accept(TypeReadingVisitor &visitor) const override;
-    std::unique_ptr<Type> clone() const override;
-
-    void setEncoding(const RealEncoding encoding) { m_encoding = encoding; }
-    RealEncoding encoding() const { return m_encoding; }
-
-    void setEndianness(const Endianness endianness) { m_endianness = endianness; }
-    Endianness endianness() const { return m_endianness; }
-
-    static RealEncoding mapEncoding(const QStringRef &ref);
-
-private:
-    RealEncoding m_encoding;
-    Endianness m_endianness;
+    virtual void visit(const Boolean &type) = 0;
+    virtual void visit(const Null &type) = 0;
+    virtual void visit(const BitString &type) = 0;
+    virtual void visit(const OctetString &type) = 0;
+    virtual void visit(const IA5String &type) = 0;
+    virtual void visit(const NumericString &type) = 0;
+    virtual void visit(const Enumerated &type) = 0;
+    virtual void visit(const Choice &type) = 0;
+    virtual void visit(const Sequence &type) = 0;
+    virtual void visit(const SequenceOf &type) = 0;
+    virtual void visit(const Real &type) = 0;
+    virtual void visit(const LabelType &type) = 0;
+    virtual void visit(const Integer &type) = 0;
+    virtual void visit(const UserdefinedType &type) = 0;
 };
 
 } // namespace Types

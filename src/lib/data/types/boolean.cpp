@@ -25,7 +25,8 @@
 ****************************************************************************/
 #include "boolean.h"
 
-#include "typevisitor.h"
+#include "typemutatingvisitor.h"
+#include "typereadingvisitor.h"
 
 using namespace MalTester::Data::Types;
 
@@ -34,7 +35,12 @@ std::unique_ptr<Type> Boolean::clone() const
     return std::make_unique<Boolean>(*this);
 }
 
-void Boolean::accept(TypeVisitor &visitor)
+void Boolean::accept(TypeMutatingVisitor &visitor)
+{
+    visitor.visit(*this);
+}
+
+void Boolean::accept(TypeReadingVisitor &visitor) const
 {
     visitor.visit(*this);
 }

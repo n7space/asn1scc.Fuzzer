@@ -116,7 +116,7 @@ private:
     QString createNamedValueAssignmentValue() const;
     QString createComponentialTypeAssignmentValue(std::unique_ptr<Data::Types::Type> type) const;
 
-    QString createChoiceValueValueAssignmentValue() const;
+    QString createChoiceValueAssignmentValue() const;
 
     QString restoreNode(const Data::Node &assignment) const;
 };

@@ -60,10 +60,9 @@ void NodeReconstructingVisitor::visit(const Data::TypeAssignment &type)
 {
     m_outStream << type.name() << QStringLiteral(" ::= ");
 
-    TypeComponentReconstructingVisitor visitor;
+    TypeComponentReconstructingVisitor visitor(m_outStream);
     type.type()->accept(visitor);
 
-    m_outStream << visitor.value();
     m_outStream << QStringLiteral("\n");
 }
 

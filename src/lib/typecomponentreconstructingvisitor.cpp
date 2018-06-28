@@ -31,166 +31,156 @@
 using namespace MalTester;
 
 namespace {
-
 const int INDENT_SIZE = 4;
+} // namespace
 
-void addIndent(QString &in, int indent)
+TypeComponentReconstructingVisitor::TypeComponentReconstructingVisitor(QTextStream &outStream,
+                                                                       int indent)
+    : m_outStream(outStream)
+    , m_indent(indent)
+{}
+
+void TypeComponentReconstructingVisitor::visit(const Data::Types::Boolean &type)
 {
-    if (indent > 0)
-        in.append(QString(indent, QChar(' ')));
+    valueForStraightType(type);
+}
+void TypeComponentReconstructingVisitor::visit(const Data::Types::Null &type)
+{
+    valueForStraightType(type);
 }
 
-void addWord(QString &in, QString word)
+void TypeComponentReconstructingVisitor::visit(const Data::Types::BitString &type)
 {
-    in.append(word);
-    in.append(QStringLiteral(" "));
+    valueForStraightType(type);
 }
 
-void finishLine(QString &in)
+void TypeComponentReconstructingVisitor::visit(const Data::Types::OctetString &type)
 {
-    in.append(QStringLiteral("\n"));
+    valueForStraightType(type);
 }
 
-void addLine(QString &in, QString line, int indent = 0)
+void TypeComponentReconstructingVisitor::visit(const Data::Types::IA5String &type)
 {
-    addIndent(in, indent);
-    addWord(in, line);
-    finishLine(in);
+    valueForStraightType(type);
 }
 
-QString valueForStraightType(const Data::Types::Type &type)
+void TypeComponentReconstructingVisitor::visit(const Data::Types::NumericString &type)
+{
+    valueForStraightType(type);
+}
+
+void TypeComponentReconstructingVisitor::visit(const Data::Types::Enumerated &type)
+{
+    addLine(type.name());
+    addLine(QStringLiteral("{"), m_indent);
+
+    const auto &items = type.items();
+    for (auto it = items.begin(); it != items.end(); it++) {
+        addIndent(m_indent + INDENT_SIZE);
+        addWord((*it).name());
+        addWord(QStringLiteral("("));
+        addWord(QString::number((*it).value()));
+        addWord(QStringLiteral(")"));
+
+        if (std::next(it, 1) != items.end())
+            addWord(QStringLiteral(","));
+
+        finishLine();
+    }
+
+    addIndent(m_indent);
+    addWord(QStringLiteral("}"));
+}
+
+void TypeComponentReconstructingVisitor::visit(const Data::Types::Choice &type)
+{
+    valueForComplexType<Data::Types::Choice>(type, m_indent);
+}
+
+void TypeComponentReconstructingVisitor::visit(const Data::Types::Sequence &type)
+{
+    valueForComplexType<Data::Types::Sequence>(type, m_indent);
+}
+
+void TypeComponentReconstructingVisitor::visit(const Data::Types::SequenceOf &type)
+{
+    m_outStream << QStringLiteral("SEQUENCE ") << type.constraints().rangesTree().expression()
+                << QStringLiteral(" OF ");
+
+    TypeComponentReconstructingVisitor visitor(m_outStream, m_indent);
+    type.itemsType().accept(visitor);
+}
+
+void TypeComponentReconstructingVisitor::visit(const Data::Types::Real &type)
+{
+    valueForStraightType(type);
+}
+
+void TypeComponentReconstructingVisitor::visit(const Data::Types::LabelType &type)
+{
+    Q_UNUSED(type);
+}
+
+void TypeComponentReconstructingVisitor::visit(const Data::Types::Integer &type)
+{
+    valueForStraightType(type);
+}
+
+void TypeComponentReconstructingVisitor::visit(const Data::Types::UserdefinedType &type)
+{
+    valueForStraightType(type);
+}
+
+void TypeComponentReconstructingVisitor::valueForStraightType(const Data::Types::Type &type)
 {
     TypeConstraintsReconstructingVisitor visitor;
     type.accept(visitor);
 
-    return type.name() + visitor.value();
+    m_outStream << type.name() << visitor.value();
 }
 
 template<typename T>
-QString valueForComplexType(const T &type, const int indent)
+void TypeComponentReconstructingVisitor::valueForComplexType(const T &type, const int indent)
 {
-    QString out;
-    addLine(out, type.name());
-    addLine(out, QStringLiteral("{"), indent);
+    addLine(type.name());
+    addLine(QStringLiteral("{"), indent);
 
     const auto &components = type.components();
     for (auto it = components.begin(); it != components.end(); it++) {
-        addIndent(out, indent + INDENT_SIZE);
-        addWord(out, (*it)->name());
+        addIndent(indent + INDENT_SIZE);
+        addWord((*it)->name());
 
-        TypeComponentReconstructingVisitor visitor(indent + INDENT_SIZE);
+        TypeComponentReconstructingVisitor visitor(m_outStream, indent + INDENT_SIZE);
         (*it)->type().accept(visitor);
-        addWord(out, visitor.value());
 
         if (std::next(it) != components.end())
-            addWord(out, QStringLiteral(","));
+            addWord(QStringLiteral(","));
 
-        finishLine(out);
+        finishLine();
     }
 
-    addIndent(out, indent);
-    addWord(out, QStringLiteral("}"));
-
-    return out;
+    addIndent(indent);
+    addWord(QStringLiteral("}"));
 }
 
-} // namespace
-
-TypeComponentReconstructingVisitor::TypeComponentReconstructingVisitor(int indent)
-    : m_indent(indent)
-{}
-
-QString TypeComponentReconstructingVisitor::valueFor(const Data::Types::Boolean &type) const
+void TypeComponentReconstructingVisitor::addIndent(int indent)
 {
-    return valueForStraightType(type);
-}
-QString TypeComponentReconstructingVisitor::valueFor(const Data::Types::Null &type) const
-{
-    return valueForStraightType(type);
+    m_outStream << QString(indent, QChar(' '));
 }
 
-QString TypeComponentReconstructingVisitor::valueFor(const Data::Types::BitString &type) const
+void TypeComponentReconstructingVisitor::addWord(const QString &word)
 {
-    return valueForStraightType(type);
+    m_outStream << word << QStringLiteral(" ");
 }
 
-QString TypeComponentReconstructingVisitor::valueFor(const Data::Types::OctetString &type) const
+void TypeComponentReconstructingVisitor::finishLine()
 {
-    return valueForStraightType(type);
+    m_outStream << QStringLiteral("\n");
 }
 
-QString TypeComponentReconstructingVisitor::valueFor(const Data::Types::IA5String &type) const
+void TypeComponentReconstructingVisitor::addLine(QString line, int indent)
 {
-    return valueForStraightType(type);
-}
-
-QString TypeComponentReconstructingVisitor::valueFor(const Data::Types::NumericString &type) const
-{
-    return valueForStraightType(type);
-}
-
-QString TypeComponentReconstructingVisitor::valueFor(const Data::Types::Enumerated &type) const
-{
-    QString out;
-    addLine(out, type.name());
-    addLine(out, QStringLiteral("{"), m_indent);
-
-    const auto &items = type.items();
-    for (auto it = items.begin(); it != items.end(); it++) {
-        addIndent(out, m_indent + INDENT_SIZE);
-        addWord(out, (*it).name());
-        addWord(out, QStringLiteral("("));
-        addWord(out, QString::number((*it).value()));
-        addWord(out, QStringLiteral(")"));
-
-        if (std::next(it, 1) != items.end())
-            addWord(out, QStringLiteral(","));
-
-        finishLine(out);
-    }
-
-    addIndent(out, m_indent);
-    addWord(out, QStringLiteral("}"));
-
-    return out;
-}
-
-QString TypeComponentReconstructingVisitor::valueFor(const Data::Types::Choice &type) const
-{
-    return valueForComplexType<Data::Types::Choice>(type, m_indent);
-}
-
-QString TypeComponentReconstructingVisitor::valueFor(const Data::Types::Sequence &type) const
-{
-    return valueForComplexType<Data::Types::Sequence>(type, m_indent);
-}
-
-QString TypeComponentReconstructingVisitor::valueFor(const Data::Types::SequenceOf &type) const
-{
-    TypeComponentReconstructingVisitor visitor(m_indent);
-    type.itemsType().accept(visitor);
-
-    return QStringLiteral("SEQUENCE ") + type.constraints().rangesTree().expression()
-           + QStringLiteral(" OF ") + visitor.value();
-}
-
-QString TypeComponentReconstructingVisitor::valueFor(const Data::Types::Real &type) const
-{
-    return valueForStraightType(type);
-}
-
-QString TypeComponentReconstructingVisitor::valueFor(const Data::Types::LabelType &type) const
-{
-    Q_UNUSED(type);
-    return {};
-}
-
-QString TypeComponentReconstructingVisitor::valueFor(const Data::Types::Integer &type) const
-{
-    return valueForStraightType(type);
-}
-
-QString TypeComponentReconstructingVisitor::valueFor(const Data::Types::UserdefinedType &type) const
-{
-    return valueForStraightType(type);
+    addIndent(indent);
+    addWord(line);
+    finishLine();
 }

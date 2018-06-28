@@ -196,7 +196,7 @@ void NodeReconstructingVisitorTests::test_valueAssignmentIA5String()
 
 void NodeReconstructingVisitorTests::test_valueAssignmentChoice()
 {
-    auto actual = createChoiceValueValueAssignmentValue();
+    auto actual = createChoiceValueAssignmentValue();
 
     QString expected = "myChoice CHOICE ::= MyChoice:10\n";
 
@@ -354,8 +354,8 @@ void NodeReconstructingVisitorTests::test_typeAssignmentChoice()
     QString expected =
         "MyType ::= CHOICE \n"
         "{ \n"
-        "    ch1 INTEGER , \n"
-        "    ch2 REAL \n"
+        "    ch1 INTEGER, \n"
+        "    ch2 REAL\n"
         "} \n";
     // clang-format on
 
@@ -392,9 +392,9 @@ void NodeReconstructingVisitorTests::test_typeAssignmentNestedChoice()
         "{ \n"
         "    ch1 SEQUENCE \n"
         "    { \n"
-        "        seq1 INTEGER , \n"
-        "        seq2 REAL \n"
-        "    }  \n"
+        "        seq1 INTEGER, \n"
+        "        seq2 REAL\n"
+        "    } \n"
         "} \n";
     // clang-format on
 
@@ -420,8 +420,8 @@ void NodeReconstructingVisitorTests::test_typeAssignmentSequence()
     QString expected =
         "MyType ::= SEQUENCE \n"
         "{ \n"
-        "    seq1 INTEGER , \n"
-        "    seq2 REAL \n"
+        "    seq1 INTEGER, \n"
+        "    seq2 REAL\n"
         "} \n";
     // clang-format on
 
@@ -453,9 +453,9 @@ void NodeReconstructingVisitorTests::test_typeAssignmentNestedSequence()
         "{ \n"
         "    seq1 SEQUENCE \n"
         "    { \n"
-        "        n1 INTEGER , \n"
-        "        n2 REAL \n"
-        "    }  \n"
+        "        n1 INTEGER, \n"
+        "        n2 REAL\n"
+        "    } \n"
         "} \n";
     // clang-format on
 
@@ -657,7 +657,7 @@ QString NodeReconstructingVisitorTests::createComponentialTypeAssignmentValue(
     return restoreNode(*assignment);
 }
 
-QString NodeReconstructingVisitorTests::createChoiceValueValueAssignmentValue() const
+QString NodeReconstructingVisitorTests::createChoiceValueAssignmentValue() const
 {
     auto internalValue = std::make_unique<Data::SingleValue>(QStringLiteral("10"));
     auto choiceValue = std::make_unique<Data::ChoiceValue>(QStringLiteral("MyChoice"),

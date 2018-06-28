@@ -25,8 +25,8 @@
 ****************************************************************************/
 #pragma once
 
-#include <memory>
 #include <functional>
+#include <memory>
 
 #include <QObject>
 
@@ -34,6 +34,8 @@
 #include <data/file.h>
 #include <data/project.h>
 #include <data/valueassignment.h>
+
+#include <data/types/constraints.h>
 
 namespace MalTester {
 namespace Tests {
@@ -61,17 +63,38 @@ private slots:
 
     void test_typeAssignmentBoolean();
     void test_typeAssignmentNull();
+
     void test_typeAssignmentBitString();
+    void test_typeAssignmentBitStringWithValue();
+
     void test_typeAssignmentOctetString();
+    void test_typeAssignmentOctetStringWithValue();
+
     void test_typeAssignmentIA5String();
+    void test_typeAssignmentIA5StringWithValue();
+
     void test_typeAssignmentNumericString();
+    void test_typeAssignmentNumericStringWithValue();
+
     void test_typeAssignmentEnumerated();
+
     void test_typeAssignmentChoice();
+    void test_typeAssignmentNestedChoice();
+
     void test_typeAssignmentSequence();
+    void test_typeAssignmentNestedSequence();
+
     void test_typeAssignmentSequenceOf();
+    void test_typeAssignmentSequenceOfWithValue();
+
     void test_typeAssignmentReal();
+    void test_typeAssignmentRealWithValue();
+
     void test_typeAssignmentInteger();
+    void test_typeAssignmentIntegerWithValue();
+
     void test_typeAssignmentUserDefined();
+    void test_typeAssignmentUserDefinedWithValue();
 
 private:
     std::unique_ptr<Data::Definitions> createDefinitions(const QString &name) const;
@@ -80,14 +103,22 @@ private:
         const QString &typeName,
         const QString &typeValue,
         std::function<QString(const QString &)> printer) const;
+
     void testSimpleTypeAssignment(const QString &astValue, const QString &asn1Value) const;
+
+    std::unique_ptr<Data::TypeAssignment> createSimpleTypeAssignment(
+        const QString &astTypeName) const;
+
+    std::unique_ptr<Data::TypeAssignment> createTypeAssignmentWithConstraint(
+        const QString &astTypeName, Data::ExpressionTree::ExpressionNode *range) const;
 
     QString createMultipleValueValueAssignmentValue() const;
     QString createNamedValueAssignmentValue() const;
     QString createComponentialTypeAssignmentValue(std::unique_ptr<Data::Types::Type> type) const;
 
     QString createChoiceValueValueAssignmentValue() const;
-    QString createValueFromValueAssignment(std::unique_ptr<Data::ValueAssignment> &assignment) const;
+
+    QString restoreNode(const Data::Node &assignment) const;
 };
 
 } // namespace Tests

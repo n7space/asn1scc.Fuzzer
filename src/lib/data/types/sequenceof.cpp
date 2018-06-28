@@ -25,11 +25,17 @@
 ****************************************************************************/
 #include "sequenceof.h"
 
-#include "typevisitor.h"
+#include "typemutatingvisitor.h"
+#include "typereadingvisitor.h"
 
 using namespace MalTester::Data::Types;
 
-void SequenceOf::accept(TypeVisitor &visitor)
+void SequenceOf::accept(TypeMutatingVisitor &visitor)
+{
+    visitor.visit(*this);
+}
+
+void SequenceOf::accept(TypeReadingVisitor &visitor) const
 {
     visitor.visit(*this);
 }

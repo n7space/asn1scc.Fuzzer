@@ -26,9 +26,12 @@
 
 #include "reconstructor.h"
 
+#include <QTextStream>
+
 #include <nodereconstructingvisitor.h>
 
 #include <iostream>
+#include <QDebug>
 
 using namespace MalTester;
 
@@ -36,25 +39,12 @@ Reconstructor::Reconstructor(std::unique_ptr<Data::Project> &project)
     : m_project(std::move(project))
 {}
 
-void printToStdOut(const QString &name, const QString &content)
-{
-    std::cout << std::endl;
-    std::cout << "=========" + name.toStdString() + "=========" << std::endl;
-    std::cout << content.toStdString() << std::endl;
-    std::cout << "=========" + name.toStdString() + "=========" << std::endl;
-    std::cout << std::endl;
-}
-
 void Reconstructor::reconstruct()
 {
     for (const auto &file : m_project->files()) {
-        NodeReconstructingVisitor visitor;
+        QTextStream outStream(&m_reconstructedFiles[file->name()]);
+
+        NodeReconstructingVisitor visitor(outStream);
         visitor.visit(*file);
-
-        // TODO: remove when not needed any more
-        if (0)
-            printToStdOut(file->name(), visitor.value());
-
-        m_reconstructedFiles[file->name()] = visitor.value();
     }
 }

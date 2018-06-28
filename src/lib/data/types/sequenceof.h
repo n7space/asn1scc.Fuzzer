@@ -41,7 +41,8 @@ public:
     SequenceOf(const SequenceOf &other);
 
     QString name() const override { return QLatin1String("SEQUENCE OF"); }
-    void accept(TypeVisitor &visitor) override;
+    void accept(TypeMutatingVisitor &visitor) override;
+    void accept(TypeReadingVisitor &visitor) const override;
     std::unique_ptr<Type> clone() const override;
 
     QString size() const { return m_size; }

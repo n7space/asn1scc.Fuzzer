@@ -58,8 +58,7 @@ void NodeReconstructingVisitorTests::test_singleImportedType()
     defs->addImportedType(
         Data::ImportedType(QStringLiteral("MyModule_1"), QStringLiteral("ImportedType_1")));
 
-    NodeReconstructingVisitor visitor;
-    defs->accept(visitor);
+    auto actual = restoreNode(*defs);
 
     // clang-format off
     QString expected =
@@ -67,12 +66,11 @@ void NodeReconstructingVisitorTests::test_singleImportedType()
         "IMPORTS\n"
         "ImportedType_1 FROM MyModule_1\n"
         ";\n"
-        "\n"
         "END\n"
         "\n";
     // clang-format on
 
-    QCOMPARE(visitor.value(), expected);
+    QCOMPARE(actual, expected);
 }
 
 void NodeReconstructingVisitorTests::test_multipleImportedTypes()
@@ -84,8 +82,7 @@ void NodeReconstructingVisitorTests::test_multipleImportedTypes()
     defs->addImportedType(
         Data::ImportedType(QStringLiteral("MyModule_2"), QStringLiteral("ImportedType_2")));
 
-    NodeReconstructingVisitor visitor;
-    defs->accept(visitor);
+    auto actual = restoreNode(*defs);
 
     // clang-format off
     QString expected =
@@ -94,12 +91,11 @@ void NodeReconstructingVisitorTests::test_multipleImportedTypes()
         "ImportedType_1 FROM MyModule_1\n"
         "ImportedType_2 FROM MyModule_2\n"
         ";\n"
-        "\n"
         "END\n"
         "\n";
     // clang-format on
 
-    QCOMPARE(visitor.value(), expected);
+    QCOMPARE(actual, expected);
 }
 
 void NodeReconstructingVisitorTests::test_singleImportedValue()
@@ -108,8 +104,7 @@ void NodeReconstructingVisitorTests::test_singleImportedValue()
     defs->addImportedValue(
         Data::ImportedValue(QStringLiteral("MyModule_1"), QStringLiteral("ImportedValue_1")));
 
-    NodeReconstructingVisitor visitor;
-    defs->accept(visitor);
+    auto actual = restoreNode(*defs);
 
     // clang-format off
     QString expected =
@@ -117,12 +112,11 @@ void NodeReconstructingVisitorTests::test_singleImportedValue()
         "IMPORTS\n"
         "ImportedValue_1 FROM MyModule_1\n"
         ";\n"
-        "\n"
         "END\n"
         "\n";
     // clang-format on
 
-    QCOMPARE(visitor.value(), expected);
+    QCOMPARE(actual, expected);
 }
 
 void NodeReconstructingVisitorTests::test_multipleImportedValues()
@@ -134,8 +128,7 @@ void NodeReconstructingVisitorTests::test_multipleImportedValues()
     defs->addImportedValue(
         Data::ImportedValue(QStringLiteral("MyModule_2"), QStringLiteral("ImportedValue_2")));
 
-    NodeReconstructingVisitor visitor;
-    defs->accept(visitor);
+    auto actual = restoreNode(*defs);
 
     // clang-format off
     QString expected =
@@ -144,12 +137,11 @@ void NodeReconstructingVisitorTests::test_multipleImportedValues()
         "ImportedValue_1 FROM MyModule_1\n"
         "ImportedValue_2 FROM MyModule_2\n"
         ";\n"
-        "\n"
         "END\n"
         "\n";
     // clang-format on
 
-    QCOMPARE(visitor.value(), expected);
+    QCOMPARE(actual, expected);
 }
 
 void NodeReconstructingVisitorTests::test_valueAssignmentSimpleValue()
@@ -157,14 +149,7 @@ void NodeReconstructingVisitorTests::test_valueAssignmentSimpleValue()
     auto actual = createSingleValueValueAssignmentValue(QStringLiteral("INTEGER"),
                                                         QStringLiteral("10"),
                                                         Data::printAsSelf);
-    // clang-format off
-    QString expected =
-        "MyModule_1 DEFINITIONS ::= BEGIN\n"
-        "myValue INTEGER ::= 10\n"
-        "\n"
-        "END\n"
-        "\n";
-    // clang-format on
+    QString expected = "myValue INTEGER ::= 10\n";
 
     QCOMPARE(actual, expected);
 }
@@ -174,15 +159,7 @@ void NodeReconstructingVisitorTests::test_valueAssignmentBitString()
     auto actual = createSingleValueValueAssignmentValue(QStringLiteral("BIT_STRING"),
                                                         QStringLiteral("1010"),
                                                         Data::printAsBitString);
-
-    // clang-format off
-    QString expected =
-        "MyModule_1 DEFINITIONS ::= BEGIN\n"
-        "myValue BIT STRING ::= '1010'B\n"
-        "\n"
-        "END\n"
-        "\n";
-    // clang-format on
+    QString expected = "myValue BIT STRING ::= '1010'B\n";
 
     QCOMPARE(actual, expected);
 }
@@ -190,16 +167,9 @@ void NodeReconstructingVisitorTests::test_valueAssignmentBitString()
 void NodeReconstructingVisitorTests::test_valueAssignmentBoolean()
 {
     auto actual = createSingleValueValueAssignmentValue(QStringLiteral("BOOLEAN"),
-                                                        QStringLiteral("TRUE"),
+                                                        QStringLiteral("true"),
                                                         Data::printInBooleanFormat);
-    // clang-format off
-    QString expected =
-            "MyModule_1 DEFINITIONS ::= BEGIN\n"
-            "myValue BOOLEAN ::= TRUE\n"
-            "\n"
-            "END\n"
-            "\n";
-    // clang-format on
+    QString expected = "myValue BOOLEAN ::= TRUE\n";
 
     QCOMPARE(actual, expected);
 }
@@ -209,15 +179,7 @@ void NodeReconstructingVisitorTests::test_valueAssignmentOctetString()
     auto actual = createSingleValueValueAssignmentValue(QStringLiteral("OCTET_STRING"),
                                                         QStringLiteral("1010"),
                                                         Data::printAsHexString);
-
-    // clang-format off
-    QString expected =
-        "MyModule_1 DEFINITIONS ::= BEGIN\n"
-        "myValue OCTET STRING ::= '1010'H\n"
-        "\n"
-        "END\n"
-        "\n";
-    // clang-format on
+    QString expected = "myValue OCTET STRING ::= '1010'H\n";
 
     QCOMPARE(actual, expected);
 }
@@ -227,30 +189,16 @@ void NodeReconstructingVisitorTests::test_valueAssignmentIA5String()
     auto actual = createSingleValueValueAssignmentValue(QStringLiteral("IA5String"),
                                                         QStringLiteral("MyValue"),
                                                         Data::printAsASCIIString);
-    // clang-format off
-    QString expected =
-        "MyModule_1 DEFINITIONS ::= BEGIN\n"
-        "myValue IA5String ::= \"MyValue\"\n"
-        "\n"
-        "END\n"
-        "\n";
-    // clang-format on
+    QString expected = "myValue IA5String ::= \"MyValue\"\n";
 
     QCOMPARE(actual, expected);
 }
 
 void NodeReconstructingVisitorTests::test_valueAssignmentChoice()
 {
-    auto actual = createChoiceValueValueAssignmentValue();
+    auto actual = createChoiceValueAssignmentValue();
 
-    // clang-format off
-    QString expected =
-        "MyModule_1 DEFINITIONS ::= BEGIN\n"
-        "myChoice CHOICE ::= MyChoice:10\n"
-        "\n"
-        "END\n"
-        "\n";
-    // clang-format on
+    QString expected = "myChoice CHOICE ::= MyChoice:10\n";
 
     QCOMPARE(actual, expected);
 }
@@ -259,14 +207,7 @@ void NodeReconstructingVisitorTests::test_valueAssignmentMultipleValues()
 {
     auto actual = createMultipleValueValueAssignmentValue();
 
-    // clang-format off
-    QString expected =
-        "MyModule_1 DEFINITIONS ::= BEGIN\n"
-        "mySequence SEQUENCE OF ::= {1, 2, 3}\n"
-        "\n"
-        "END\n"
-        "\n";
-    // clang-format on
+    QString expected = "mySequence SEQUENCE OF ::= {1, 2, 3}\n";
 
     QCOMPARE(actual, expected);
 }
@@ -275,14 +216,7 @@ void NodeReconstructingVisitorTests::test_valueAssignmentNamedValue()
 {
     auto actual = createNamedValueAssignmentValue();
 
-    // clang-format off
-    QString expected =
-        "MyModule_1 DEFINITIONS ::= BEGIN\n"
-        "mySequence SEQUENCE ::= {v1 1, v2 TRUE, v3 3.0}\n"
-        "\n"
-        "END\n"
-        "\n";
-    // clang-format on
+    QString expected = "mySequence SEQUENCE ::= {v1 1, v2 TRUE, v3 3.0}\n";
 
     QCOMPARE(actual, expected);
 }
@@ -302,9 +236,35 @@ void NodeReconstructingVisitorTests::test_typeAssignmentBitString()
     testSimpleTypeAssignment(QStringLiteral("BIT_STRING"), QStringLiteral("BIT STRING"));
 }
 
+void NodeReconstructingVisitorTests::test_typeAssignmentBitStringWithValue()
+{
+    auto assignment = createTypeAssignmentWithConstraint(
+        QStringLiteral("BIT_STRING"),
+        new Data::ExpressionTree::StringRange(QStringLiteral("1111"),
+                                              QStringLiteral("1111"),
+                                              Data::printAsBitString));
+
+    auto actual = restoreNode(*assignment);
+    QString expected = "MyType ::= BIT STRING('1111'B)\n";
+
+    QCOMPARE(actual, expected);
+}
+
 void NodeReconstructingVisitorTests::test_typeAssignmentOctetString()
 {
     testSimpleTypeAssignment(QStringLiteral("OCTET_STRING"), QStringLiteral("OCTET STRING"));
+}
+
+void NodeReconstructingVisitorTests::test_typeAssignmentOctetStringWithValue()
+{
+    auto assignment = createTypeAssignmentWithConstraint(
+        QStringLiteral("OCTET_STRING"),
+        new Data::ExpressionTree::StringRange("1010", "1010", Data::printAsHexString));
+
+    auto actual = restoreNode(*assignment);
+    QString expected = "MyType ::= OCTET STRING('1010'H)\n";
+
+    QCOMPARE(actual, expected);
 }
 
 void NodeReconstructingVisitorTests::test_typeAssignmentIA5String()
@@ -312,9 +272,35 @@ void NodeReconstructingVisitorTests::test_typeAssignmentIA5String()
     testSimpleTypeAssignment(QStringLiteral("IA5String"), QStringLiteral("IA5String"));
 }
 
+void NodeReconstructingVisitorTests::test_typeAssignmentIA5StringWithValue()
+{
+    auto assignment
+        = createTypeAssignmentWithConstraint(QStringLiteral("IA5String"),
+                                             new Data::ExpressionTree::StringRange("TextString",
+                                                                                   "TextString"));
+
+    auto actual = restoreNode(*assignment);
+    QString expected = "MyType ::= IA5String(\"TextString\")\n";
+
+    QCOMPARE(actual, expected);
+}
+
 void NodeReconstructingVisitorTests::test_typeAssignmentNumericString()
 {
     testSimpleTypeAssignment(QStringLiteral("NumericString"), QStringLiteral("NumericString"));
+}
+
+void NodeReconstructingVisitorTests::test_typeAssignmentNumericStringWithValue()
+{
+    auto assignment
+        = createTypeAssignmentWithConstraint(QStringLiteral("NumericString"),
+                                             new Data::ExpressionTree::StringRange("12345678",
+                                                                                   "12345678"));
+
+    auto actual = restoreNode(*assignment);
+    QString expected = "MyType ::= NumericString(\"12345678\")\n";
+
+    QCOMPARE(actual, expected);
 }
 
 void NodeReconstructingVisitorTests::test_typeAssignmentEnumerated()
@@ -329,15 +315,11 @@ void NodeReconstructingVisitorTests::test_typeAssignmentEnumerated()
 
     // clang-format off
     QString expected =
-        "MyModule_1 DEFINITIONS ::= BEGIN\n"
         "MyType ::= ENUMERATED \n"
         "{ \n"
         "    e1 ( 1 ) , \n"
         "    e2 ( 2 ) \n"
-        "} \n"
-        "\n"
-        "END\n"
-        "\n";
+        "} \n";
     // clang-format on
 
     QCOMPARE(actual, expected);
@@ -346,7 +328,6 @@ void NodeReconstructingVisitorTests::test_typeAssignmentEnumerated()
 void NodeReconstructingVisitorTests::test_typeAssignmentChoice()
 {
     auto type = std::make_unique<Data::Types::Choice>();
-
     type->addComponent(
         std::make_unique<Data::Types::ChoiceAlternative>(QStringLiteral("ch1"),
                                                          QStringLiteral(""),
@@ -371,15 +352,50 @@ void NodeReconstructingVisitorTests::test_typeAssignmentChoice()
 
     // clang-format off
     QString expected =
-        "MyModule_1 DEFINITIONS ::= BEGIN\n"
         "MyType ::= CHOICE \n"
         "{ \n"
-        "    ch1 INTEGER , \n"
-        "    ch2 REAL \n"
-        "} \n"
-        "\n"
-        "END\n"
-        "\n";
+        "    ch1 INTEGER, \n"
+        "    ch2 REAL\n"
+        "} \n";
+    // clang-format on
+
+    QCOMPARE(actual, expected);
+}
+
+void NodeReconstructingVisitorTests::test_typeAssignmentNestedChoice()
+{
+    auto sequenceType = std::make_unique<Data::Types::Sequence>();
+    auto type = std::make_unique<Data::Types::Choice>();
+
+    sequenceType->addComponent(
+        std::make_unique<Data::SequenceComponent>(QStringLiteral("seq1"),
+                                                  Data::Types::TypeFactory::createBuiltinType(
+                                                      QStringLiteral("INTEGER"))));
+
+    sequenceType->addComponent(
+        std::make_unique<Data::SequenceComponent>(QStringLiteral("seq2"),
+                                                  Data::Types::TypeFactory::createBuiltinType(
+                                                      QStringLiteral("REAL"))));
+
+    type->addComponent(std::make_unique<Data::Types::ChoiceAlternative>(QStringLiteral("ch1"),
+                                                                        QStringLiteral(""),
+                                                                        QStringLiteral(""),
+                                                                        QStringLiteral(""),
+                                                                        QStringLiteral(""),
+                                                                        Data::SourceLocation(),
+                                                                        std::move(sequenceType)));
+    auto actual = createComponentialTypeAssignmentValue(std::move(type));
+
+    // clang-format off
+    QString expected =
+        "MyType ::= CHOICE \n"
+        "{ \n"
+        "    ch1 SEQUENCE \n"
+        "    { \n"
+        "        seq1 INTEGER, \n"
+        "        seq2 REAL\n"
+        "    } \n"
+        "} \n";
     // clang-format on
 
     QCOMPARE(actual, expected);
@@ -402,15 +418,45 @@ void NodeReconstructingVisitorTests::test_typeAssignmentSequence()
 
     // clang-format off
     QString expected =
-        "MyModule_1 DEFINITIONS ::= BEGIN\n"
         "MyType ::= SEQUENCE \n"
         "{ \n"
-        "    seq1 INTEGER , \n"
-        "    seq2 REAL \n"
-        "} \n"
-        "\n"
-        "END\n"
-        "\n";
+        "    seq1 INTEGER, \n"
+        "    seq2 REAL\n"
+        "} \n";
+    // clang-format on
+
+    QCOMPARE(actual, expected);
+}
+
+void NodeReconstructingVisitorTests::test_typeAssignmentNestedSequence()
+{
+    auto type = std::make_unique<Data::Types::Sequence>();
+    auto internalType = std::make_unique<Data::Types::Sequence>();
+
+    internalType->addComponent(
+        std::make_unique<Data::SequenceComponent>(QStringLiteral("n1"),
+                                                  Data::Types::TypeFactory::createBuiltinType(
+                                                      QStringLiteral("INTEGER"))));
+    internalType->addComponent(
+        std::make_unique<Data::SequenceComponent>(QStringLiteral("n2"),
+                                                  Data::Types::TypeFactory::createBuiltinType(
+                                                      QStringLiteral("REAL"))));
+
+    type->addComponent(
+        std::make_unique<Data::SequenceComponent>(QStringLiteral("seq1"), std::move(internalType)));
+
+    auto actual = createComponentialTypeAssignmentValue(std::move(type));
+
+    // clang-format off
+    QString expected =
+        "MyType ::= SEQUENCE \n"
+        "{ \n"
+        "    seq1 SEQUENCE \n"
+        "    { \n"
+        "        n1 INTEGER, \n"
+        "        n2 REAL\n"
+        "    } \n"
+        "} \n";
     // clang-format on
 
     QCOMPARE(actual, expected);
@@ -423,14 +469,28 @@ void NodeReconstructingVisitorTests::test_typeAssignmentSequenceOf()
 
     auto actual = createComponentialTypeAssignmentValue(std::move(type));
 
-    // clang-format off
-    QString expected =
-        "MyModule_1 DEFINITIONS ::= BEGIN\n"
-        "MyType ::= SEQUENCE  OF INTEGER\n"
-        "\n"
-        "END\n"
-        "\n";
-    // clang-format on
+    QString expected = "MyType ::= SEQUENCE  OF INTEGER\n";
+
+    QCOMPARE(actual, expected);
+}
+
+void NodeReconstructingVisitorTests::test_typeAssignmentSequenceOfWithValue()
+{
+    auto internalType = std::make_unique<Data::Types::Integer>();
+    auto &internalConstrainedType = dynamic_cast<Data::Types::WithConstraints &>(*internalType);
+    internalConstrainedType.constraints().appendSubtree(
+        new Data::ExpressionTree::IntegerRange(5, 10));
+
+    auto assignment = createTypeAssignmentWithConstraint(
+        QStringLiteral("SEQUENCE_OF"),
+        new Data::ExpressionTree::ConstrainingOperator(QStringLiteral("SIZE"),
+                                                       new Data::ExpressionTree::IntegerRange(10,
+                                                                                              10)));
+    auto &sequenceType = dynamic_cast<Data::Types::SequenceOf &>(*(assignment->type()));
+    sequenceType.setItemsType(std::move(internalType));
+
+    auto actual = restoreNode(*assignment);
+    QString expected = "MyType ::= SEQUENCE ((SIZE (10))) OF INTEGER(5 .. 10)\n";
 
     QCOMPARE(actual, expected);
 }
@@ -440,9 +500,31 @@ void NodeReconstructingVisitorTests::test_typeAssignmentReal()
     testSimpleTypeAssignment(QStringLiteral("REAL"), QStringLiteral("REAL"));
 }
 
+void NodeReconstructingVisitorTests::test_typeAssignmentRealWithValue()
+{
+    auto assignment = createTypeAssignmentWithConstraint(QStringLiteral("REAL"),
+                                                         new Data::ExpressionTree::RealRange(1.1,
+                                                                                             1.1));
+    auto actual = restoreNode(*assignment);
+    QString expected = "MyType ::= REAL(1.1)\n";
+
+    QCOMPARE(actual, expected);
+}
+
 void NodeReconstructingVisitorTests::test_typeAssignmentInteger()
 {
     testSimpleTypeAssignment(QStringLiteral("INTEGER"), QStringLiteral("INTEGER"));
+}
+
+void NodeReconstructingVisitorTests::test_typeAssignmentIntegerWithValue()
+{
+    auto assignment = createTypeAssignmentWithConstraint(QStringLiteral("INTEGER"),
+                                                         new Data::ExpressionTree::IntegerRange(1,
+                                                                                                2));
+    auto actual = restoreNode(*assignment);
+    QString expected = "MyType ::= INTEGER(1 .. 2)\n";
+
+    QCOMPARE(actual, expected);
 }
 
 void NodeReconstructingVisitorTests::test_typeAssignmentUserDefined()
@@ -454,23 +536,28 @@ void NodeReconstructingVisitorTests::test_typeAssignmentUserDefined()
     auto assignment = std::make_unique<Data::TypeAssignment>(QStringLiteral("MyType"),
                                                              Data::SourceLocation(),
                                                              std::move(type));
+    auto actual = restoreNode(*assignment);
+    QString expected = "MyType ::= ReferencedType\n";
 
-    auto defs = createDefinitions(QStringLiteral("MyModule_1"));
-    defs->addType(std::move(assignment));
+    QCOMPARE(actual, expected);
+}
 
-    NodeReconstructingVisitor visitor;
-    defs->accept(visitor);
+void NodeReconstructingVisitorTests::test_typeAssignmentUserDefinedWithValue()
+{
+    auto referedType = Data::Types::TypeFactory::createBuiltinType(QStringLiteral("INTEGER"));
+    auto &constrainedType = dynamic_cast<Data::Types::WithConstraints &>(*referedType);
+    constrainedType.constraints().appendSubtree(new Data::ExpressionTree::IntegerRange(1, 2));
 
-    auto actual = visitor.value();
+    auto type = std::make_unique<Data::Types::UserdefinedType>(QStringLiteral("ReferencedType"),
+                                                               QStringLiteral("MyModule"));
+    type->setType(std::move(referedType));
+    auto assignment = std::make_unique<Data::TypeAssignment>(QStringLiteral("MyType"),
+                                                             Data::SourceLocation(),
+                                                             std::move(type));
 
-    // clang-format off
-    QString expected =
-        "MyModule_1 DEFINITIONS ::= BEGIN\n"
-        "MyType ::= ReferencedType\n"
-        "\n"
-        "END\n"
-        "\n";
-    // clang-format on
+    auto actual = restoreNode(*assignment);
+
+    QString expected = "MyType ::= ReferencedType(1 .. 2)\n";
 
     QCOMPARE(actual, expected);
 }
@@ -478,29 +565,34 @@ void NodeReconstructingVisitorTests::test_typeAssignmentUserDefined()
 void NodeReconstructingVisitorTests::testSimpleTypeAssignment(const QString &astValue,
                                                               const QString &asn1Value) const
 {
-    auto type = Data::Types::TypeFactory::createBuiltinType(astValue);
+    auto assignment = createSimpleTypeAssignment(astValue);
+    auto actual = restoreNode(*assignment);
+
+    QString expected = "MyType ::= " + asn1Value + "\n";
+
+    QCOMPARE(actual, expected);
+}
+
+std::unique_ptr<Data::TypeAssignment> NodeReconstructingVisitorTests::createSimpleTypeAssignment(
+    const QString &astTypeName) const
+{
+    auto type = Data::Types::TypeFactory::createBuiltinType(astTypeName);
     auto assignment = std::make_unique<Data::TypeAssignment>(QStringLiteral("MyType"),
                                                              Data::SourceLocation(),
                                                              std::move(type));
 
-    auto defs = createDefinitions(QStringLiteral("MyModule_1"));
-    defs->addType(std::move(assignment));
+    return assignment;
+}
 
-    NodeReconstructingVisitor visitor;
-    defs->accept(visitor);
+std::unique_ptr<Data::TypeAssignment>
+NodeReconstructingVisitorTests::createTypeAssignmentWithConstraint(
+    const QString &astTypeName, Data::ExpressionTree::ExpressionNode *range) const
+{
+    auto assignment = createSimpleTypeAssignment(astTypeName);
+    auto &constrainedType = dynamic_cast<Data::Types::WithConstraints &>(*assignment->type());
+    constrainedType.constraints().appendSubtree(range);
 
-    auto actual = visitor.value();
-
-    // clang-format off
-    QString expected =
-        "MyModule_1 DEFINITIONS ::= BEGIN\n"
-        "MyType ::= " + asn1Value + "\n"
-        "\n"
-        "END\n"
-        "\n";
-    // clang-format on
-
-    QCOMPARE(actual, expected);
+    return assignment;
 }
 
 std::unique_ptr<Data::Definitions> NodeReconstructingVisitorTests::createDefinitions(
@@ -521,7 +613,7 @@ QString NodeReconstructingVisitorTests::createSingleValueValueAssignmentValue(
                                                               Data::SourceLocation(),
                                                               std::move(type),
                                                               std::move(value));
-    return createValueFromValueAssignment(assignment);
+    return restoreNode(*assignment);
 }
 
 QString NodeReconstructingVisitorTests::createMultipleValueValueAssignmentValue() const
@@ -537,7 +629,7 @@ QString NodeReconstructingVisitorTests::createMultipleValueValueAssignmentValue(
                                                               Data::SourceLocation(),
                                                               std::move(type),
                                                               std::move(multipleValue));
-    return createValueFromValueAssignment(assignment);
+    return restoreNode(*assignment);
 }
 
 QString NodeReconstructingVisitorTests::createNamedValueAssignmentValue() const
@@ -553,7 +645,7 @@ QString NodeReconstructingVisitorTests::createNamedValueAssignmentValue() const
                                                               Data::SourceLocation(),
                                                               std::move(type),
                                                               std::move(multipleValue));
-    return createValueFromValueAssignment(assignment);
+    return restoreNode(*assignment);
 }
 
 QString NodeReconstructingVisitorTests::createComponentialTypeAssignmentValue(
@@ -562,17 +654,10 @@ QString NodeReconstructingVisitorTests::createComponentialTypeAssignmentValue(
     auto assignment = std::make_unique<Data::TypeAssignment>(QStringLiteral("MyType"),
                                                              Data::SourceLocation(),
                                                              std::move(type));
-
-    auto defs = createDefinitions(QStringLiteral("MyModule_1"));
-    defs->addType(std::move(assignment));
-
-    NodeReconstructingVisitor visitor;
-    defs->accept(visitor);
-
-    return visitor.value();
+    return restoreNode(*assignment);
 }
 
-QString NodeReconstructingVisitorTests::createChoiceValueValueAssignmentValue() const
+QString NodeReconstructingVisitorTests::createChoiceValueAssignmentValue() const
 {
     auto internalValue = std::make_unique<Data::SingleValue>(QStringLiteral("10"));
     auto choiceValue = std::make_unique<Data::ChoiceValue>(QStringLiteral("MyChoice"),
@@ -583,16 +668,16 @@ QString NodeReconstructingVisitorTests::createChoiceValueValueAssignmentValue() 
                                                               Data::SourceLocation(),
                                                               std::move(type),
                                                               std::move(choiceValue));
-    return createValueFromValueAssignment(assignment);
+    return restoreNode(*assignment);
 }
 
-QString NodeReconstructingVisitorTests::createValueFromValueAssignment(
-    std::unique_ptr<Data::ValueAssignment> &assignment) const
+QString NodeReconstructingVisitorTests::restoreNode(const Data::Node &node) const
 {
-    auto defs = createDefinitions(QStringLiteral("MyModule_1"));
-    defs->addValue(std::move(assignment));
+    QString ret;
+    QTextStream outStream(&ret);
 
-    NodeReconstructingVisitor visitor;
-    defs->accept(visitor);
-    return visitor.value();
+    NodeReconstructingVisitor visitor(outStream);
+    node.accept(visitor);
+
+    return ret;
 }

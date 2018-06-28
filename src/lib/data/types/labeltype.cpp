@@ -25,7 +25,8 @@
 ****************************************************************************/
 #include "labeltype.h"
 
-#include <data/types/typevisitor.h>
+#include "typemutatingvisitor.h"
+#include "typereadingvisitor.h"
 
 using namespace MalTester::Data::Types;
 
@@ -38,7 +39,12 @@ QString LabelType::name() const
     return m_name;
 }
 
-void LabelType::accept(TypeVisitor &visitor)
+void LabelType::accept(TypeMutatingVisitor &visitor)
+{
+    visitor.visit(*this);
+}
+
+void LabelType::accept(TypeReadingVisitor &visitor) const
 {
     visitor.visit(*this);
 }

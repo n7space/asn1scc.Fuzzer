@@ -25,12 +25,18 @@
 ****************************************************************************/
 #include "sequence.h"
 
-#include "typevisitor.h"
+#include "typemutatingvisitor.h"
+#include "typereadingvisitor.h"
 
 using namespace MalTester::Data;
 using namespace MalTester::Data::Types;
 
-void Sequence::accept(TypeVisitor &visitor)
+void Sequence::accept(TypeMutatingVisitor &visitor)
+{
+    visitor.visit(*this);
+}
+
+void Sequence::accept(TypeReadingVisitor &visitor) const
 {
     visitor.visit(*this);
 }

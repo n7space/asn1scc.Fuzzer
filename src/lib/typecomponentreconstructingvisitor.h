@@ -25,7 +25,7 @@
 ****************************************************************************/
 #pragma once
 
-#include <QString>
+#include <QTextStream>
 
 #include <data/types/acnparameterizablecomposite.h>
 #include <data/types/bitstring.h>
@@ -42,33 +42,44 @@
 #include <data/types/real.h>
 #include <data/types/sequence.h>
 #include <data/types/sequenceof.h>
-#include <data/types/typevisitorwithvalue.h>
+#include <data/types/typereadingvisitor.h>
 #include <data/types/userdefinedtype.h>
 
 namespace MalTester {
 
-class TypeComponentReconstructingVisitor : public Data::Types::TypeVisitorWithValue<QString>
+class TypeComponentReconstructingVisitor : public Data::Types::TypeReadingVisitor
 {
 public:
-    TypeComponentReconstructingVisitor(int indent = 0);
+    TypeComponentReconstructingVisitor(QTextStream &outStream, int indent = 0);
     ~TypeComponentReconstructingVisitor() override = default;
 
-    QString valueFor(Data::Types::Boolean &type) const override;
-    QString valueFor(Data::Types::Null &type) const override;
-    QString valueFor(Data::Types::BitString &type) const override;
-    QString valueFor(Data::Types::OctetString &type) const override;
-    QString valueFor(Data::Types::IA5String &type) const override;
-    QString valueFor(Data::Types::NumericString &type) const override;
-    QString valueFor(Data::Types::Enumerated &type) const override;
-    QString valueFor(Data::Types::Choice &type) const override;
-    QString valueFor(Data::Types::Sequence &type) const override;
-    QString valueFor(Data::Types::SequenceOf &type) const override;
-    QString valueFor(Data::Types::Real &type) const override;
-    QString valueFor(Data::Types::LabelType &type) const override;
-    QString valueFor(Data::Types::Integer &type) const override;
-    QString valueFor(Data::Types::UserdefinedType &type) const override;
+    void visit(const Data::Types::Boolean &type) override;
+    void visit(const Data::Types::Null &type) override;
+    void visit(const Data::Types::BitString &type) override;
+    void visit(const Data::Types::OctetString &type) override;
+    void visit(const Data::Types::IA5String &type) override;
+    void visit(const Data::Types::NumericString &type) override;
+    void visit(const Data::Types::Enumerated &type) override;
+    void visit(const Data::Types::Choice &type) override;
+    void visit(const Data::Types::Sequence &type) override;
+    void visit(const Data::Types::SequenceOf &type) override;
+    void visit(const Data::Types::Real &type) override;
+    void visit(const Data::Types::LabelType &type) override;
+    void visit(const Data::Types::Integer &type) override;
+    void visit(const Data::Types::UserdefinedType &type) override;
 
 private:
+    void valueForStraightType(const Data::Types::Type &type);
+
+    template<typename T>
+    void valueForComplexType(const T &type, const int indent);
+
+    void addIndent(int indent);
+    void addWord(const QString &word);
+    void finishLine();
+    void addLine(QString line, int indent = 0);
+
+    QTextStream &m_outStream;
     int m_indent;
 };
 

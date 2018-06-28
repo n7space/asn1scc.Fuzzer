@@ -41,7 +41,8 @@ public:
     BitString(const BitString &other) = default;
 
     QString name() const override { return QLatin1String("BIT STRING"); }
-    void accept(TypeVisitor &visitor) override;
+    void accept(TypeMutatingVisitor &visitor) override;
+    void accept(TypeReadingVisitor &visitor) const override;
     std::unique_ptr<Type> clone() const override;
 };
 

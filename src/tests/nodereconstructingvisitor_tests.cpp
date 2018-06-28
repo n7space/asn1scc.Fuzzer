@@ -66,7 +66,6 @@ void NodeReconstructingVisitorTests::test_singleImportedType()
         "IMPORTS\n"
         "ImportedType_1 FROM MyModule_1\n"
         ";\n"
-        "\n"
         "END\n"
         "\n";
     // clang-format on
@@ -92,7 +91,6 @@ void NodeReconstructingVisitorTests::test_multipleImportedTypes()
         "ImportedType_1 FROM MyModule_1\n"
         "ImportedType_2 FROM MyModule_2\n"
         ";\n"
-        "\n"
         "END\n"
         "\n";
     // clang-format on
@@ -114,7 +112,6 @@ void NodeReconstructingVisitorTests::test_singleImportedValue()
         "IMPORTS\n"
         "ImportedValue_1 FROM MyModule_1\n"
         ";\n"
-        "\n"
         "END\n"
         "\n";
     // clang-format on
@@ -140,7 +137,6 @@ void NodeReconstructingVisitorTests::test_multipleImportedValues()
         "ImportedValue_1 FROM MyModule_1\n"
         "ImportedValue_2 FROM MyModule_2\n"
         ";\n"
-        "\n"
         "END\n"
         "\n";
     // clang-format on
@@ -677,7 +673,11 @@ QString NodeReconstructingVisitorTests::createChoiceValueValueAssignmentValue() 
 
 QString NodeReconstructingVisitorTests::restoreNode(const Data::Node &node) const
 {
-    NodeReconstructingVisitor visitor;
+    QString ret;
+    QTextStream outStream(&ret);
+
+    NodeReconstructingVisitor visitor(outStream);
     node.accept(visitor);
-    return visitor.value();
+
+    return ret;
 }

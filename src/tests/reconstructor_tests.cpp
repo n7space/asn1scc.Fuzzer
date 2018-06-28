@@ -81,7 +81,6 @@ void ReconstructorTests::test_singleFileWithSingleModule()
     // clang-format off
     QString expected =
         "MyModule_1 DEFINITIONS ::= BEGIN\n"
-        "\n"
         "END\n"
         "\n";
     // clang-format on
@@ -108,11 +107,9 @@ void ReconstructorTests::test_singleFileWithMultipleModules()
     // clang-format off
     QString expected =
         "MyModule_1 DEFINITIONS ::= BEGIN\n"
-        "\n"
         "END\n"
         "\n"
         "MyModule_2 DEFINITIONS ::= BEGIN\n"
-        "\n"
         "END\n"
         "\n";
     // clang-format on

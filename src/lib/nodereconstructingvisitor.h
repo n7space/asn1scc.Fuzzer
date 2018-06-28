@@ -25,31 +25,35 @@
 ****************************************************************************/
 #pragma once
 
-#include <data/visitorwithvalue.h>
 #include <QString>
+#include <QTextStream>
+
+#include <data/visitor.h>
 
 namespace MalTester {
 
-class NodeReconstructingVisitor : public Data::VisitorWithValue<QString>
+class NodeReconstructingVisitor : public Data::Visitor
 {
 public:
+    NodeReconstructingVisitor(QTextStream &outStream);
     ~NodeReconstructingVisitor() override = default;
 
+    void visit(const Data::Definitions &defs) override;
+    void visit(const Data::File &file) override;
+    void visit(const Data::TypeAssignment &type) override;
+    void visit(const Data::ValueAssignment &value) override;
+    void visit(const Data::Project &project) override;
+    void visit(const Data::Root &root) override;
+
 private:
-    QString valueFor(const Data::Definitions &defs) const override;
-    QString valueFor(const Data::File &file) const override;
-    QString valueFor(const Data::TypeAssignment &type) const override;
-    QString valueFor(const Data::ValueAssignment &value) const override;
-    QString valueFor(const Data::Project &project) const override;
-    QString valueFor(const Data::Root &root) const override;
-
-    QString importsAsString(const Data::Definitions &defs) const;
-
     template<typename T>
-    QString importedCollectionAsString(const T &types) const;
+    void reconstructImportedCollection(const T &types) const;
+    template<typename T>
+    void reconstructCollection(const T &collection) const;
 
-    QString typesAsString(const Data::Definitions &defs) const;
-    QString valuesAsString(const Data::Definitions &defs) const;
+    void reconstructImports(const Data::Definitions &defs) const;
+
+    QTextStream &m_outStream;
 };
 
 } // namespace MalTester

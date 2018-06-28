@@ -36,107 +36,86 @@
 
 using namespace MalTester;
 
-QString NodeReconstructingVisitor::valueFor(const Data::Definitions &defs) const
+NodeReconstructingVisitor::NodeReconstructingVisitor(QTextStream &outStream)
+    : m_outStream(outStream)
+{}
+
+void NodeReconstructingVisitor::visit(const Data::Definitions &defs)
 {
-    QString start = defs.name() + QStringLiteral(" DEFINITIONS ::= BEGIN") + QStringLiteral("\n");
+    m_outStream << defs.name() << QStringLiteral(" DEFINITIONS ::= BEGIN") << QStringLiteral("\n");
 
-    QString imports = importsAsString(defs);
-    QString values = valuesAsString(defs);
-    QString types = typesAsString(defs);
+    reconstructImports(defs);
+    reconstructCollection<Data::Definitions::Values>(defs.values());
+    reconstructCollection<Data::Definitions::Types>(defs.types());
 
-    QString finish = QStringLiteral("END\n\n");
-
-    return start + imports + types + values + finish;
+    m_outStream << QStringLiteral("END\n\n");
 }
 
-QString NodeReconstructingVisitor::valueFor(const Data::File &file) const
+void NodeReconstructingVisitor::visit(const Data::File &file)
 {
-    QString ret;
-    for (const auto &def : file.definitionsList()) {
-        NodeReconstructingVisitor visitor;
-        ret += visitor.valueFor(*def);
-    }
-
-    return ret;
+    reconstructCollection<Data::File::DefinitionsList>(file.definitionsList());
 }
 
-QString NodeReconstructingVisitor::valueFor(const Data::TypeAssignment &type) const
+void NodeReconstructingVisitor::visit(const Data::TypeAssignment &type)
 {
+    m_outStream << type.name() << QStringLiteral(" ::= ");
+
     TypeComponentReconstructingVisitor visitor;
     type.type()->accept(visitor);
 
-    return type.name() + QStringLiteral(" ::= ") + visitor.value() + QStringLiteral("\n");
+    m_outStream << visitor.value();
+    m_outStream << QStringLiteral("\n");
 }
 
-QString NodeReconstructingVisitor::valueFor(const Data::ValueAssignment &assignment) const
+void NodeReconstructingVisitor::visit(const Data::ValueAssignment &assignment)
 {
     if (assignment.value() == nullptr)
-        return {};
+        return;
 
-    return assignment.name() + QStringLiteral(" ") + assignment.type()->name()
-           + QStringLiteral(" ::= ") + assignment.value()->asString() + QStringLiteral("\n");
+    m_outStream << assignment.name() << QStringLiteral(" ") << assignment.type()->name()
+                << QStringLiteral(" ::= ") << assignment.value()->asString()
+                << QStringLiteral("\n");
 }
 
-QString NodeReconstructingVisitor::valueFor(const Data::Project &project) const
+void NodeReconstructingVisitor::visit(const Data::Project &project)
 {
     Q_UNUSED(project);
-    return {};
 }
 
-QString NodeReconstructingVisitor::valueFor(const Data::Root &root) const
+void NodeReconstructingVisitor::visit(const Data::Root &root)
 {
     Q_UNUSED(root);
-    return {};
 }
 
-QString NodeReconstructingVisitor::importsAsString(const Data::Definitions &defs) const
+void NodeReconstructingVisitor::reconstructImports(const Data::Definitions &defs) const
 {
     const auto &values = defs.importedValues();
     const auto &types = defs.importedTypes();
 
     if (values.empty() && types.empty())
-        return {};
+        return;
 
-    QString ret("IMPORTS\n");
+    m_outStream << QStringLiteral("IMPORTS\n");
 
-    ret += importedCollectionAsString<Data::Definitions::ImportedValues>(values);
-    ret += importedCollectionAsString<Data::Definitions::ImportedTypes>(types);
-    ret += QStringLiteral(";\n");
+    reconstructImportedCollection<Data::Definitions::ImportedValues>(values);
+    reconstructImportedCollection<Data::Definitions::ImportedTypes>(types);
 
-    return ret;
+    m_outStream << QStringLiteral(";\n");
 }
 
 template<typename T>
-QString NodeReconstructingVisitor::importedCollectionAsString(const T &types) const
+void NodeReconstructingVisitor::reconstructImportedCollection(const T &types) const
 {
-    QString ret;
     for (const auto &type : types)
-        ret += type.name() + QStringLiteral(" FROM ") + type.module() + QStringLiteral("\n");
-
-    return ret;
+        m_outStream << type.name() << QStringLiteral(" FROM ") << type.module()
+                    << QStringLiteral("\n");
 }
 
-QString NodeReconstructingVisitor::valuesAsString(const Data::Definitions &defs) const
+template<typename T>
+void NodeReconstructingVisitor::reconstructCollection(const T &collection) const
 {
-    QString ret;
-    for (const auto &value : defs.values()) {
-        NodeReconstructingVisitor visitor;
-        ret += visitor.valueFor(*value);
+    for (const auto &item : collection) {
+        NodeReconstructingVisitor visitor(m_outStream);
+        item->accept(visitor);
     }
-    ret += QStringLiteral("\n");
-
-    return ret;
-}
-
-QString NodeReconstructingVisitor::typesAsString(const Data::Definitions &defs) const
-{
-    QString ret;
-    for (const auto &typeAssignment : defs.types()) {
-        NodeReconstructingVisitor visitor;
-        typeAssignment->accept(visitor);
-
-        ret += visitor.value();
-    }
-
-    return ret;
 }

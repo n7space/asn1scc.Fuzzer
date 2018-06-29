@@ -34,6 +34,7 @@ ConstrainingOperator::ConstrainingOperator(const QString &type, const Expression
 {}
 
 ConstrainingOperator::ConstrainingOperator(const ConstrainingOperator &other)
+    : m_type(other.m_type)
 {
     m_child = other.m_child ? other.m_child->clone() : nullptr;
 }

@@ -25,11 +25,17 @@
 ****************************************************************************/
 #include "numericstring.h"
 
-#include "typevisitor.h"
+#include "typemutatingvisitor.h"
+#include "typereadingvisitor.h"
 
 using namespace MalTester::Data::Types;
 
-void NumericString::accept(TypeVisitor &visitor)
+void NumericString::accept(TypeMutatingVisitor &visitor)
+{
+    visitor.visit(*this);
+}
+
+void NumericString::accept(TypeReadingVisitor &visitor) const
 {
     visitor.visit(*this);
 }

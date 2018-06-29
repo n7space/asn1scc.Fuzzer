@@ -29,11 +29,13 @@
 
 #include <QString>
 
+#include "typereadingvisitor.h"
+
 namespace MalTester {
 namespace Data {
 namespace Types {
 
-class TypeVisitor;
+class TypeMutatingVisitor;
 
 enum class AlignToNext { byte, word, dword, unspecified };
 enum class Endianness { big, little, unspecified };
@@ -51,7 +53,10 @@ public:
     virtual ~Type();
 
     virtual QString name() const = 0;
-    virtual void accept(TypeVisitor &visitor) = 0;
+
+    virtual void accept(TypeMutatingVisitor &visitor) = 0;
+    virtual void accept(TypeReadingVisitor &visitor) const = 0;
+
     virtual std::unique_ptr<Type> clone() const = 0;
 
     void setAlignToNext(const AlignToNext alignToNext) { m_alignment = alignToNext; }

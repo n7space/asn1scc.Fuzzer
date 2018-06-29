@@ -877,7 +877,7 @@ void AstXmlParserTests::test_enumeratedValueAssignment()
 
     const auto myEnum
         = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->value("myEnum");
-    QCOMPARE(myEnum->value(), QStringLiteral("e1"));
+    QCOMPARE(myEnum->value()->asString(), QStringLiteral("e1"));
 }
 
 void AstXmlParserTests::test_singleIntegerTypeAssignmentWithSimpleConstraint()
@@ -1037,7 +1037,7 @@ void AstXmlParserTests::test_singleIntegerValueAssignment()
         R"(</AstRoot>)");
 
     const auto myInt = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->value("myInt");
-    QCOMPARE(myInt->value(), QStringLiteral("10"));
+    QCOMPARE(myInt->value()->asString(), QStringLiteral("10"));
 }
 
 void AstXmlParserTests::test_singleRealTypeAssignmentWithSimpleConstraint()
@@ -1178,7 +1178,7 @@ void AstXmlParserTests::test_singleRealValueAssignment()
 
     const auto myReal
         = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->value("myReal");
-    QCOMPARE(myReal->value(), QStringLiteral("9.9"));
+    QCOMPARE(myReal->value()->asString(), QStringLiteral("9.9"));
 }
 
 void AstXmlParserTests::test_sequenceOfAssignmentWithSimpleConstraint()
@@ -1372,6 +1372,54 @@ void AstXmlParserTests::test_sequenceOfAssignmentWithAcnParams()
 
     QVERIFY(sequenceOfType != nullptr);
     QCOMPARE(sequenceOfType->size(), QStringLiteral("n"));
+}
+
+void AstXmlParserTests::test_sequenceOfValueAssignment()
+{
+    parse(
+        R"(<?xml version="1.0" encoding="utf-8"?>)"
+        R"(<AstRoot>)"
+        R"(  <Asn1File FileName="Test2File.asn">)"
+        R"(    <Modules>)"
+        R"(      <Module Name="TestDefinitions" Line="13" CharPositionInLine="42">)"
+        R"(        <ValueAssignments>)"
+        R"(          <ValueAssignment Name="mySequenceOfValue" Line="22" CharPositionInLine="0">)"
+        R"(            <Asn1Type id="MyModel.mySequenceOfValue" Line="22" CharPositionInLine="18" ParameterizedTypeInstance="false">)"
+        R"(              <REFERENCE_TYPE Module="MyModel" TypeAssignment="MySequenceOf">)"
+        R"(                <Asn1Type id="MyModel.mySequenceOfValue" Line="11" CharPositionInLine="17" ParameterizedTypeInstance="false" tasInfoModule="MyModel" tasInfoName="MySequenceOf">)"
+        R"(                  <SEQUENCE_OF acnMaxSizeInBits="288" acnMinSizeInBits="288" uperMaxSizeInBits="288" uperMinSizeInBits="32">)"
+        R"(                    <Constraints>)"
+        R"(                      <SIZE>)"
+        R"(                        <IntegerValue>4</IntegerValue>)"
+        R"(                      </SIZE>)"
+        R"(                    </Constraints>)"
+        R"(                    <WithComponentConstraints />)"
+        R"(                    <Asn1Type id="MyModel.mySequenceOfValue.#" Line="11" CharPositionInLine="39" ParameterizedTypeInstance="false">)"
+        R"(                      <INTEGER acnMaxSizeInBits="72" acnMinSizeInBits="8" uperMaxSizeInBits="72" uperMinSizeInBits="8">)"
+        R"(                        <Constraints />)"
+        R"(                        <WithComponentConstraints />)"
+        R"(                      </INTEGER>)"
+        R"(                    </Asn1Type>)"
+        R"(                  </SEQUENCE_OF>)"
+        R"(                </Asn1Type>)"
+        R"(              </REFERENCE_TYPE>)"
+        R"(            </Asn1Type>)"
+        R"(            <SequenceOfValue>)"
+        R"(              <IntegerValue>1</IntegerValue>)"
+        R"(              <IntegerValue>2</IntegerValue>)"
+        R"(              <IntegerValue>3</IntegerValue>)"
+        R"(              <IntegerValue>4</IntegerValue>)"
+        R"(            </SequenceOfValue>)"
+        R"(          </ValueAssignment>)"
+        R"(       </ValueAssignments>)"
+        R"(      </Module>)"
+        R"(    </Modules>)"
+        R"(  </Asn1File>)"
+        R"(</AstRoot>)");
+
+    const auto mySeqOf
+        = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->value("mySequenceOfValue");
+    QCOMPARE(mySeqOf->value()->asString(), QStringLiteral("{1, 2, 3, 4}"));
 }
 
 template<typename Collection>
@@ -1580,6 +1628,50 @@ void AstXmlParserTests::test_choiceAlternativesWithAcnParams()
     QCOMPARE(alternative->presentWhen(), QStringLiteral("type = 1"));
 }
 
+void AstXmlParserTests::test_choiceValueAssignment()
+{
+    parse(
+        R"(<?xml version="1.0" encoding="utf-8"?>)"
+        R"(<AstRoot>)"
+        R"(  <Asn1File FileName="Test2File.asn">)"
+        R"(    <Modules>)"
+        R"(      <Module Name="Defs" Line="13" CharPositionInLine="42">)"
+        R"(        <ValueAssignments>)"
+        R"(          <ValueAssignment Name="myChoiceValue" Line="33" CharPositionInLine="0">)"
+        R"(            <Asn1Type id="MyModel.myChoiceValue" Line="33" CharPositionInLine="14" ParameterizedTypeInstance="false">)"
+        R"(              <REFERENCE_TYPE Module="MyModel" TypeAssignment="MyChoice">)"
+        R"(                <Asn1Type id="MyModel.myChoiceValue" Line="9" CharPositionInLine="13" ParameterizedTypeInstance="false" tasInfoModule="MyModel" tasInfoName="MyChoice">)"
+        R"(                  <CHOICE acnMaxSizeInBits="72" acnMinSizeInBits="72" uperMaxSizeInBits="72" uperMinSizeInBits="8">)"
+        R"(                    <CHOICE_ALTERNATIVE Name="ic1" Line="9" CharPositionInLine="22" PresentWhenName="ic1" AdaName="ic1" CName="ic1">)"
+        R"(                      <Asn1Type id="MyModel.myChoiceValue.ic1" Line="9" CharPositionInLine="26" ParameterizedTypeInstance="false">)"
+        R"(                        <INTEGER acnMaxSizeInBits="72" acnMinSizeInBits="8" uperMaxSizeInBits="72" uperMinSizeInBits="8">)"
+        R"(                          <Constraints />)"
+        R"(                          <WithComponentConstraints />)"
+        R"(                        </INTEGER>)"
+        R"(                      </Asn1Type>)"
+        R"(                    </CHOICE_ALTERNATIVE>)"
+        R"(                    <Constraints />)"
+        R"(                    <WithComponentConstraints />)"
+        R"(                  </CHOICE>)"
+        R"(                </Asn1Type>)"
+        R"(              </REFERENCE_TYPE>)"
+        R"(            </Asn1Type>)"
+        R"(            <ChoiceValue>)"
+        R"(              <NamedValue Name="ic1">)"
+        R"(                <IntegerValue>10</IntegerValue>)"
+        R"(              </NamedValue>)"
+        R"(            </ChoiceValue>)"
+        R"(          </ValueAssignment>)"
+        R"(        </ValueAssignments>)"
+        R"(      </Module>)"
+        R"(    </Modules>)"
+        R"(  </Asn1File>)"
+        R"(</AstRoot>)");
+
+    auto type = m_parsedData["Test2File.asn"]->definitions("Defs")->value("myChoiceValue");
+    QCOMPARE(type->value()->asString(), QStringLiteral("ic1:10"));
+}
+
 void AstXmlParserTests::test_booleanWithAcnParams()
 {
     parse(
@@ -1648,7 +1740,7 @@ void AstXmlParserTests::test_booleanValueAssignment()
         R"(</AstRoot>)");
 
     auto type = m_parsedData["Test2File.asn"]->definitions("Defs")->value("myBool");
-    QCOMPARE(type->value(), QStringLiteral("true"));
+    QCOMPARE(type->value()->asString(), QStringLiteral("TRUE"));
 }
 
 void AstXmlParserTests::test_nullWithAcnParams()
@@ -1675,6 +1767,31 @@ void AstXmlParserTests::test_nullWithAcnParams()
     auto nullType = dynamic_cast<const Data::Types::Null *>(type->type());
 
     QCOMPARE(nullType->pattern(), QStringLiteral("1001"));
+}
+
+void AstXmlParserTests::test_nullValueAssignment()
+{
+    parse(
+        R"(<?xml version="1.0" encoding="utf-8"?>)"
+        R"(<AstRoot>)"
+        R"(  <Asn1File FileName="Test2File.asn">)"
+        R"(    <Modules>)"
+        R"(      <Module Name="Defs" Line="13" CharPositionInLine="42">)"
+        R"(        <ValueAssignments>)"
+        R"(          <ValueAssignment Name="myNullValue" Line="18" CharPositionInLine="0">)"
+        R"(            <Asn1Type id="MyModel.myNullValue" Line="18" CharPositionInLine="12" ParameterizedTypeInstance="false">)"
+        R"(              <NULL acnMaxSizeInBits="0" acnMinSizeInBits="0" uperMaxSizeInBits="0" uperMinSizeInBits="0" />)"
+        R"(            </Asn1Type>)"
+        R"(            <NullValue />)"
+        R"(          </ValueAssignment>)"
+        R"(        </ValueAssignments>)"
+        R"(      </Module>)"
+        R"(    </Modules>)"
+        R"(  </Asn1File>)"
+        R"(</AstRoot>)");
+
+    const auto type = m_parsedData["Test2File.asn"]->definitions("Defs")->value("myNullValue");
+    QCOMPARE(type->value()->asString(), QStringLiteral("NULL"));
 }
 
 void AstXmlParserTests::test_sequnceWithAcnParams()
@@ -2084,6 +2201,62 @@ void AstXmlParserTests::test_sequenceAcnComponents()
     QCOMPARE(intType.alignToNext(), Data::Types::AlignToNext::dword);
 }
 
+void AstXmlParserTests::test_sequenceValueAssignment()
+{
+    parse(
+        R"(<?xml version="1.0" encoding="utf-8"?>)"
+        R"(<AstRoot>)"
+        R"(  <Asn1File FileName="Test2File.asn">)"
+        R"(    <Modules>)"
+        R"(      <Module Name="Defs" Line="13" CharPositionInLine="42">)"
+        R"(        <ValueAssignments>)"
+        R"(          <ValueAssignment Name="mySequenceValue" Line="21" CharPositionInLine="0">)"
+        R"(            <Asn1Type id="MyModel.mySequenceValue" Line="21" CharPositionInLine="16" ParameterizedTypeInstance="false">)"
+        R"(              <REFERENCE_TYPE Module="MyModel" TypeAssignment="MySequence">)"
+        R"(                <Asn1Type id="MyModel.mySequenceValue" Line="10" CharPositionInLine="15" ParameterizedTypeInstance="false" tasInfoModule="MyModel" tasInfoName="MySequence">)"
+        R"(                  <SEQUENCE acnMaxSizeInBits="176" acnMinSizeInBits="16" uperMaxSizeInBits="176" uperMinSizeInBits="16">)"
+        R"(                    <SEQUENCE_COMPONENT Name="is1" Line="10" CharPositionInLine="26">)"
+        R"(                      <Asn1Type id="MyModel.mySequenceValue.is1" Line="10" CharPositionInLine="30" ParameterizedTypeInstance="false">)"
+        R"(                        <INTEGER acnMaxSizeInBits="72" acnMinSizeInBits="8" uperMaxSizeInBits="72" uperMinSizeInBits="8">)"
+        R"(                          <Constraints />)"
+        R"(                          <WithComponentConstraints />)"
+        R"(                        </INTEGER>)"
+        R"(                      </Asn1Type>)"
+        R"(                    </SEQUENCE_COMPONENT>)"
+        R"(                    <SEQUENCE_COMPONENT Name="rs1" Line="10" CharPositionInLine="39">)"
+        R"(                      <Asn1Type id="MyModel.mySequenceValue.rs1" Line="10" CharPositionInLine="43" ParameterizedTypeInstance="false">)"
+        R"(                        <REAL acnMaxSizeInBits="104" acnMinSizeInBits="8" uperMaxSizeInBits="104" uperMinSizeInBits="8">)"
+        R"(                          <Constraints />)"
+        R"(                          <WithComponentConstraints />)"
+        R"(                        </REAL>)"
+        R"(                      </Asn1Type>)"
+        R"(                    </SEQUENCE_COMPONENT>)"
+        R"(                    <Constraints />)"
+        R"(                    <WithComponentConstraints />)"
+        R"(                  </SEQUENCE>)"
+        R"(                </Asn1Type>)"
+        R"(              </REFERENCE_TYPE>)"
+        R"(            </Asn1Type>)"
+        R"(            <SequenceValue>)"
+        R"(              <NamedValue Name="is1">)"
+        R"(                <IntegerValue>1</IntegerValue>)"
+        R"(              </NamedValue>)"
+        R"(              <NamedValue Name="rs1">)"
+        R"(                <RealValue>2.2</RealValue>)"
+        R"(              </NamedValue>)"
+        R"(            </SequenceValue>)"
+        R"(          </ValueAssignment>)"
+        R"(        </ValueAssignments>)"
+        R"(      </Module>)"
+        R"(    </Modules>)"
+        R"(  </Asn1File>)"
+        R"(</AstRoot>)");
+
+    const auto mySeq = m_parsedData["Test2File.asn"]->definitions("Defs")->value("mySequenceValue");
+
+    QCOMPARE(mySeq->value()->asString(), QStringLiteral("{is1 1, rs1 2.2}"));
+}
+
 void AstXmlParserTests::test_octetStringWithSizeConstraint()
 {
     parse(
@@ -2210,7 +2383,7 @@ void AstXmlParserTests::test_octetStringWithValueDefined()
         = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyOctetString");
 
     const auto ocetStringType = dynamic_cast<const Data::Types::OctetString *>(type->type());
-    QCOMPARE(ocetStringType->constraints().rangesTree().expression(), QStringLiteral("(\"599\")"));
+    QCOMPARE(ocetStringType->constraints().rangesTree().expression(), QStringLiteral("('599'H)"));
 }
 
 void AstXmlParserTests::test_octetStringAcnParams()
@@ -2295,7 +2468,7 @@ void AstXmlParserTests::test_octetStringValueAssignment()
 
     auto octetStringType
         = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->value("myOctet");
-    QCOMPARE(octetStringType->value(), QStringLiteral("01"));
+    QCOMPARE(octetStringType->value()->asString(), QStringLiteral("'01'H"));
 }
 
 void AstXmlParserTests::test_iA5StringWithSizeConstraint()
@@ -2517,7 +2690,7 @@ void AstXmlParserTests::test_iA5StringValueAssignment()
         R"(</AstRoot>)");
 
     const auto type = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->value("myIA5");
-    QCOMPARE(type->value(), QStringLiteral("value"));
+    QCOMPARE(type->value()->asString(), QStringLiteral("\"value\""));
 }
 
 void AstXmlParserTests::test_numericStringWithSizeConstraint()
@@ -2821,7 +2994,7 @@ void AstXmlParserTests::test_bitStringWithValueDefined()
     const auto type
         = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyBitString");
     const auto bitString = dynamic_cast<const Data::Types::BitString *>(type->type());
-    QCOMPARE(bitString->constraints().rangesTree().expression(), QStringLiteral("(\"10101011\")"));
+    QCOMPARE(bitString->constraints().rangesTree().expression(), QStringLiteral("('10101011'B)"));
 }
 
 void AstXmlParserTests::test_bitStringAcnParams()
@@ -2905,7 +3078,7 @@ void AstXmlParserTests::test_bitStringValueAssignment()
         R"(</AstRoot>)");
 
     auto type = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->value("myBit");
-    QCOMPARE(type->value(), QStringLiteral("101"));
+    QCOMPARE(type->value()->asString(), QStringLiteral("'101'B"));
 }
 
 void AstXmlParserTests::test_notRelatedConstraintsInNumericString()
@@ -2971,6 +3144,109 @@ void AstXmlParserTests::test_notRelatedConstraintsInNumericString()
     QCOMPARE(numericString->constraints().rangesTree().expression(),
              QStringLiteral(
                  "((SIZE (10)))((FROM ((\"1\" .. \"5\" | (\"6\" .. \"9\" ^ \"1\" .. \"8\")))))"));
+}
+
+void AstXmlParserTests::test_nestedValueAssignments()
+{
+    parse(
+        R"(<?xml version="1.0" encoding="utf-8"?>)"
+        R"(<AstRoot>)"
+        R"(  <Asn1File FileName="Test2File.asn">)"
+        R"(    <Modules>)"
+        R"(      <Module Name="TestDefinitions" Line="13" CharPositionInLine="42">)"
+        R"(        <ValueAssignments>)"
+        R"(          <ValueAssignment Name="nestedSequenceOfInstance" Line="30" CharPositionInLine="0">)"
+        R"(            <Asn1Type id="MyModel.nestedSequenceOfInstance" Line="30" CharPositionInLine="25" ParameterizedTypeInstance="false">)"
+        R"(              <REFERENCE_TYPE Module="MyModel" TypeAssignment="NestedSequenceOf">)"
+        R"(                <Asn1Type id="MyModel.nestedSequenceOfInstance" Line="27" CharPositionInLine="21" ParameterizedTypeInstance="false" tasInfoModule="MyModel" tasInfoName="NestedSequenceOf">)"
+        R"(                  <SEQUENCE_OF acnMaxSizeInBits="416" acnMinSizeInBits="416" uperMaxSizeInBits="416" uperMinSizeInBits="32">)"
+        R"(                    <Constraints>)"
+        R"(                      <SIZE>)"
+        R"(                        <IntegerValue>2</IntegerValue>)"
+        R"(                      </SIZE>)"
+        R"(                    </Constraints>)"
+        R"(                    <WithComponentConstraints />)"
+        R"(                    <Asn1Type id="MyModel.nestedSequenceOfInstance.#" Line="27" CharPositionInLine="43" ParameterizedTypeInstance="false">)"
+        R"(                      <REFERENCE_TYPE Module="MyModel" TypeAssignment="OtherSequenceOf">)"
+        R"(                        <Asn1Type id="MyModel.nestedSequenceOfInstance.#" Line="26" CharPositionInLine="20" ParameterizedTypeInstance="false" tasInfoModule="MyModel" tasInfoName="OtherSequenceOf">)"
+        R"(                          <SEQUENCE_OF acnMaxSizeInBits="208" acnMinSizeInBits="208" uperMaxSizeInBits="208" uperMinSizeInBits="16">)"
+        R"(                            <Constraints>)"
+        R"(                              <SIZE>)"
+        R"(                                <IntegerValue>2</IntegerValue>)"
+        R"(                              </SIZE>)"
+        R"(                            </Constraints>)"
+        R"(                            <WithComponentConstraints />)"
+        R"(                            <Asn1Type id="MyModel.nestedSequenceOfInstance.#.#" Line="26" CharPositionInLine="42" ParameterizedTypeInstance="false">)"
+        R"(                              <REAL acnMaxSizeInBits="104" acnMinSizeInBits="8" uperMaxSizeInBits="104" uperMinSizeInBits="8">)"
+        R"(                                <Constraints />)"
+        R"(                                <WithComponentConstraints />)"
+        R"(                              </REAL>)"
+        R"(                            </Asn1Type>)"
+        R"(                          </SEQUENCE_OF>)"
+        R"(                        </Asn1Type>)"
+        R"(                      </REFERENCE_TYPE>)"
+        R"(                    </Asn1Type>)"
+        R"(                  </SEQUENCE_OF>)"
+        R"(                </Asn1Type>)"
+        R"(              </REFERENCE_TYPE>)"
+        R"(            </Asn1Type>)"
+        R"(            <SequenceOfValue>)"
+        R"(              <SequenceOfValue>)"
+        R"(                <RealValue>1.1</RealValue>)"
+        R"(                <RealValue>2.2</RealValue>)"
+        R"(              </SequenceOfValue>)"
+        R"(              <SequenceOfValue>)"
+        R"(                <RealValue>3.3</RealValue>)"
+        R"(                <RealValue>4.4</RealValue>)"
+        R"(              </SequenceOfValue>)"
+        R"(            </SequenceOfValue>)"
+        R"(          </ValueAssignment>)"
+        R"(          <ValueAssignment Name="mySequenceInstance" Line="31" CharPositionInLine="0">)"
+        R"(            <Asn1Type id="MyModel.mySequenceInstance" Line="31" CharPositionInLine="19" ParameterizedTypeInstance="false">)"
+        R"(              <REFERENCE_TYPE Module="MyModel" TypeAssignment="MySequence">)"
+        R"(                <Asn1Type id="MyModel.mySequenceInstance" Line="28" CharPositionInLine="15" ParameterizedTypeInstance="false" tasInfoModule="MyModel" tasInfoName="MySequence">)"
+        R"(                  <SEQUENCE acnMaxSizeInBits="568" acnMinSizeInBits="504" uperMaxSizeInBits="568" uperMinSizeInBits="56">)"
+        R"(                    <Constraints />)"
+        R"(                    <WithComponentConstraints />)"
+        R"(                  </SEQUENCE>)"
+        R"(                </Asn1Type>)"
+        R"(              </REFERENCE_TYPE>)"
+        R"(            </Asn1Type>)"
+        R"(            <SequenceValue>)"
+        R"(              <NamedValue Name="ms">)"
+        R"(                <SequenceOfValue>)"
+        R"(                  <IntegerValue>1</IntegerValue>)"
+        R"(                  <IntegerValue>2</IntegerValue>)"
+        R"(                  <IntegerValue>3</IntegerValue>)"
+        R"(                  <IntegerValue>4</IntegerValue>)"
+        R"(                </SequenceOfValue>)"
+        R"(              </NamedValue>)"
+        R"(              <NamedValue Name="is">)"
+        R"(                <IntegerValue>5</IntegerValue>)"
+        R"(              </NamedValue>)"
+        R"(              <NamedValue Name="os">)"
+        R"(                <SequenceOfValue>)"
+        R"(                  <RealValue>5.5</RealValue>)"
+        R"(                  <RealValue>6.6</RealValue>)"
+        R"(                </SequenceOfValue>)"
+        R"(              </NamedValue>)"
+        R"(            </SequenceValue>)"
+        R"(          </ValueAssignment>)"
+        R"(        </ValueAssignments>)"
+        R"(      </Module>)"
+        R"(    </Modules>)"
+        R"(  </Asn1File>)"
+        R"(</AstRoot>)");
+
+    const auto myNestedSeq = m_parsedData["Test2File.asn"]
+                                 ->definitions("TestDefinitions")
+                                 ->value("nestedSequenceOfInstance");
+    QCOMPARE(myNestedSeq->value()->asString(), QStringLiteral("{{1.1, 2.2}, {3.3, 4.4}}"));
+
+    const auto mySeqInstance
+        = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->value("mySequenceInstance");
+    QCOMPARE(mySeqInstance->value()->asString(),
+             QStringLiteral("{ms {1, 2, 3, 4}, is 5, os {5.5, 6.6}}"));
 }
 
 void AstXmlParserTests::test_parametrizedInstances()

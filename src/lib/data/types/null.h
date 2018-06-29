@@ -40,7 +40,8 @@ public:
     Null(const Null &other) = default;
 
     QString name() const override { return QLatin1String("NULL"); }
-    void accept(TypeVisitor &visitor) override;
+    void accept(TypeMutatingVisitor &visitor) override;
+    void accept(TypeReadingVisitor &visitor) const override;
     std::unique_ptr<Type> clone() const override;
 
     void setPattern(const QString &pattern) { m_pattern = pattern; }

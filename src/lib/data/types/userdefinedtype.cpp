@@ -25,7 +25,8 @@
 ****************************************************************************/
 #include "userdefinedtype.h"
 
-#include "typevisitor.h"
+#include "typemutatingvisitor.h"
+#include "typereadingvisitor.h"
 
 using namespace MalTester::Data;
 using namespace MalTester::Data::Types;
@@ -38,6 +39,8 @@ UserdefinedType::UserdefinedType(const QString &name, const QString &module)
 
 UserdefinedType::UserdefinedType(const UserdefinedType &other)
     : Type()
+    , m_name(other.m_name)
+    , m_module(other.m_module)
 {
     m_type = (other.m_type != nullptr) ? other.m_type->clone() : nullptr;
 
@@ -50,7 +53,12 @@ QString UserdefinedType::name() const
     return m_name;
 }
 
-void UserdefinedType::accept(TypeVisitor &visitor)
+void UserdefinedType::accept(TypeMutatingVisitor &visitor)
+{
+    visitor.visit(*this);
+}
+
+void UserdefinedType::accept(TypeReadingVisitor &visitor) const
 {
     visitor.visit(*this);
 }

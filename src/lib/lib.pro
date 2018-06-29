@@ -16,9 +16,13 @@ SOURCES += \
     data/typereference.cpp \
     data/valueassignment.cpp \
     data/visitor.cpp \
+    data/singlevalue.cpp \
+    data/multiplevalue.cpp \
+    data/namedvalue.cpp \
+    data/choicevalue.cpp \
     \
     data/types/type.cpp \
-    data/types/typevisitor.cpp \
+    data/types/typemutatingvisitor.cpp \
     data/types/typefactory.cpp \
     data/types/labeltype.cpp \
     data/types/userdefinedtype.cpp \
@@ -45,7 +49,11 @@ SOURCES += \
     astxmlparser.cpp \
     astfilegenerator.cpp \
     astfileprocessor.cpp \
-    testgenerator.cpp
+    testgenerator.cpp \
+    reconstructor.cpp \
+    nodereconstructingvisitor.cpp \
+    typecomponentreconstructingvisitor.cpp \
+    typeconstraintsreconstructingvisitor.cpp
 
 HEADERS += \
     data/definitions.h \
@@ -67,11 +75,18 @@ HEADERS += \
     data/acnsequencecomponent.h \
     data/sequencecomponent.h \
     data/acnargument.h \
+    data/value.h \
+    data/singlevalue.h \
+    data/multiplevalue.h \
+    data/namedvalue.h \
+    data/valueprinters.h \
+    data/choicevalue.h \
     \
     data/types/typefactory.h \
     data/types/labeltype.h \
     data/types/type.h \
-    data/types/typevisitor.h \
+    data/types/typemutatingvisitor.h \
+    data/types/typereadingvisitor.h \
     data/types/typevisitorwithvalue.h \
     data/types/userdefinedtype.h \
     data/types/integer.h \
@@ -102,4 +117,8 @@ HEADERS += \
     runparameters.h \
     astfilegenerator.h \
     astfileprocessor.h \
-    testgenerator.h
+    testgenerator.h \
+    reconstructor.h \
+    typecomponentreconstructingvisitor.h \
+    typeconstraintsreconstructingvisitor.h \
+    nodereconstructingvisitor.h

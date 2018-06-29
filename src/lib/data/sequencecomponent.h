@@ -52,7 +52,9 @@ public:
     virtual ~SequenceComponent() = default;
 
     const QString &name() const { return m_name; }
+
     const Types::Type &type() const { return *m_type; }
+    Types::Type &type() { return *m_type; }
 
 private:
     QString m_name;

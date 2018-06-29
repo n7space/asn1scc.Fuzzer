@@ -28,6 +28,7 @@
 
 #include <astfilegenerator.h>
 #include <astfileprocessor.h>
+#include <reconstructor.h>
 
 using namespace MalTester;
 
@@ -40,6 +41,11 @@ void TestGenerator::run() const
     auto ast = createDataTree();
     if (ast == nullptr)
         return;
+
+    auto astCpy = std::make_unique<Data::Project>(*ast);
+
+    Reconstructor r(astCpy);
+    r.reconstruct();
 }
 
 std::unique_ptr<Data::Project> TestGenerator::createDataTree() const

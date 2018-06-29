@@ -37,7 +37,6 @@
 #include "real.h"
 #include "sequence.h"
 #include "sequenceof.h"
-#include "typevisitor.h"
 
 using namespace MalTester::Data::Types;
 

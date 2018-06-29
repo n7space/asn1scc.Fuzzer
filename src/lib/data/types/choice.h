@@ -40,7 +40,6 @@ namespace Types {
 class ChoiceAlternative
 {
 public:
-    ChoiceAlternative() = default;
     ChoiceAlternative(const QString &name,
                       const QString &presentWhenName,
                       const QString &adaName,
@@ -57,7 +56,9 @@ public:
     const QString &cName() const { return m_cName; }
     const QString &presentWhen() const { return m_presentWhen; }
     const SourceLocation &location() const { return m_location; }
+
     const Type &type() const { return *m_type; }
+    Type &type() { return *m_type; }
 
 private:
     QString m_name;
@@ -77,7 +78,10 @@ public:
     Choice(const Choice &other);
 
     QString name() const override { return QLatin1String("CHOICE"); }
-    void accept(TypeVisitor &visitor) override;
+
+    void accept(TypeMutatingVisitor &visitor) override;
+    void accept(TypeReadingVisitor &visitor) const override;
+
     std::unique_ptr<Type> clone() const override;
 
     void setDeterminant(const QString &determinant) { m_determinant = determinant; }

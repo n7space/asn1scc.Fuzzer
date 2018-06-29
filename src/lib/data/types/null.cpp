@@ -25,11 +25,17 @@
 ****************************************************************************/
 #include "null.h"
 
-#include "typevisitor.h"
+#include "typemutatingvisitor.h"
+#include "typereadingvisitor.h"
 
 using namespace MalTester::Data::Types;
 
-void Null::accept(TypeVisitor &visitor)
+void Null::accept(TypeMutatingVisitor &visitor)
+{
+    visitor.visit(*this);
+}
+
+void Null::accept(TypeReadingVisitor &visitor) const
 {
     visitor.visit(*this);
 }

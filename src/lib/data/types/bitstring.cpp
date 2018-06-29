@@ -25,7 +25,8 @@
 ****************************************************************************/
 #include "bitstring.h"
 
-#include "typevisitor.h"
+#include "typemutatingvisitor.h"
+#include "typereadingvisitor.h"
 
 using namespace MalTester::Data::Types;
 
@@ -34,7 +35,12 @@ std::unique_ptr<Type> BitString::clone() const
     return std::make_unique<BitString>(*this);
 }
 
-void BitString::accept(TypeVisitor &visitor)
+void BitString::accept(TypeMutatingVisitor &visitor)
+{
+    visitor.visit(*this);
+}
+
+void BitString::accept(TypeReadingVisitor &visitor) const
 {
     visitor.visit(*this);
 }

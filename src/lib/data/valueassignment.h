@@ -33,6 +33,8 @@
 #include "sourcelocation.h"
 #include "types/type.h"
 
+#include "value.h"
+
 namespace MalTester {
 namespace Data {
 
@@ -42,18 +44,18 @@ public:
     ValueAssignment(const QString &name,
                     const SourceLocation &location,
                     std::unique_ptr<Types::Type> type,
-                    const QString &value);
+                    ValuePtr value);
     ValueAssignment(const ValueAssignment &other);
     ~ValueAssignment() override;
 
     void accept(Visitor &visitor) const override;
 
     const Types::Type *type() const { return m_type.get(); }
-    const QString &value() const { return m_value; }
+    const ValuePtr &value() const { return m_value; }
 
 private:
     std::unique_ptr<Types::Type> m_type;
-    const QString m_value;
+    ValuePtr m_value;
 };
 
 } // namespace Data

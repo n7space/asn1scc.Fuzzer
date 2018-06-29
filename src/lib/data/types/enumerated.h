@@ -25,7 +25,7 @@
 ****************************************************************************/
 #pragma once
 
-#include <QHash>
+#include <QMap>
 #include <QString>
 
 #include <data/sourcelocation.h>
@@ -49,8 +49,6 @@ public:
         , m_location(location)
     {}
 
-    EnumeratedItem(const EnumeratedItem &other) = default;
-
     const QString &name() const { return m_name; }
     int value() const { return m_value; }
     const SourceLocation &location() const { return m_location; }
@@ -68,10 +66,11 @@ public:
     Enumerated(const Enumerated &other) = default;
 
     QString name() const override;
-    void accept(TypeVisitor &visitor) override;
+    void accept(TypeMutatingVisitor &visitor) override;
+    void accept(TypeReadingVisitor &visitor) const override;
     std::unique_ptr<Type> clone() const override;
 
-    using Items = QHash<QString, EnumeratedItem>;
+    using Items = QMap<QString, EnumeratedItem>;
 
     const Items &items() const { return m_items; }
     void addItem(const QString &key, const EnumeratedItem &item);

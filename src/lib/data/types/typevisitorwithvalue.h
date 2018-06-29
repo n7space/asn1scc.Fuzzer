@@ -25,50 +25,50 @@
 ****************************************************************************/
 #pragma once
 
-#include "typevisitor.h"
+#include "typereadingvisitor.h"
 
 namespace MalTester {
 namespace Data {
 namespace Types {
 
 template<typename Value>
-class TypeVisitorWithValue : public TypeVisitor
+class TypeVisitorWithValue : public TypeReadingVisitor
 {
 public:
     using ValueType = Value;
 
     const Value &value() const { return m_value; }
 
-    void visit(Boolean &type) override final { m_value = valueFor(type); }
-    void visit(Null &type) override final { m_value = valueFor(type); }
-    void visit(BitString &type) override final { m_value = valueFor(type); }
-    void visit(OctetString &type) override final { m_value = valueFor(type); }
-    void visit(IA5String &type) override final { m_value = valueFor(type); }
-    void visit(NumericString &type) override final { m_value = valueFor(type); }
-    void visit(Enumerated &type) override final { m_value = valueFor(type); }
-    void visit(Choice &type) override final { m_value = valueFor(type); }
-    void visit(Sequence &type) override final { m_value = valueFor(type); }
-    void visit(SequenceOf &type) override final { m_value = valueFor(type); }
-    void visit(Real &type) override final { m_value = valueFor(type); }
-    void visit(LabelType &type) override final { m_value = valueFor(type); }
-    void visit(Integer &type) override final { m_value = valueFor(type); }
-    void visit(UserdefinedType &type) override final { m_value = valueFor(type); }
+    void visit(const Boolean &type) override final { m_value = valueFor(type); }
+    void visit(const Null &type) override final { m_value = valueFor(type); }
+    void visit(const BitString &type) override final { m_value = valueFor(type); }
+    void visit(const OctetString &type) override final { m_value = valueFor(type); }
+    void visit(const IA5String &type) override final { m_value = valueFor(type); }
+    void visit(const NumericString &type) override final { m_value = valueFor(type); }
+    void visit(const Enumerated &type) override final { m_value = valueFor(type); }
+    void visit(const Choice &type) override final { m_value = valueFor(type); }
+    void visit(const Sequence &type) override final { m_value = valueFor(type); }
+    void visit(const SequenceOf &type) override final { m_value = valueFor(type); }
+    void visit(const Real &type) override final { m_value = valueFor(type); }
+    void visit(const LabelType &type) override final { m_value = valueFor(type); }
+    void visit(const Integer &type) override final { m_value = valueFor(type); }
+    void visit(const UserdefinedType &type) override final { m_value = valueFor(type); }
 
 protected:
-    virtual Value valueFor(Boolean &type) const = 0;
-    virtual Value valueFor(Null &type) const = 0;
-    virtual Value valueFor(BitString &type) const = 0;
-    virtual Value valueFor(OctetString &type) const = 0;
-    virtual Value valueFor(IA5String &type) const = 0;
-    virtual Value valueFor(NumericString &type) const = 0;
-    virtual Value valueFor(Enumerated &type) const = 0;
-    virtual Value valueFor(Choice &type) const = 0;
-    virtual Value valueFor(Sequence &type) const = 0;
-    virtual Value valueFor(SequenceOf &type) const = 0;
-    virtual Value valueFor(Real &type) const = 0;
-    virtual Value valueFor(LabelType &type) const = 0;
-    virtual Value valueFor(Integer &type) const = 0;
-    virtual Value valueFor(UserdefinedType &type) const = 0;
+    virtual Value valueFor(const Boolean &type) const = 0;
+    virtual Value valueFor(const Null &type) const = 0;
+    virtual Value valueFor(const BitString &type) const = 0;
+    virtual Value valueFor(const OctetString &type) const = 0;
+    virtual Value valueFor(const IA5String &type) const = 0;
+    virtual Value valueFor(const NumericString &type) const = 0;
+    virtual Value valueFor(const Enumerated &type) const = 0;
+    virtual Value valueFor(const Choice &type) const = 0;
+    virtual Value valueFor(const Sequence &type) const = 0;
+    virtual Value valueFor(const SequenceOf &type) const = 0;
+    virtual Value valueFor(const Real &type) const = 0;
+    virtual Value valueFor(const LabelType &type) const = 0;
+    virtual Value valueFor(const Integer &type) const = 0;
+    virtual Value valueFor(const UserdefinedType &type) const = 0;
 
 private:
     Value m_value;

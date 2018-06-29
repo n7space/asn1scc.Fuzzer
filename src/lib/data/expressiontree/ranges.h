@@ -25,8 +25,12 @@
 ****************************************************************************/
 #pragma once
 
+#include <functional>
+
 #include <QPair>
 #include <QString>
+
+#include <data/valueprinters.h>
 
 #include <data/expressiontree/expressionnode.h>
 
@@ -84,10 +88,15 @@ public:
 class StringRange : public TypedRange<QString>
 {
 public:
-    StringRange(const QString &begin, const QString &end);
+    StringRange(const QString &begin,
+                const QString &end,
+                std::function<QString(const QString &)> printer = printAsASCIIString);
 
     std::unique_ptr<ExpressionNode> clone() const override;
     QString asString() const override;
+
+private:
+    std::function<QString(const QString &)> m_printer;
 };
 
 } // namespace ExpressionTree

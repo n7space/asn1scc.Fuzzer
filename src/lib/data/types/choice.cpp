@@ -25,7 +25,8 @@
 ****************************************************************************/
 #include "choice.h"
 
-#include "typevisitor.h"
+#include "typemutatingvisitor.h"
+#include "typereadingvisitor.h"
 
 using namespace MalTester::Data;
 using namespace MalTester::Data::Types;
@@ -69,7 +70,12 @@ std::unique_ptr<Type> Choice::clone() const
     return std::make_unique<Choice>(*this);
 }
 
-void Choice::accept(TypeVisitor &visitor)
+void Choice::accept(TypeMutatingVisitor &visitor)
+{
+    visitor.visit(*this);
+}
+
+void Choice::accept(TypeReadingVisitor &visitor) const
 {
     visitor.visit(*this);
 }

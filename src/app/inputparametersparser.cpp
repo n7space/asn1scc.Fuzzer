@@ -42,7 +42,7 @@ InputParametersParser::InputParametersParser() // clang-format off
 void InputParametersParser::parse(int argc, char *argv[])
 {
     if (argc <= 1)
-        printUsageAndExit("Invalid arguments number: " + QString::number(argc));
+        printUsageAndExit("Invalid arguments number: " + QString::number(argc - 1));
 
     QStringList args;
     for (int i = 0; i < argc; i++)

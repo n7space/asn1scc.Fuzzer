@@ -25,7 +25,8 @@
 ****************************************************************************/
 #include "enumerated.h"
 
-#include "typevisitor.h"
+#include "typemutatingvisitor.h"
+#include "typereadingvisitor.h"
 
 using namespace MalTester::Data::Types;
 
@@ -43,7 +44,12 @@ QString Enumerated::name() const
     return QLatin1String("ENUMERATED");
 }
 
-void Enumerated::accept(TypeVisitor &visitor)
+void Enumerated::accept(TypeMutatingVisitor &visitor)
+{
+    visitor.visit(*this);
+}
+
+void Enumerated::accept(TypeReadingVisitor &visitor) const
 {
     visitor.visit(*this);
 }

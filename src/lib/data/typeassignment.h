@@ -48,6 +48,7 @@ public:
     void accept(Visitor &visitor) const override;
 
     const Types::Type *type() const { return m_type.get(); }
+    Types::Type *type() { return m_type.get(); }
 
 private:
     std::unique_ptr<Types::Type> m_type;

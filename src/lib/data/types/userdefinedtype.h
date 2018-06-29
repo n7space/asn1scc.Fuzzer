@@ -45,12 +45,15 @@ public:
     UserdefinedType(const UserdefinedType &other);
 
     QString name() const override;
-    void accept(TypeVisitor &visitor) override;
+    void accept(TypeMutatingVisitor &visitor) override;
+    void accept(TypeReadingVisitor &visitor) const override;
+
     std::unique_ptr<Type> clone() const override;
 
     const QString &module() const { return m_module; }
 
     const Type &type() const { return *m_type; }
+    Type &type() { return *m_type; }
     void setType(std::unique_ptr<Type> type);
 
     const AcnArgumentPtrs &acnArguments() const { return m_arguments; }

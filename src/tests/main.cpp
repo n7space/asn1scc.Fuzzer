@@ -28,6 +28,9 @@
 #include <QTest>
 
 #include "astxmlparser_tests.h"
+#include "nodereconstructingvisitor_tests.h"
+#include "reconstructor_tests.h"
+
 #include "data/expressiontree/expressiontree_tests.h"
 
 int main(int argc, char *argv[])
@@ -39,6 +42,8 @@ int main(int argc, char *argv[])
     };
 
     runTest(new MalTester::Tests::AstXmlParserTests);
+    runTest(new MalTester::Tests::NodeReconstructingVisitorTests);
+    runTest(new MalTester::Tests::ReconstructorTests);
     runTest(new MalTester::Data::ExpressionTree::Tests::ExpressionTreeTests);
 
     return ret;

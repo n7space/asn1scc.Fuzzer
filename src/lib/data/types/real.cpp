@@ -25,7 +25,8 @@
 ****************************************************************************/
 #include "real.h"
 
-#include "typevisitor.h"
+#include "typemutatingvisitor.h"
+#include "typereadingvisitor.h"
 
 using namespace MalTester::Data;
 using namespace MalTester::Data::Types;
@@ -35,7 +36,12 @@ Real::Real()
     , m_endianness(Endianness::unspecified)
 {}
 
-void Real::accept(TypeVisitor &visitor)
+void Real::accept(TypeMutatingVisitor &visitor)
+{
+    visitor.visit(*this);
+}
+
+void Real::accept(TypeReadingVisitor &visitor) const
 {
     visitor.visit(*this);
 }

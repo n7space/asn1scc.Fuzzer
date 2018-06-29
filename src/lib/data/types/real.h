@@ -43,7 +43,8 @@ public:
     Real(const Real &other) = default;
 
     QString name() const override { return QLatin1String("REAL"); }
-    void accept(TypeVisitor &visitor) override;
+    void accept(TypeMutatingVisitor &visitor) override;
+    void accept(TypeReadingVisitor &visitor) const override;
     std::unique_ptr<Type> clone() const override;
 
     void setEncoding(const RealEncoding encoding) { m_encoding = encoding; }

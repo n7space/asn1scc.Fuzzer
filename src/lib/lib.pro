@@ -51,6 +51,7 @@ SOURCES += \
     testgenerator.cpp \
     reconstructor.cpp \
     nodereconstructingvisitor.cpp \
+    acnnodereconstructingvisitor.cpp \
     typecomponentreconstructingvisitor.cpp \
     typeconstraintsreconstructingvisitor.cpp
 
@@ -131,4 +132,5 @@ HEADERS += \
     reconstructor.h \
     typecomponentreconstructingvisitor.h \
     typeconstraintsreconstructingvisitor.h \
-    nodereconstructingvisitor.h
+    nodereconstructingvisitor.h \
+    acnnodereconstructingvisitor.h

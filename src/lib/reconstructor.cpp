@@ -28,6 +28,7 @@
 
 #include <QTextStream>
 
+#include <acnnodereconstructingvisitor.h>
 #include <nodereconstructingvisitor.h>
 
 #include <iostream>
@@ -42,9 +43,21 @@ Reconstructor::Reconstructor(std::unique_ptr<Data::Project> &project)
 void Reconstructor::reconstruct()
 {
     for (const auto &file : m_project->files()) {
-        QTextStream outStream(&m_reconstructedFiles[file->name()]);
-
-        NodeReconstructingVisitor visitor(outStream);
-        visitor.visit(*file);
+        reconstructAsn1File(*file);
+        reconstructAcnFile(*file);
     }
+}
+
+void Reconstructor::reconstructAsn1File(const Data::File &file)
+{
+    QTextStream outStream(&m_reconstructedFiles[file.name()].first);
+    NodeReconstructingVisitor visitor(outStream);
+    visitor.visit(file);
+}
+
+void Reconstructor::reconstructAcnFile(const Data::File &file)
+{
+    QTextStream outStream(&m_reconstructedFiles[file.name()].second);
+    AcnNodeReconstructingVisitor visitor(outStream);
+    visitor.visit(file);
 }

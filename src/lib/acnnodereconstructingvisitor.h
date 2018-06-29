@@ -6,7 +6,7 @@
 ** This file is part of ASN.1/ACN MalTester - Tool for generating test cases
 ** based on ASN.1/ACN models and simulating malformed or malicious data.
 **
-** Tool was developed under a m_processogramme and funded by
+** Tool was developed under a programme and funded by
 ** European Space Agency.
 **
 ** This Tool is free software: you can redistribute it and/or modify
@@ -20,41 +20,40 @@
 ** GNU General Public License for more details.
 **
 ** You should have received a copy of the GNU General Public License
-** along with this m_processogram.  If not, see <http://www.gnu.org/licenses/>.
+** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
 #pragma once
 
-#include <map>
-#include <memory>
-
 #include <QString>
+#include <QTextStream>
 
-#include <data/project.h>
+#include <data/visitor.h>
 
 namespace MalTester {
 
-class Reconstructor
+class AcnNodeReconstructingVisitor : public Data::Visitor
 {
 public:
-    using AcnComponent = QString;
-    using Asn1Component = QString;
-    using Asn1AcnPair = std::pair<Asn1Component, AcnComponent>;
+    AcnNodeReconstructingVisitor(QTextStream &outStream);
+    ~AcnNodeReconstructingVisitor() override = default;
 
-    Reconstructor(std::unique_ptr<Data::Project> &project);
-
-    void reconstruct();
-    const std::map<QString, Asn1AcnPair> &reconstructedFiles() const
-    {
-        return m_reconstructedFiles;
-    }
+    void visit(const Data::Definitions &defs) override;
+    void visit(const Data::File &file) override;
+    void visit(const Data::TypeAssignment &type) override;
+    void visit(const Data::ValueAssignment &value) override;
+    void visit(const Data::Project &project) override;
+    void visit(const Data::Root &root) override;
 
 private:
-    void reconstructAsn1File(const Data::File &file);
-    void reconstructAcnFile(const Data::File &file);
+    template<typename T>
+    void reconstructImportedCollection(const T &types) const;
+    template<typename T>
+    void reconstructCollection(const T &collection) const;
 
-    std::map<QString, Asn1AcnPair> m_reconstructedFiles;
-    std::unique_ptr<Data::Project> m_project;
+    void reconstructImports(const Data::Definitions &defs) const;
+
+    QTextStream &m_outStream;
 };
 
 } // namespace MalTester

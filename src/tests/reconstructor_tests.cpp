@@ -60,7 +60,7 @@ void ReconstructorTests::test_emptyFile()
     const auto &files = rec.reconstructedFiles();
 
     QCOMPARE(files.size(), std::size_t{1});
-    QCOMPARE(files.at(QStringLiteral("MyFile_1")), QStringLiteral(""));
+    QCOMPARE(files.at(QStringLiteral("MyFile_1")).first, QStringLiteral(""));
 }
 
 void ReconstructorTests::test_singleFileWithSingleModule()
@@ -85,7 +85,7 @@ void ReconstructorTests::test_singleFileWithSingleModule()
         "\n";
     // clang-format on
 
-    QCOMPARE(files.at(QStringLiteral("MyFile_1")), expected);
+    QCOMPARE(files.at(QStringLiteral("MyFile_1")).first, expected);
 }
 
 void ReconstructorTests::test_singleFileWithMultipleModules()
@@ -114,7 +114,7 @@ void ReconstructorTests::test_singleFileWithMultipleModules()
         "\n";
     // clang-format on
 
-    QCOMPARE(files.at(QStringLiteral("MyFile_1")), expected);
+    QCOMPARE(files.at(QStringLiteral("MyFile_1")).first, expected);
 }
 
 void ReconstructorTests::test_multipleFiles()

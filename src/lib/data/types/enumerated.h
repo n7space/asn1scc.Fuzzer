@@ -64,7 +64,7 @@ private:
 class Enumerated : public Type,
                    public WithConstraints,
                    public IntegerAcnParameters,
-                   public Constraints::WithValueConstraints<Data::EnumValue>
+                   public Constraints::WithConstraints<Data::EnumValue>
 {
 public:
     Enumerated();

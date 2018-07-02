@@ -25,76 +25,77 @@
 ****************************************************************************/
 #pragma once
 
-#include "rangeconstraint.h"
+#include "constraint.h"
+#include "constraintvisitor.h"
 
 namespace MalTester {
 namespace Data {
 namespace Constraints {
 
-template<typename T>
-class AndConstraint : public RangeConstraint<T>
+template<typename ValueType>
+class AndConstraint : public Constraint<ValueType>
 {
 public:
-    AndConstraint(std::unique_ptr<RangeConstraint<T>> leftChild,
-                  std::unique_ptr<RangeConstraint<T>> rightChild)
+    AndConstraint(std::unique_ptr<Constraint<ValueType>> leftChild,
+                  std::unique_ptr<Constraint<ValueType>> rightChild)
         : m_leftChild(std::move(leftChild))
         , m_rightChild(std::move(rightChild))
     {}
     ~AndConstraint() override = default;
 
-    QString asString() const override
-    {
-        return QStringLiteral("(%1 ^ %2)").arg(m_leftChild->asString()).arg(m_rightChild->asString());
-    }
+    const Constraint<ValueType> &leftChild() const { return *m_leftChild; }
+    const Constraint<ValueType> &rightChild() const { return *m_rightChild; }
 
-    RangeList<typename RangeConstraint<T>::ValueType> asRangeList() const override
+    void accept(ConstraintVisitor<ValueType> &visitor) const { visitor.visit(*this); }
+
+    /*    RangeList<typename RangeConstraint<T>::ValueType> asRangeList() const override
     {
         auto list = m_leftChild->asRangeList();
         list.intersect(m_rightChild->asRangeList());
         return list;
-    }
+    }*/
 
-    std::unique_ptr<RangeConstraint<T>> clone() const override
+    std::unique_ptr<Constraint<ValueType>> clone() const override
     {
         return std::make_unique<AndConstraint>(m_leftChild->clone(), m_rightChild->clone());
     }
 
 private:
-    std::unique_ptr<RangeConstraint<T>> m_leftChild;
-    std::unique_ptr<RangeConstraint<T>> m_rightChild;
+    std::unique_ptr<Constraint<ValueType>> m_leftChild;
+    std::unique_ptr<Constraint<ValueType>> m_rightChild;
 };
 
-template<typename T>
-class OrConstraint : public RangeConstraint<T>
+template<typename ValueType>
+class OrConstraint : public Constraint<ValueType>
 {
 public:
-    OrConstraint(std::unique_ptr<RangeConstraint<T>> leftChild,
-                 std::unique_ptr<RangeConstraint<T>> rightChild)
+    OrConstraint(std::unique_ptr<Constraint<ValueType>> leftChild,
+                 std::unique_ptr<Constraint<ValueType>> rightChild)
         : m_leftChild(std::move(leftChild))
         , m_rightChild(std::move(rightChild))
     {}
     ~OrConstraint() override = default;
 
-    QString asString() const override
-    {
-        return QStringLiteral("(%1 | %2)").arg(m_leftChild->asString()).arg(m_rightChild->asString());
-    }
+    const Constraint<ValueType> &leftChild() const { return *m_leftChild; }
+    const Constraint<ValueType> &rightChild() const { return *m_rightChild; }
 
-    RangeList<typename RangeConstraint<T>::ValueType> asRangeList() const override
+    void accept(ConstraintVisitor<ValueType> &visitor) const { visitor.visit(*this); }
+
+    /*    RangeList<typename RangeConstraint<T>::ValueType> asRangeList() const override
     {
         auto list = m_leftChild->asRangeList();
         list.merge(m_rightChild->asRangeList());
         return list;
-    }
+    }*/
 
-    std::unique_ptr<RangeConstraint<T>> clone() const override
+    std::unique_ptr<Constraint<ValueType>> clone() const override
     {
         return std::make_unique<OrConstraint>(m_leftChild->clone(), m_rightChild->clone());
     }
 
 private:
-    std::unique_ptr<RangeConstraint<T>> m_leftChild;
-    std::unique_ptr<RangeConstraint<T>> m_rightChild;
+    std::unique_ptr<Constraint<ValueType>> m_leftChild;
+    std::unique_ptr<Constraint<ValueType>> m_rightChild;
 };
 
 } // namespace Constraints

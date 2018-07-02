@@ -23,28 +23,31 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-#include "elementconstraint_tests.h"
+#pragma once
 
-#include <QtTest>
+#include <QObject>
 
-#include <data/values.h>
+namespace MalTester {
+namespace Data {
+namespace Constraints {
+namespace Tests {
 
-#include <data/constraints/elementconstraint.h>
-#include <data/constraints/rangeconstraintliteral.h>
-
-using namespace MalTester::Data::Constraints::Tests;
-using namespace MalTester::Data::Constraints;
-using namespace MalTester::Data;
-
-ElementConstraintTests::ElementConstraintTests(QObject *parent)
-    : QObject(parent)
-{}
-
-void ElementConstraintTests::test_asString()
+class PrintingVisitorTests : public QObject
 {
-    auto c = std::make_unique<RangeConstraintLiteral<IntegerValue>>(Range<int>{10, 20});
+    Q_OBJECT
+public:
+    explicit PrintingVisitorTests(QObject *parent = 0);
 
-    ElementConstraint<IntegerValue> a(std::move(c));
+private slots:
+    void test_fromConstraintToString();
+    void test_sizeConstraintToString();
+    void test_rangeConstraintToString();
+    void test_andConstraintToString();
+    void test_orConstraintToString();
+    void test_listToString();
+};
 
-    QCOMPARE(a.asString(), QLatin1Literal("FROM(10 .. 20)"));
-}
+} // namespace Tests
+} // namespace Constraints
+} // namespace Data
+} // namespace MalTester

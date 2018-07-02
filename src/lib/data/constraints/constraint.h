@@ -25,36 +25,26 @@
 ****************************************************************************/
 #pragma once
 
-#include <QString>
+#include <memory>
 
-#include "range.h"
-#include "rangeconstraint.h"
+#include <QString>
 
 namespace MalTester {
 namespace Data {
 namespace Constraints {
 
-template<typename T>
-class RangeConstraintLiteral : public RangeConstraint<T>
+template<typename ValueType>
+class ConstraintVisitor;
+
+template<typename ValueType>
+class Constraint
 {
 public:
-    explicit RangeConstraintLiteral(const Range<typename RangeConstraint<T>::ValueType> &range)
-        : m_range(range)
-    {}
-    ~RangeConstraintLiteral() override = default;
+    virtual ~Constraint() = default;
 
-    QString asString() const override { return m_range.asString(); }
-    RangeList<typename RangeConstraint<T>::ValueType> asRangeList() const override
-    {
-        return {m_range};
-    }
-    std::unique_ptr<RangeConstraint<T>> clone() const override
-    {
-        return std::make_unique<RangeConstraintLiteral>(m_range);
-    }
+    virtual std::unique_ptr<Constraint<ValueType>> clone() const = 0;
 
-private:
-    Range<typename RangeConstraint<T>::ValueType> m_range;
+    virtual void accept(ConstraintVisitor<ValueType> &visitor) const = 0;
 };
 
 } // namespace Constraints

@@ -31,13 +31,15 @@
 #include <data/types/string.h>
 #include <data/types/type.h>
 
+#include <data/constraints/withconstraints.h>
+
 namespace MalTester {
 namespace Data {
 namespace Types {
 
 class NumericString : public String,
                       public AsciiStringAcnParameters,
-                      public Constraints::WithValueConstraints<Data::StringValue>
+                      public Constraints::WithConstraints<Data::StringValue>
 {
 public:
     NumericString() = default;

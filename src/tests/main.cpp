@@ -27,12 +27,12 @@
 #include <QObject>
 #include <QTest>
 
+#include "astxmlconstraintparser_tests.h"
 #include "astxmlparser_tests.h"
 #include "nodereconstructingvisitor_tests.h"
 #include "reconstructor_tests.h"
 
-#include "data/constraints/elementconstraint_tests.h"
-#include "data/constraints/logicoperators_tests.h"
+#include "data/constraints/printingvisitor_tests.h"
 #include "data/constraints/range_tests.h"
 #include "data/constraints/rangelist_tests.h"
 
@@ -52,8 +52,7 @@ int main(int argc, char *argv[])
     runTest(new MalTester::Data::ExpressionTree::Tests::ExpressionTreeTests);
     runTest(new MalTester::Data::Constraints::Tests::RangeTests);
     runTest(new MalTester::Data::Constraints::Tests::RangeListTests);
-    runTest(new MalTester::Data::Constraints::Tests::LogicOperatorsTests);
-    runTest(new MalTester::Data::Constraints::Tests::ElementConstraintTests);
+    runTest(new MalTester::Data::Constraints::Tests::PrintingVisitorTests);
 
     return ret;
 }

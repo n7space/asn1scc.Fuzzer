@@ -116,11 +116,16 @@ HEADERS += \
     \
     data/constraints/range.h \
     data/constraints/rangelist.h \
+    data/constraints/constraint.h \
     data/constraints/rangeconstraint.h \
-    data/constraints/rangeconstraintliteral.h \
     data/constraints/logicoperators.h \
+    data/constraints/fromconstraint.h \
+    data/constraints/sizeconstraint.h \
+    data/constraints/constraintlist.h \
     data/constraints/withconstraints.h \
-    data/constraints/elementconstraint.h \
+    data/constraints/constraintvisitor.h \
+    data/constraints/printingvisitor.h \
+    data/constraints/rangelistingvisitor.h \
     \
     astxmlparser.h \
     runparameters.h \

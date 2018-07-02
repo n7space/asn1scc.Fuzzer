@@ -40,7 +40,7 @@ enum class RealEncoding { IEEE754_1985_32, IEEE754_1985_64, unspecified };
 
 class Real : public Type,
              public WithConstraints,
-             public Constraints::WithValueConstraints<Data::RealValue>
+             public Constraints::WithConstraints<Data::RealValue>
 {
 public:
     Real();

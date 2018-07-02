@@ -23,39 +23,44 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-#include "logicoperators_tests.h"
+#pragma once
 
-#include <QtTest>
+namespace MalTester {
+namespace Data {
+namespace Constraints {
 
-#include <data/values.h>
+template<typename ValueType>
+class ConstraintList;
 
-#include <data/constraints/logicoperators.h>
-#include <data/constraints/rangeconstraintliteral.h>
+template<typename ValueType>
+class RangeConstraint;
 
-using namespace MalTester::Data::Constraints::Tests;
-using namespace MalTester::Data::Constraints;
-using namespace MalTester::Data;
+template<typename ValueType>
+class AndConstraint;
 
-LogicOperatorsTests::LogicOperatorsTests(QObject *parent)
-    : QObject(parent)
-{}
+template<typename ValueType>
+class OrConstraint;
 
-void LogicOperatorsTests::test_andAsString()
+template<typename ValueType>
+class FromConstraint;
+
+template<typename ValueType>
+class SizeConstraint;
+
+template<typename ValueType>
+class ConstraintVisitor
 {
-    auto l = std::make_unique<RangeConstraintLiteral<IntegerValue>>(Range<int>{10, 20});
-    auto r = std::make_unique<RangeConstraintLiteral<IntegerValue>>(Range<int>{50, 60});
+public:
+    virtual ~ConstraintVisitor() = default;
 
-    AndConstraint<IntegerValue> a(std::move(l), std::move(r));
+    virtual void visit(const RangeConstraint<ValueType> &constraint) = 0;
+    virtual void visit(const AndConstraint<ValueType> &constraint) = 0;
+    virtual void visit(const OrConstraint<ValueType> &constraint) = 0;
+    virtual void visit(const FromConstraint<ValueType> &constraint) = 0;
+    virtual void visit(const SizeConstraint<ValueType> &constraint) = 0;
+    virtual void visit(const ConstraintList<ValueType> &constraint) = 0;
+};
 
-    QCOMPARE(a.asString(), QLatin1Literal("(10 .. 20 ^ 50 .. 60)"));
-}
-
-void LogicOperatorsTests::test_orAsString()
-{
-    auto l = std::make_unique<RangeConstraintLiteral<IntegerValue>>(Range<int>{10, 20});
-    auto r = std::make_unique<RangeConstraintLiteral<IntegerValue>>(Range<int>{50, 60});
-
-    OrConstraint<IntegerValue> o(std::move(l), std::move(r));
-
-    QCOMPARE(o.asString(), QLatin1Literal("(10 .. 20 | 50 .. 60)"));
-}
+} // namespace Constraints
+} // namespace Data
+} // namespace MalTester

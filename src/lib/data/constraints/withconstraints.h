@@ -29,54 +29,31 @@
 
 #include <data/values.h>
 
-#include "rangeconstraint.h"
+#include "constraint.h"
 
 namespace MalTester {
 namespace Data {
 namespace Constraints {
 
-template<typename T>
-class WithValueConstraints
+template<typename ValueType>
+class WithConstraints
 {
 public:
-    using ValueConstraintsType = RangeConstraint<T>;
+    using Constraints = Constraint<ValueType>;
 
-    WithValueConstraints() = default;
-    WithValueConstraints(const WithValueConstraints &other);
+    WithConstraints() = default;
+    WithConstraints(const WithConstraints &other);
 
-    void setValueConstraints(std::unique_ptr<ValueConstraintsType> c)
-    {
-        m_constraints = std::move(c);
-    }
-    bool hasValueConstraints() const { return m_constraints != nullptr; }
-    const ValueConstraintsType &valueConstraints() const { return *m_constraints; }
+    void setXConstraints(std::unique_ptr<Constraints> c) { m_constraints = std::move(c); }
+    bool hasXConstraints() const { return m_constraints != nullptr; }
+    const Constraints &Xconstraints() const { return *m_constraints; }
 
 private:
-    std::unique_ptr<RangeConstraint<T>> m_constraints;
+    std::unique_ptr<Constraints> m_constraints;
 };
 
-class WithSizeConstraints
-{
-public:
-    WithSizeConstraints() = default;
-    WithSizeConstraints(const WithSizeConstraints &other) = default;
-
-    void setSizeConstraints(std::unique_ptr<RangeConstraint<Data::IntegerValue>> c)
-    {
-        m_constraints.setValueConstraints(std::move(c));
-    }
-    bool hasSizeConstraints() const { return m_constraints.hasValueConstraints(); }
-    const RangeConstraint<Data::IntegerValue> &sizeConstraints() const
-    {
-        return m_constraints.valueConstraints();
-    }
-
-private:
-    WithValueConstraints<Data::IntegerValue> m_constraints;
-};
-
-template<typename T>
-WithValueConstraints<T>::WithValueConstraints(const WithValueConstraints &other)
+template<typename ValueType>
+WithConstraints<ValueType>::WithConstraints(const WithConstraints &other)
     : m_constraints(other.m_constraints ? other.m_constraints->clone() : nullptr)
 {}
 

@@ -25,25 +25,46 @@
 ****************************************************************************/
 #pragma once
 
-#include <QObject>
+#include <memory>
+
+#include <data/values.h>
+
+#include "constraint.h"
+#include "constraintvisitor.h"
 
 namespace MalTester {
 namespace Data {
 namespace Constraints {
-namespace Tests {
 
-class LogicOperatorsTests : public QObject
+template<typename ValueType>
+class FromConstraint : public Constraint<ValueType>
 {
-    Q_OBJECT
 public:
-    explicit LogicOperatorsTests(QObject *parent = 0);
+    FromConstraint(std::unique_ptr<Constraint<Data::StringValue>> innerConstraints)
+        : m_innerContraints(std::move(innerConstraints))
+    {}
 
-private slots:
-    void test_andAsString();
-    void test_orAsString();
+    const Constraint<Data::StringValue> &innerConstraints() const { return *m_innerContraints; }
+
+    void accept(ConstraintVisitor<ValueType> &visitor) const { visitor.visit(*this); }
+
+    std::unique_ptr<Constraint<ValueType>> clone() const override;
+
+    /*RangeList<typename RangeConstraint<T>::ValueType> asRangeList() const override
+    {
+        throw std::runtime_error("Unable to flatten element constaint");
+    }*/
+
+private:
+    std::unique_ptr<Constraint<Data::StringValue>> m_innerContraints;
 };
 
-} // namespace Tests
+template<typename ValueType>
+std::unique_ptr<Constraint<ValueType>> FromConstraint<ValueType>::clone() const
+{
+    return std::make_unique<FromConstraint<ValueType>>(m_innerContraints->clone());
+}
+
 } // namespace Constraints
 } // namespace Data
 } // namespace MalTester

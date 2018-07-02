@@ -36,7 +36,9 @@ namespace MalTester {
 namespace Data {
 namespace Types {
 
-class SequenceOf : public Type, public WithConstraints, public Constraints::WithSizeConstraints
+class SequenceOf : public Type,
+                   public WithConstraints,
+                   public Constraints::WithConstraints<Data::IntegerValue>
 {
 public:
     SequenceOf() = default;

@@ -29,13 +29,11 @@
 
 #include <data/types/type.h>
 
-#include <data/constraints/withconstraints.h>
-
 namespace MalTester {
 namespace Data {
 namespace Types {
 
-class String : public Type, public WithConstraints, public Constraints::WithSizeConstraints
+class String : public Type, public WithConstraints
 {
 protected:
     String() = default;

@@ -25,8 +25,6 @@
 ****************************************************************************/
 #pragma once
 
-#include <QString>
-
 namespace MalTester {
 namespace Data {
 namespace Constraints {

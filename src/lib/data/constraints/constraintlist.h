@@ -26,46 +26,46 @@
 #pragma once
 
 #include <memory>
-#include <stdexcept>
+#include <vector>
 
-#include <QString>
-
-#include "rangeconstraint.h"
+#include "constraint.h"
+#include "constraintvisitor.h"
 
 namespace MalTester {
 namespace Data {
 namespace Constraints {
 
-template<typename T>
-class ElementConstraint : public RangeConstraint<T>
+template<typename ValueType>
+class ConstraintList : public Constraint<ValueType>
 {
 public:
-    ElementConstraint(std::unique_ptr<RangeConstraint<T>> elementConstraints)
-        : m_elementContraints(std::move(elementConstraints))
-    {}
+    ConstraintList() {}
 
-    QString asString() const override;
-    std::unique_ptr<RangeConstraint<T>> clone() const override;
-
-    RangeList<typename RangeConstraint<T>::ValueType> asRangeList() const override
+    const std::vector<std::unique_ptr<Constraint<ValueType>>> &constraints() const
     {
-        throw std::runtime_error("Unable to flatten element constaint");
+        return m_constraints;
     }
 
+    void append(std::unique_ptr<Constraint<ValueType>> c)
+    {
+        m_constraints.emplace_back(std::move(c));
+    }
+
+    void accept(ConstraintVisitor<ValueType> &visitor) const { visitor.visit(*this); }
+
+    std::unique_ptr<Constraint<ValueType>> clone() const override;
+
 private:
-    std::unique_ptr<RangeConstraint<T>> m_elementContraints;
+    std::vector<std::unique_ptr<Constraint<ValueType>>> m_constraints;
 };
 
-template<typename T>
-QString ElementConstraint<T>::asString() const
+template<typename ValueType>
+std::unique_ptr<Constraint<ValueType>> ConstraintList<ValueType>::clone() const
 {
-    return "FROM(" + m_elementContraints->asString() + ")";
-}
-
-template<typename T>
-std::unique_ptr<RangeConstraint<T>> ElementConstraint<T>::clone() const
-{
-    return std::make_unique<ElementConstraint<T>>(m_elementContraints->clone());
+    auto l = std::make_unique<ConstraintList<ValueType>>();
+    for (const auto &c : m_constraints)
+        l->append(c->clone());
+    return l;
 }
 
 } // namespace Constraints

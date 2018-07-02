@@ -30,11 +30,13 @@
 #include <data/types/string.h>
 #include <data/types/type.h>
 
+#include <data/constraints/withconstraints.h>
+
 namespace MalTester {
 namespace Data {
 namespace Types {
 
-class BitString : public String, public Constraints::WithValueConstraints<Data::BitStringValue>
+class BitString : public String, public Constraints::WithConstraints<Data::BitStringValue>
 {
 public:
     BitString() = default;

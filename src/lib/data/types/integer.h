@@ -27,7 +27,6 @@
 
 #include <data/constraints/withconstraints.h>
 
-#include "constraints.h"
 #include "integeracnparams.h"
 #include "type.h"
 
@@ -36,7 +35,6 @@ namespace Data {
 namespace Types {
 
 class Integer : public Type,
-                public WithConstraints,
                 public IntegerAcnParameters,
                 public Constraints::WithConstraints<Data::IntegerValue>
 {

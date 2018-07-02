@@ -61,12 +61,6 @@ public:
 
     std::map<QString, std::unique_ptr<Data::File>> takeData() { return std::move(m_data); }
 
-    using ConstraintType = QString;
-    using Constraint = QString;
-
-    using ExpressionNode = Data::ExpressionTree::ExpressionNode;
-    using Range = Data::ExpressionTree::Range;
-
 private:
     void readAstRoot();
     void readAsn1File();
@@ -147,20 +141,8 @@ private:
     void readNumericString(Data::Types::Type &type);
     void readBitString(Data::Types::Type &type);
 
-    void readConstraints(Data::Types::Type &type, const ConstraintType &constraintName);
-
-    void readExpressionTree(Data::Types::Type &type, const ConstraintType &constraintName);
-    const ExpressionNode *readExpressionSubtree(Data::Types::Type &type,
-                                                const ConstraintType &constraintName);
-    const ExpressionNode *readNodeNextChild(Data::Types::Type &type,
-                                            const ConstraintType &constraintName);
-
-    Constraint readValue(const ConstraintType &valName);
-    Range *readRange(Data::Types::Type &type, const ConstraintType &constraintName);
-    Range *createRangeNode(Data::Types::Type &type,
-                           const Constraint &min,
-                           const Constraint &max,
-                           const ConstraintType &constraintName);
+    void findAndReadConstraints(Data::Types::Type &type);
+    void readConstraints(Data::Types::Type &type);
 
     QString readTypeAssignmentAttribute();
     QString readModuleAttribute();

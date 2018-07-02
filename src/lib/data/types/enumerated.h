@@ -30,7 +30,6 @@
 
 #include <data/sourcelocation.h>
 
-#include <data/types/constraints.h>
 #include <data/types/integeracnparams.h>
 #include <data/types/type.h>
 
@@ -62,7 +61,6 @@ private:
 };
 
 class Enumerated : public Type,
-                   public WithConstraints,
                    public IntegerAcnParameters,
                    public Constraints::WithConstraints<Data::EnumValue>
 {

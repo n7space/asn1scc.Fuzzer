@@ -40,6 +40,7 @@ class ConstraintList : public Constraint<ValueType>
 {
 public:
     ConstraintList() {}
+    ConstraintList(const ConstraintList &other);
 
     const std::vector<std::unique_ptr<Constraint<ValueType>>> &constraints() const
     {
@@ -60,12 +61,16 @@ private:
 };
 
 template<typename ValueType>
+ConstraintList<ValueType>::ConstraintList(const ConstraintList &other)
+{
+    for (const auto &c : other.constraints())
+        append(c->clone());
+}
+
+template<typename ValueType>
 std::unique_ptr<Constraint<ValueType>> ConstraintList<ValueType>::clone() const
 {
-    auto l = std::make_unique<ConstraintList<ValueType>>();
-    for (const auto &c : m_constraints)
-        l->append(c->clone());
-    return l;
+    return std::make_unique<ConstraintList<ValueType>>(*this);
 }
 
 } // namespace Constraints

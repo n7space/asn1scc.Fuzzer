@@ -53,7 +53,7 @@
 #include <data/types/typevisitorwithvalue.h>
 #include <data/types/userdefinedtype.h>
 
-#include <data/expressiontree/ranges.h>
+#include "astxmlconstraintparser.h"
 
 using namespace MalTester;
 
@@ -171,198 +171,6 @@ private:
     }
 
     const QXmlStreamAttributes &m_attributes;
-};
-
-class SubtreeAddingVisitor : public Data::Types::TypeMutatingVisitor
-{
-public:
-    SubtreeAddingVisitor(const Data::ExpressionTree::ExpressionNode *node)
-        : m_node(node)
-    {}
-
-    ~SubtreeAddingVisitor() override = default;
-
-    void visit(Data::Types::Boolean &type) override { Q_UNUSED(type); }
-    void visit(Data::Types::Null &type) override { Q_UNUSED(type); }
-
-    void visit(Data::Types::BitString &type) override { type.constraints().appendSubtree(m_node); }
-    void visit(Data::Types::OctetString &type) override
-    {
-        type.constraints().appendSubtree(m_node);
-    }
-    void visit(Data::Types::IA5String &type) override { type.constraints().appendSubtree(m_node); }
-    void visit(Data::Types::NumericString &type) override
-    {
-        type.constraints().appendSubtree(m_node);
-    }
-    void visit(Data::Types::Enumerated &type) override { type.constraints().appendSubtree(m_node); }
-
-    void visit(Data::Types::Choice &type) override { Q_UNUSED(type); }
-    void visit(Data::Types::Sequence &type) override { Q_UNUSED(type); }
-
-    void visit(Data::Types::SequenceOf &type) override { type.constraints().appendSubtree(m_node); }
-    void visit(Data::Types::Real &type) override { type.constraints().appendSubtree(m_node); }
-
-    void visit(Data::Types::LabelType &type) override { Q_UNUSED(type); }
-
-    void visit(Data::Types::Integer &type) override { type.constraints().appendSubtree(m_node); }
-
-    void visit(Data::Types::UserdefinedType &type) override { Q_UNUSED(type); }
-
-private:
-    const AstXmlParser::ExpressionNode *m_node;
-};
-
-class RangeCreatingVisitor : public Data::Types::TypeVisitorWithValue<Data::ExpressionTree::Range *>
-{
-public:
-    using Range = AstXmlParser::Range;
-
-    RangeCreatingVisitor(QXmlStreamReader &xmlReader,
-                         const QString &begin,
-                         const QString &end,
-                         const AstXmlParser::ConstraintType constraintType)
-        : m_xmlReader(xmlReader)
-        , m_begin(begin)
-        , m_end(end)
-        , m_constraintType(constraintType)
-    {}
-
-    ~RangeCreatingVisitor() override {}
-
-    Range *valueFor(const Data::Types::Boolean &type) const override
-    {
-        Q_UNUSED(type);
-        return nullptr;
-    }
-
-    Range *valueFor(const Data::Types::Null &type) const override
-    {
-        Q_UNUSED(type);
-        return nullptr;
-    }
-
-    Range *valueFor(const Data::Types::BitString &type) const override
-    {
-        Q_UNUSED(type);
-        return createStringRange(QStringLiteral("IntegerValue"), QStringLiteral("BitStringValue"));
-    }
-
-    Range *valueFor(const Data::Types::OctetString &type) const override
-    {
-        Q_UNUSED(type);
-        return createStringRange(QStringLiteral("IntegerValue"), QStringLiteral("OctetStringValue"));
-    }
-
-    Range *valueFor(const Data::Types::IA5String &type) const override
-    {
-        Q_UNUSED(type);
-        return createStringRange(QStringLiteral("IntegerValue"), QStringLiteral("StringValue"));
-    }
-
-    Range *valueFor(const Data::Types::NumericString &type) const override
-    {
-        Q_UNUSED(type);
-        return createStringRange(QStringLiteral("IntegerValue"), QStringLiteral("StringValue"));
-    }
-
-    Range *valueFor(const Data::Types::Enumerated &type) const override
-    {
-        const auto &items = type.items();
-        if (!items.contains(m_begin)) {
-            m_xmlReader.raiseError("Incorrect ENUMERATED value: " + m_begin);
-            return nullptr;
-        }
-
-        const auto val = items.value(m_begin).value();
-        return new Data::ExpressionTree::EnumeratedRange(val, val);
-    }
-
-    Range *valueFor(const Data::Types::Choice &type) const override
-    {
-        Q_UNUSED(type);
-        return nullptr;
-    }
-    Range *valueFor(const Data::Types::Sequence &type) const override
-    {
-        Q_UNUSED(type);
-        return nullptr;
-    }
-
-    Range *valueFor(const Data::Types::SequenceOf &type) const override
-    {
-        Q_UNUSED(type);
-        return createIntegerRange("Incorrect SIZE range for SEQUENCE OF");
-    }
-
-    Range *valueFor(const Data::Types::Real &type) const override
-    {
-        Q_UNUSED(type);
-        bool beginOk = false;
-        bool endOk = false;
-        auto range = new Data::ExpressionTree::RealRange(m_begin.toDouble(&beginOk),
-                                                         m_end.toDouble(&endOk));
-        if (!beginOk || !endOk) {
-            m_xmlReader.raiseError("Incorrect range for REAL: " + m_begin + " " + m_end);
-            return nullptr;
-        }
-
-        return range;
-    }
-
-    Range *valueFor(const Data::Types::LabelType &type) const override
-    {
-        Q_UNUSED(type);
-        return nullptr;
-    }
-
-    Range *valueFor(const Data::Types::Integer &type) const override
-    {
-        Q_UNUSED(type);
-        return createIntegerRange("Incorrect range for INTEGER");
-    }
-
-    Range *valueFor(const Data::Types::UserdefinedType &type) const override
-    {
-        Q_UNUSED(type);
-        return nullptr;
-    }
-
-private:
-    Range *createStringRange(const QString &intConstraintName,
-                             const QString &stringConstraintName) const
-    {
-        if (m_constraintType == intConstraintName)
-            return createIntegerRange("Incorrect range for string type");
-
-        if (m_constraintType == stringConstraintName)
-            return new Data::ExpressionTree::StringRange(m_begin,
-                                                         m_end,
-                                                         getPrinterFunction(stringConstraintName));
-
-        return nullptr;
-    }
-
-    Range *createIntegerRange(const QString &message) const
-    {
-        bool beginOk = false;
-        bool endOk = false;
-
-        auto range = new Data::ExpressionTree::IntegerRange(m_begin.toInt(&beginOk),
-                                                            m_end.toInt(&endOk));
-        if (!beginOk || !endOk) {
-            m_xmlReader.raiseError(message + ": " + m_begin + " " + m_end);
-            return nullptr;
-        }
-
-        return range;
-    }
-
-    QXmlStreamReader &m_xmlReader;
-
-    const QString m_begin;
-    const QString m_end;
-    const AstXmlParser::ConstraintType m_constraintType;
 };
 
 class ChildItemAddingVisitor : public Data::Types::TypeMutatingVisitor
@@ -1061,9 +869,9 @@ void AstXmlParser::readAcnComponent(Data::Types::Type &type)
 void AstXmlParser::readSequenceOf(Data::Types::Type &type)
 {
     while (m_xmlReader.readNextStartElement()) {
-        if (m_xmlReader.name() == QStringLiteral("Constraints")) {
-            readExpressionTree(type, QStringLiteral("IntegerValue"));
-        } else if (m_xmlReader.name() == QStringLiteral("Asn1Type")) {
+        if (m_xmlReader.name() == QStringLiteral("Constraints"))
+            readConstraints(type);
+        else if (m_xmlReader.name() == QStringLiteral("Asn1Type")) {
             auto attributes = m_xmlReader.attributes();
             auto childType = readType();
 
@@ -1090,12 +898,12 @@ void AstXmlParser::readChoice(Data::Types::Type &type)
 
 void AstXmlParser::readInteger(Data::Types::Type &type)
 {
-    readConstraints(type, QStringLiteral("IntegerValue"));
+    findAndReadConstraints(type);
 }
 
 void AstXmlParser::readReal(Data::Types::Type &type)
 {
-    readConstraints(type, QStringLiteral("RealValue"));
+    findAndReadConstraints(type);
 }
 
 void AstXmlParser::readEnumerated(Data::Types::Type &type)
@@ -1104,7 +912,7 @@ void AstXmlParser::readEnumerated(Data::Types::Type &type)
         if (m_xmlReader.name() == QStringLiteral("Items"))
             readEnumeratedItem(type);
         else if (m_xmlReader.name() == QStringLiteral("Constraints"))
-            readExpressionTree(type, QStringLiteral("EnumValue"));
+            readConstraints(type);
         else
             m_xmlReader.skipCurrentElement();
     }
@@ -1112,22 +920,22 @@ void AstXmlParser::readEnumerated(Data::Types::Type &type)
 
 void AstXmlParser::readOctetString(Data::Types::Type &type)
 {
-    readConstraints(type, QStringLiteral("OctetStringValue"));
+    findAndReadConstraints(type);
 }
 
 void AstXmlParser::readIA5String(Data::Types::Type &type)
 {
-    readConstraints(type, QStringLiteral("StringValue"));
+    findAndReadConstraints(type);
 }
 
 void AstXmlParser::readNumericString(Data::Types::Type &type)
 {
-    readConstraints(type, QStringLiteral("StringValue"));
+    findAndReadConstraints(type);
 }
 
 void AstXmlParser::readBitString(Data::Types::Type &type)
 {
-    readConstraints(type, QStringLiteral("BitStringValue"));
+    findAndReadConstraints(type);
 }
 
 void AstXmlParser::readEnumeratedItem(Data::Types::Type &type)
@@ -1154,117 +962,81 @@ void AstXmlParser::readReferenceType(Data::Types::Type &type)
     }
 }
 
-void AstXmlParser::readConstraints(Data::Types::Type &type, const ConstraintType &constraintName)
+namespace {
+class ConstraintReadingVisitor : public Data::Types::TypeMutatingVisitor
+{
+public:
+    ConstraintReadingVisitor(QXmlStreamReader &xmlReader)
+        : m_xmlReader(xmlReader)
+    {}
+
+    void visit(Data::Types::Boolean &type) override { readConstraints<Data::BooleanValue>(type); }
+
+    void visit(Data::Types::Null &type) override { Q_UNUSED(type); }
+
+    void visit(Data::Types::BitString &type) override
+    {
+        readConstraints<Data::BitStringValue>(type);
+    }
+
+    void visit(Data::Types::OctetString &type) override
+    {
+        readConstraints<Data::OctetStringValue>(type);
+    }
+
+    void visit(Data::Types::IA5String &type) override { readConstraints<Data::StringValue>(type); }
+
+    void visit(Data::Types::NumericString &type) override
+    {
+        readConstraints<Data::StringValue>(type);
+    }
+
+    void visit(Data::Types::Enumerated &type) override { readConstraints<Data::EnumValue>(type); }
+
+    void visit(Data::Types::Choice &type) override { Q_UNUSED(type); }
+
+    void visit(Data::Types::Sequence &type) override { Q_UNUSED(type); }
+
+    void visit(Data::Types::SequenceOf &type) override
+    {
+        // any value constraint would be valid, only size matters
+        readConstraints<Data::IntegerValue>(type);
+    }
+
+    void visit(Data::Types::Real &type) override { readConstraints<Data::RealValue>(type); }
+
+    void visit(Data::Types::LabelType &type) override { Q_UNUSED(type); }
+
+    void visit(Data::Types::Integer &type) override { readConstraints<Data::IntegerValue>(type); }
+
+    void visit(Data::Types::UserdefinedType &type) override { Q_UNUSED(type); }
+
+private:
+    template<typename T>
+    void readConstraints(Data::Constraints::WithConstraints<T> &type) const
+    {
+        AstXmlConstraintParser<T> parser(m_xmlReader, type.constraints());
+        parser.parse();
+    }
+
+    QXmlStreamReader &m_xmlReader;
+};
+} // namespace
+
+void AstXmlParser::findAndReadConstraints(Data::Types::Type &type)
 {
     while (m_xmlReader.readNextStartElement()) {
-        if (m_xmlReader.name() == QStringLiteral("Constraints"))
-            readExpressionTree(type, constraintName);
+        if (m_xmlReader.name() == QLatin1Literal("Constraints"))
+            readConstraints(type);
         else
             m_xmlReader.skipCurrentElement();
     }
 }
 
-void AstXmlParser::readExpressionTree(Data::Types::Type &type, const ConstraintType &constraintName)
+void AstXmlParser::readConstraints(Data::Types::Type &type)
 {
-    while (m_xmlReader.readNextStartElement()) {
-        auto subtree = readExpressionSubtree(type, constraintName);
-        if (subtree == nullptr)
-            continue;
-
-        SubtreeAddingVisitor visitor(subtree);
-        type.accept(visitor);
-    }
-}
-
-const AstXmlParser::ExpressionNode *AstXmlParser::readExpressionSubtree(
-    Data::Types::Type &type, const ConstraintType &constraintName)
-{
-    const auto name = m_xmlReader.name().toString();
-
-    if (name == QStringLiteral("SIZE")) {
-        const auto child = readNodeNextChild(type, QStringLiteral("IntegerValue"));
-
-        m_xmlReader.skipCurrentElement();
-        return new Data::ExpressionTree::ConstrainingOperator(name, child);
-    }
-
-    if (name == QStringLiteral("ALPHA")) {
-        const auto child = readNodeNextChild(type, QStringLiteral("StringValue"));
-
-        m_xmlReader.skipCurrentElement();
-        return new Data::ExpressionTree::ConstrainingOperator(name, child);
-    }
-
-    if (name == QStringLiteral("OR") || name == QStringLiteral("AND")) {
-        const auto childLeft = readNodeNextChild(type, constraintName);
-        const auto childRight = readNodeNextChild(type, constraintName);
-
-        m_xmlReader.skipCurrentElement();
-
-        return new Data::ExpressionTree::LogicOperator(name, childLeft, childRight);
-    }
-
-    if (name == QStringLiteral("Range"))
-        return readRange(type, constraintName);
-
-    if (name == constraintName) {
-        Constraint val = m_xmlReader.readElementText();
-        return createRangeNode(type, val, val, constraintName);
-    }
-
-    m_xmlReader.skipCurrentElement();
-
-    return nullptr;
-}
-
-const AstXmlParser::ExpressionNode *AstXmlParser::readNodeNextChild(
-    Data::Types::Type &type, const ConstraintType &constraintName)
-{
-    if (!m_xmlReader.readNextStartElement())
-        return nullptr;
-
-    return readExpressionSubtree(type, constraintName);
-}
-
-AstXmlParser::Range *AstXmlParser::readRange(Data::Types::Type &type,
-                                             const ConstraintType &constraintName)
-{
-    Q_UNUSED(type);
-    Constraint min, max;
-    while (m_xmlReader.readNextStartElement()) {
-        if (m_xmlReader.name() == QStringLiteral("Min"))
-            min = readValue(constraintName);
-        else if (m_xmlReader.name() == QStringLiteral("Max"))
-            max = readValue(constraintName);
-        else
-            m_xmlReader.skipCurrentElement();
-    }
-
-    return createRangeNode(type, min, max, constraintName);
-}
-
-AstXmlParser::Constraint AstXmlParser::readValue(const ConstraintType &constraintName)
-{
-    Constraint val;
-    while (m_xmlReader.readNextStartElement()) {
-        const auto &name = m_xmlReader.name().toString();
-        if (constraintName == name)
-            val = m_xmlReader.readElementText();
-        else
-            m_xmlReader.skipCurrentElement();
-    }
-
-    return val;
-}
-
-AstXmlParser::Range *AstXmlParser::createRangeNode(Data::Types::Type &type,
-                                                   const Constraint &min,
-                                                   const Constraint &max,
-                                                   const ConstraintType &constraintName)
-{
-    RangeCreatingVisitor visitor(m_xmlReader, min, max, constraintName);
+    ConstraintReadingVisitor visitor(m_xmlReader);
     type.accept(visitor);
-    return visitor.value();
 }
 
 bool AstXmlParser::skipToChildElement(const QString &name)

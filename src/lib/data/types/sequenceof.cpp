@@ -43,8 +43,7 @@ void SequenceOf::accept(TypeReadingVisitor &visitor) const
 
 SequenceOf::SequenceOf(const SequenceOf &other)
     : Type(other)
-    , MalTester::Data::Types::WithConstraints(other)
-    , MalTester::Data::Constraints::WithConstraints<Data::IntegerValue>(other)
+    , Data::Constraints::WithConstraints<Data::IntegerValue>(other)
     , m_acnSize(other.m_acnSize)
     , m_itemsType(other.m_itemsType->clone())
 {}

@@ -29,7 +29,7 @@
 
 #include <data/values.h>
 
-#include "constraint.h"
+#include "constraintlist.h"
 
 namespace MalTester {
 namespace Data {
@@ -39,23 +39,17 @@ template<typename ValueType>
 class WithConstraints
 {
 public:
-    using Constraints = Constraint<ValueType>;
+    using Constraints = ConstraintList<ValueType>;
 
     WithConstraints() = default;
-    WithConstraints(const WithConstraints &other);
+    WithConstraints(const WithConstraints &other) = default;
 
-    void setXConstraints(std::unique_ptr<Constraints> c) { m_constraints = std::move(c); }
-    bool hasXConstraints() const { return m_constraints != nullptr; }
-    const Constraints &Xconstraints() const { return *m_constraints; }
+    const Constraints &constraints() const { return m_constraints; }
+    Constraints &constraints() { return m_constraints; }
 
 private:
-    std::unique_ptr<Constraints> m_constraints;
+    Constraints m_constraints;
 };
-
-template<typename ValueType>
-WithConstraints<ValueType>::WithConstraints(const WithConstraints &other)
-    : m_constraints(other.m_constraints ? other.m_constraints->clone() : nullptr)
-{}
 
 } // namespace Constraints
 } // namespace Data

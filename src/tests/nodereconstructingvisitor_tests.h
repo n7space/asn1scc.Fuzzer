@@ -30,12 +30,11 @@
 
 #include <QObject>
 
+#include <data/constraints/constraint.h>
 #include <data/definitions.h>
 #include <data/file.h>
 #include <data/project.h>
 #include <data/valueassignment.h>
-
-#include <data/types/constraints.h>
 
 namespace MalTester {
 namespace Tests {
@@ -109,8 +108,9 @@ private:
     std::unique_ptr<Data::TypeAssignment> createSimpleTypeAssignment(
         const QString &astTypeName) const;
 
+    template<typename T>
     std::unique_ptr<Data::TypeAssignment> createTypeAssignmentWithConstraint(
-        const QString &astTypeName, Data::ExpressionTree::ExpressionNode *range) const;
+        const QString &astTypeName, Data::Constraints::Constraint<T> *contraint) const;
 
     QString createMultipleValueValueAssignmentValue() const;
     QString createNamedValueAssignmentValue() const;

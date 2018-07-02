@@ -14,8 +14,6 @@ SOURCES += \
     reconstructor_tests.cpp \
     astxmlconstraintparser_tests.cpp \
     \
-    data/expressiontree/expressiontree_tests.cpp \
-    \
     data/constraints/range_tests.cpp \
     data/constraints/rangelist_tests.cpp \
     data/constraints/printingvisitor_tests.cpp \
@@ -27,8 +25,6 @@ HEADERS += \
     nodereconstructingvisitor_tests.h \
     reconstructor_tests.h \
     astxmlconstraintparser_tests.h \
-    \
-    data/expressiontree/expressiontree_tests.h \
     \
     data/constraints/range_tests.h \
     data/constraints/rangelist_tests.h \

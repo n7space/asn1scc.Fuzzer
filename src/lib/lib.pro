@@ -41,11 +41,6 @@ SOURCES += \
     data/types/real.cpp \
     data/types/asciistringacnparameters.cpp \
     \
-    data/expressiontree/expressiontree.cpp \
-    data/expressiontree/constrainingoperator.cpp \
-    data/expressiontree/logicoperator.cpp \
-    data/expressiontree/ranges.cpp \
-    \
     astxmlparser.cpp \
     astfilegenerator.cpp \
     astfileprocessor.cpp \
@@ -103,16 +98,9 @@ HEADERS += \
     data/types/sequence.h \
     data/types/sequenceof.h \
     data/types/real.h \
-    data/types/constraints.h \
     data/types/string.h \
     data/types/acnparameterizablecomposite.h \
     data/types/asciistringacnparameters.h \
-    \
-    data/expressiontree/ranges.h \
-    data/expressiontree/expressiontree.h \
-    data/expressiontree/expressionnode.h \
-    data/expressiontree/logicoperator.h \
-    data/expressiontree/constrainingoperator.h \
     \
     data/constraints/range.h \
     data/constraints/rangelist.h \

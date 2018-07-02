@@ -27,7 +27,6 @@
 
 #include <QString>
 
-#include "constraints.h"
 #include "type.h"
 
 #include <data/constraints/withconstraints.h>
@@ -36,9 +35,7 @@ namespace MalTester {
 namespace Data {
 namespace Types {
 
-class SequenceOf : public Type,
-                   public WithConstraints,
-                   public Constraints::WithConstraints<Data::IntegerValue>
+class SequenceOf : public Type, public Constraints::WithConstraints<Data::IntegerValue>
 {
 public:
     SequenceOf() = default;

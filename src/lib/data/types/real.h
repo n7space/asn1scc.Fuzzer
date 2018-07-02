@@ -29,7 +29,6 @@
 
 #include <data/constraints/withconstraints.h>
 
-#include "constraints.h"
 #include "type.h"
 
 namespace MalTester {
@@ -38,9 +37,7 @@ namespace Types {
 
 enum class RealEncoding { IEEE754_1985_32, IEEE754_1985_64, unspecified };
 
-class Real : public Type,
-             public WithConstraints,
-             public Constraints::WithConstraints<Data::RealValue>
+class Real : public Type, public Constraints::WithConstraints<Data::RealValue>
 {
 public:
     Real();

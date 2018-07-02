@@ -96,5 +96,5 @@ void PrintingVisitorTests::test_listToString()
     l.append(std::make_unique<RangeConstraint<IntegerValue>>(Range<int>{10, 20}));
     l.append(std::make_unique<RangeConstraint<IntegerValue>>(Range<int>{100, 200}));
 
-    QCOMPARE(toString(l), QLatin1Literal("(10 .. 20) (100 .. 200) "));
+    QCOMPARE(toString(l), QLatin1Literal("(10 .. 20) (100 .. 200)"));
 }

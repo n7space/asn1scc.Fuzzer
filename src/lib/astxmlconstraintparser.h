@@ -35,6 +35,7 @@
 #include <data/constraints/fromconstraint.h>
 #include <data/constraints/logicoperators.h>
 #include <data/constraints/rangeconstraint.h>
+#include <data/constraints/sizeconstraint.h>
 
 #include <data/values.h>
 
@@ -44,14 +45,32 @@ template<typename T>
 class AstXmlConstraintParser
 {
 public:
-    using Constraints = std::unique_ptr<Data::Constraints::Constraint<T>>;
+    using ConstraintList = Data::Constraints::ConstraintList<T>;
 
-    explicit AstXmlConstraintParser(QXmlStreamReader &xmlReader)
+    explicit AstXmlConstraintParser(QXmlStreamReader &xmlReader, ConstraintList &targetList)
         : m_xmlReader(xmlReader)
+        , m_list(targetList)
     {}
 
     bool parse();
-    bool parseSingleNode();
+
+private:
+    QXmlStreamReader &m_xmlReader;
+    ConstraintList &m_list;
+};
+
+template<typename T>
+class AstXmlConstraintNodeParser
+{
+public:
+    using Constraints = std::unique_ptr<Data::Constraints::Constraint<T>>;
+
+    explicit AstXmlConstraintNodeParser(QXmlStreamReader &xmlReader)
+        : m_xmlReader(xmlReader)
+    {}
+
+    bool parseSingleSubNode();
+    bool parseNextSubNode();
 
     Constraints takeConstraints() { return std::move(m_constraints); }
 
@@ -73,30 +92,26 @@ private:
     Constraints buildRange(const QString &min, const QString &max) const;
 
     QXmlStreamReader &m_xmlReader;
-
     Constraints m_constraints;
 };
 
 template<typename T>
 bool AstXmlConstraintParser<T>::parse()
 {
-    auto list = std::make_unique<Data::Constraints::ConstraintList<T>>();
-
     while (m_xmlReader.readNextStartElement()) {
         if (m_xmlReader.name() == QLatin1Literal("Constraints"))
             return parse();
-        auto node = readNode();
-        if (node == nullptr)
+        AstXmlConstraintNodeParser<T> nodeParser(m_xmlReader);
+        if (!nodeParser.parseNextSubNode())
             return false;
-        list->append(std::move(node));
+        m_list.append(nodeParser.takeConstraints());
     }
 
-    m_constraints = std::move(list);
     return true;
 }
 
 template<typename T>
-bool AstXmlConstraintParser<T>::parseSingleNode()
+bool AstXmlConstraintNodeParser<T>::parseSingleSubNode()
 {
     while (m_xmlReader.readNextStartElement()) {
         if (m_constraints != nullptr) {
@@ -109,7 +124,14 @@ bool AstXmlConstraintParser<T>::parseSingleNode()
 }
 
 template<typename T>
-typename AstXmlConstraintParser<T>::Constraints AstXmlConstraintParser<T>::readNode()
+bool AstXmlConstraintNodeParser<T>::parseNextSubNode()
+{
+    m_constraints = readNode();
+    return m_constraints != nullptr;
+}
+
+template<typename T>
+typename AstXmlConstraintNodeParser<T>::Constraints AstXmlConstraintNodeParser<T>::readNode()
 {
     if (m_xmlReader.name() == T::astNodeName())
         return readValueNode();
@@ -129,13 +151,13 @@ typename AstXmlConstraintParser<T>::Constraints AstXmlConstraintParser<T>::readN
 }
 
 template<typename T>
-typename AstXmlConstraintParser<T>::Constraints AstXmlConstraintParser<T>::readValueNode()
+typename AstXmlConstraintNodeParser<T>::Constraints AstXmlConstraintNodeParser<T>::readValueNode()
 {
     return buildRange(m_xmlReader.readElementText());
 }
 
 template<typename T>
-typename AstXmlConstraintParser<T>::Constraints AstXmlConstraintParser<T>::readRange()
+typename AstXmlConstraintNodeParser<T>::Constraints AstXmlConstraintNodeParser<T>::readRange()
 {
     QString min;
     QString max;
@@ -154,7 +176,7 @@ typename AstXmlConstraintParser<T>::Constraints AstXmlConstraintParser<T>::readR
 }
 
 template<typename T>
-typename AstXmlConstraintParser<T>::Constraints AstXmlConstraintParser<T>::readOr()
+typename AstXmlConstraintNodeParser<T>::Constraints AstXmlConstraintNodeParser<T>::readOr()
 {
     auto left = readNextNode();
     auto right = readNextNode();
@@ -163,7 +185,7 @@ typename AstXmlConstraintParser<T>::Constraints AstXmlConstraintParser<T>::readO
 }
 
 template<typename T>
-typename AstXmlConstraintParser<T>::Constraints AstXmlConstraintParser<T>::readAnd()
+typename AstXmlConstraintNodeParser<T>::Constraints AstXmlConstraintNodeParser<T>::readAnd()
 {
     auto left = readNextNode();
     auto right = readNextNode();
@@ -172,25 +194,25 @@ typename AstXmlConstraintParser<T>::Constraints AstXmlConstraintParser<T>::readA
 }
 
 template<typename T>
-typename AstXmlConstraintParser<T>::Constraints AstXmlConstraintParser<T>::readAlpha()
+typename AstXmlConstraintNodeParser<T>::Constraints AstXmlConstraintNodeParser<T>::readAlpha()
 {
-    AstXmlConstraintParser<Data::StringValue> innerParser(m_xmlReader);
-    if (!innerParser.parseSingleNode())
+    AstXmlConstraintNodeParser<Data::StringValue> innerParser(m_xmlReader);
+    if (!innerParser.parseSingleSubNode())
         return nullptr;
     return std::make_unique<Data::Constraints::FromConstraint<T>>(innerParser.takeConstraints());
 }
 
 template<typename T>
-typename AstXmlConstraintParser<T>::Constraints AstXmlConstraintParser<T>::readSize()
+typename AstXmlConstraintNodeParser<T>::Constraints AstXmlConstraintNodeParser<T>::readSize()
 {
-    AstXmlConstraintParser<Data::IntegerValue> innerParser(m_xmlReader);
-    if (!innerParser.parseSingleNode())
+    AstXmlConstraintNodeParser<Data::IntegerValue> innerParser(m_xmlReader);
+    if (!innerParser.parseSingleSubNode())
         return nullptr;
     return std::make_unique<Data::Constraints::SizeConstraint<T>>(innerParser.takeConstraints());
 }
 
 template<typename T>
-typename AstXmlConstraintParser<T>::Constraints AstXmlConstraintParser<T>::readNextNode()
+typename AstXmlConstraintNodeParser<T>::Constraints AstXmlConstraintNodeParser<T>::readNextNode()
 {
     if (!m_xmlReader.readNextStartElement()) {
         m_xmlReader.raiseError("Missing required sub-node");
@@ -200,7 +222,7 @@ typename AstXmlConstraintParser<T>::Constraints AstXmlConstraintParser<T>::readN
 }
 
 template<typename T>
-QString AstXmlConstraintParser<T>::findValue()
+QString AstXmlConstraintNodeParser<T>::findValue()
 {
     QString val;
 
@@ -214,7 +236,7 @@ QString AstXmlConstraintParser<T>::findValue()
 }
 
 template<typename T>
-typename AstXmlConstraintParser<T>::Constraints AstXmlConstraintParser<T>::buildRange(
+typename AstXmlConstraintNodeParser<T>::Constraints AstXmlConstraintNodeParser<T>::buildRange(
     const QString &val) const
 {
     const auto range = Data::Constraints::Range<typename T::Type>(T::fromAstValue(val));
@@ -222,7 +244,7 @@ typename AstXmlConstraintParser<T>::Constraints AstXmlConstraintParser<T>::build
 }
 
 template<typename T>
-typename AstXmlConstraintParser<T>::Constraints AstXmlConstraintParser<T>::buildRange(
+typename AstXmlConstraintNodeParser<T>::Constraints AstXmlConstraintNodeParser<T>::buildRange(
     const QString &min, const QString &max) const
 {
     const auto range = Data::Constraints::Range<typename T::Type>(T::fromAstValue(min),

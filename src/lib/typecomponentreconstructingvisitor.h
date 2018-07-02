@@ -31,7 +31,6 @@
 #include <data/types/bitstring.h>
 #include <data/types/boolean.h>
 #include <data/types/choice.h>
-#include <data/types/constraints.h>
 #include <data/types/enumerated.h>
 #include <data/types/ia5string.h>
 #include <data/types/integer.h>

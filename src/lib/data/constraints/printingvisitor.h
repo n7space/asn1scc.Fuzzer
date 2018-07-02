@@ -120,10 +120,14 @@ void PrintingVisitor<ValueType>::visit(const SizeConstraint<ValueType> &constrai
 template<typename ValueType>
 void PrintingVisitor<ValueType>::visit(const ConstraintList<ValueType> &constraint)
 {
+    bool first = true;
     for (const auto &c : constraint.constraints()) {
-        m_stream << "(";
+        if (!first)
+            m_stream << ' ';
+        m_stream << '(';
         c->accept(*this);
-        m_stream << ") ";
+        m_stream << ')';
+        first = false;
     }
 }
 

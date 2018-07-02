@@ -25,15 +25,13 @@
 ****************************************************************************/
 #pragma once
 
-#include "constraints.h"
-
 #include <data/types/type.h>
 
 namespace MalTester {
 namespace Data {
 namespace Types {
 
-class String : public Type, public WithConstraints
+class String : public Type
 {
 protected:
     String() = default;

@@ -36,8 +36,6 @@
 #include "data/constraints/range_tests.h"
 #include "data/constraints/rangelist_tests.h"
 
-#include "data/expressiontree/expressiontree_tests.h"
-
 int main(int argc, char *argv[])
 {
     int ret = 0;
@@ -50,7 +48,6 @@ int main(int argc, char *argv[])
     runTest(new MalTester::Tests::NodeReconstructingVisitorTests);
     runTest(new MalTester::Tests::ReconstructorTests);
     runTest(new MalTester::Tests::AstXmlConstraintParserTests);
-    runTest(new MalTester::Data::ExpressionTree::Tests::ExpressionTreeTests);
     runTest(new MalTester::Data::Constraints::Tests::RangeTests);
     runTest(new MalTester::Data::Constraints::Tests::RangeListTests);
     runTest(new MalTester::Data::Constraints::Tests::PrintingVisitorTests);

@@ -50,11 +50,6 @@ public:
 
     std::unique_ptr<Constraint<ValueType>> clone() const override;
 
-    /*RangeList<typename RangeConstraint<T>::ValueType> asRangeList() const override
-    {
-        throw std::runtime_error("Unable to flatten element constaint");
-    }*/
-
 private:
     std::unique_ptr<Constraint<Data::StringValue>> m_innerContraints;
 };

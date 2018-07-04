@@ -58,6 +58,7 @@ struct BooleanValue
     static QLatin1String astNodeName() { return QLatin1Literal("BooleanValue"); }
     static Type fromAstValue(const QString &value) { return value.toUpper() == "TRUE"; }
     static QString asString(Type t) { return t ? "TRUE" : "FALSE"; }
+    static QString reformatString(const QString &value) { return asString(fromAstValue(value)); }
 };
 
 struct StringValue

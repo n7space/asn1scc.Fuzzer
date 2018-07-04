@@ -101,7 +101,7 @@ private:
     QString createSingleValueValueAssignmentValue(
         const QString &typeName,
         const QString &typeValue,
-        std::function<QString(const QString &)> printer) const;
+        std::function<QString(const QString &)> printer = {}) const;
 
     void testSimpleTypeAssignment(const QString &astValue, const QString &asn1Value) const;
 

@@ -2465,7 +2465,7 @@ void AstXmlParserTests::test_octetStringValueAssignment()
 
     auto octetStringType
         = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->value("myOctet");
-    QCOMPARE(octetStringType->value()->asString(), QStringLiteral("'01'H"));
+    QCOMPARE(octetStringType->value()->asString(), QStringLiteral("\"01\"H"));
 }
 
 void AstXmlParserTests::test_iA5StringWithSizeConstraint()
@@ -3071,7 +3071,7 @@ void AstXmlParserTests::test_bitStringValueAssignment()
         R"(</AstRoot>)");
 
     auto type = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->value("myBit");
-    QCOMPARE(type->value()->asString(), QStringLiteral("'101'B"));
+    QCOMPARE(type->value()->asString(), QStringLiteral("\"101\"B"));
 }
 
 void AstXmlParserTests::test_notRelatedConstraintsInNumericString()

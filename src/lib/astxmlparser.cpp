@@ -32,7 +32,6 @@
 #include <data/namedvalue.h>
 #include <data/singlevalue.h>
 #include <data/sourcelocation.h>
-#include <data/valueprinters.h>
 
 #include <data/types/acnparameterizablecomposite.h>
 #include <data/types/bitstring.h>
@@ -60,15 +59,15 @@ using namespace MalTester;
 static std::function<QString(QString)> getPrinterFunction(const QString &name)
 {
     if (name == QStringLiteral("StringValue"))
-        return Data::printAsASCIIString;
+        return Data::StringValue::asString;
     if (name == QStringLiteral("OctetStringValue"))
-        return Data::printAsHexString;
+        return Data::OctetStringValue::asString;
     if (name == QStringLiteral("BitStringValue"))
-        return Data::printAsBitString;
+        return Data::BitStringValue::asString;
     if (name == QStringLiteral("BooleanValue"))
-        return Data::printInBooleanFormat;
+        return Data::BooleanValue::reformatString;
 
-    return Data::printAsSelf;
+    return {};
 }
 
 namespace {

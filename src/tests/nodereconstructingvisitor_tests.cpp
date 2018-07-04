@@ -151,8 +151,7 @@ void NodeReconstructingVisitorTests::test_multipleImportedValues()
 void NodeReconstructingVisitorTests::test_valueAssignmentSimpleValue()
 {
     auto actual = createSingleValueValueAssignmentValue(QStringLiteral("INTEGER"),
-                                                        QStringLiteral("10"),
-                                                        Data::printAsSelf);
+                                                        QStringLiteral("10"));
     QString expected = "myValue INTEGER ::= 10\n";
 
     QCOMPARE(actual, expected);
@@ -162,8 +161,8 @@ void NodeReconstructingVisitorTests::test_valueAssignmentBitString()
 {
     auto actual = createSingleValueValueAssignmentValue(QStringLiteral("BIT_STRING"),
                                                         QStringLiteral("1010"),
-                                                        Data::printAsBitString);
-    QString expected = "myValue BIT STRING ::= '1010'B\n";
+                                                        Data::BitStringValue::asString);
+    QString expected = "myValue BIT STRING ::= \"1010\"B\n";
 
     QCOMPARE(actual, expected);
 }
@@ -172,7 +171,7 @@ void NodeReconstructingVisitorTests::test_valueAssignmentBoolean()
 {
     auto actual = createSingleValueValueAssignmentValue(QStringLiteral("BOOLEAN"),
                                                         QStringLiteral("true"),
-                                                        Data::printInBooleanFormat);
+                                                        Data::BooleanValue::reformatString);
     QString expected = "myValue BOOLEAN ::= TRUE\n";
 
     QCOMPARE(actual, expected);
@@ -182,8 +181,8 @@ void NodeReconstructingVisitorTests::test_valueAssignmentOctetString()
 {
     auto actual = createSingleValueValueAssignmentValue(QStringLiteral("OCTET_STRING"),
                                                         QStringLiteral("1010"),
-                                                        Data::printAsHexString);
-    QString expected = "myValue OCTET STRING ::= '1010'H\n";
+                                                        Data::OctetStringValue::asString);
+    QString expected = "myValue OCTET STRING ::= \"1010\"H\n";
 
     QCOMPARE(actual, expected);
 }
@@ -192,7 +191,7 @@ void NodeReconstructingVisitorTests::test_valueAssignmentIA5String()
 {
     auto actual = createSingleValueValueAssignmentValue(QStringLiteral("IA5String"),
                                                         QStringLiteral("MyValue"),
-                                                        Data::printAsASCIIString);
+                                                        Data::StringValue::asString);
     QString expected = "myValue IA5String ::= \"MyValue\"\n";
 
     QCOMPARE(actual, expected);

@@ -35,7 +35,9 @@ SingleValue::SingleValue(const QString &value, std::function<QString(const QStri
 
 QString SingleValue::asString() const
 {
-    return m_printer(m_value);
+    if (m_printer)
+        return m_printer(m_value);
+    return m_value;
 }
 
 ValuePtr SingleValue::clone() const

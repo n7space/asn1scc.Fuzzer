@@ -75,7 +75,6 @@ HEADERS += \
     data/singlevalue.h \
     data/multiplevalue.h \
     data/namedvalue.h \
-    data/valueprinters.h \
     data/choicevalue.h \
     \
     data/types/typefactory.h \

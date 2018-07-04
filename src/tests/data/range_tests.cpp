@@ -129,9 +129,11 @@ void RangeTests::test_difference()
     QCOMPARE(range.difference(Range<int>{begin - 100, end - 100}), QList<Range<int>>{range});
     QCOMPARE(range.difference(Range<int>{begin + 100, end + 100}), QList<Range<int>>{range});
 
-    QCOMPARE(range.difference(Range<int>{begin, begin + 1}), (QList<Range<int>>{{begin + 1, end}}));
-    QCOMPARE(range.difference(Range<int>{end - 1, end}), (QList<Range<int>>{{begin, end - 1}}));
+    QCOMPARE(range.difference(Range<int>{begin, begin + 1}), (QList<Range<int>>{{begin + 2, end}}));
+    QCOMPARE(range.difference(Range<int>{end - 1, end}), (QList<Range<int>>{{begin, end - 2}}));
 
-    QCOMPARE(range.difference(Range<int>{begin + 1, end - 1}),
+    QCOMPARE(range.difference(Range<int>{begin + 2, end - 2}),
              (QList<Range<int>>{{begin, begin + 1}, {end - 1, end}}));
+    QCOMPARE(range.difference(Range<int>{begin + 1, end - 1}),
+             (QList<Range<int>>{{begin, begin}, {end, end}}));
 }

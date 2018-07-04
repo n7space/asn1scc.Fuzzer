@@ -112,15 +112,15 @@ Range<T> Range<T>::intersection(const Range &other) const
     return {qMax(begin(), other.begin()), qMin(end(), other.end())};
 }
 
-template<typename T>
-QList<Range<T>> Range<T>::difference(const Range &other) const
+template<>
+inline QList<Range<int>> Range<int>::difference(const Range &other) const
 {
     if (!intersects(other))
         return {*this};
     if (intersection(other) == *this)
         return {};
-    const Range first{begin(), other.begin()};
-    const Range second{other.end(), end()};
+    const Range first{begin(), other.begin() - 1};
+    const Range second{other.end() + 1, end()};
     if (other.begin() <= begin())
         return {second};
     if (other.end() >= end())

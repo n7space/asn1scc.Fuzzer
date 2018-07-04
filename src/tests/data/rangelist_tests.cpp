@@ -116,6 +116,7 @@ void RangeListTests::test_difference()
 {
     QCOMPARE(diff({10, 15}, {{10, 15}}), QLatin1Literal(""));
     QCOMPARE(diff({10, 15}, {{100, 150}}), QLatin1Literal("10 .. 15"));
-    QCOMPARE(diff({10, 15}, {{11, 20}, {25, 30}}), QLatin1Literal("10 .. 11"));
-    QCOMPARE(diff({10, 40}, {{15, 20}, {25, 30}}), QLatin1Literal("10 .. 15 | 20 .. 25 | 30 .. 40"));
+    QCOMPARE(diff({10, 15}, {{11, 20}, {25, 30}}), QLatin1Literal("10"));
+    QCOMPARE(diff({10, 40}, {{15, 20}, {25, 30}}), QLatin1Literal("10 .. 14 | 21 .. 24 | 31 .. 40"));
+    QCOMPARE(diff({0, 255}, {{1, 10}}), QLatin1Literal("0 | 11 .. 255"));
 }

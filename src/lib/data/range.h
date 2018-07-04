@@ -25,6 +25,8 @@
 ****************************************************************************/
 #pragma once
 
+#include <QList>
+
 namespace MalTester {
 namespace Data {
 
@@ -51,6 +53,8 @@ public:
 
     bool canMerge(const Range &other) const;
     Range merge(const Range &other) const;
+
+    QList<Range> difference(const Range &other) const;
 
 private:
     T m_begin;
@@ -106,6 +110,22 @@ Range<T> Range<T>::intersection(const Range &other) const
     Q_ASSERT(intersects(other));
 
     return {qMax(begin(), other.begin()), qMin(end(), other.end())};
+}
+
+template<typename T>
+QList<Range<T>> Range<T>::difference(const Range &other) const
+{
+    if (!intersects(other))
+        return {*this};
+    if (intersection(other) == *this)
+        return {};
+    const Range first{begin(), other.begin()};
+    const Range second{other.end(), end()};
+    if (other.begin() <= begin())
+        return {second};
+    if (other.end() >= end())
+        return {first};
+    return {first, second};
 }
 
 } // namespace Data

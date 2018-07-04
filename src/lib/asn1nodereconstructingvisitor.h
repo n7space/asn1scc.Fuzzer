@@ -23,24 +23,37 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-#include "asciistringacnparameters.h"
+#pragma once
 
-using namespace MalTester::Data::Types;
+#include <QString>
+#include <QTextStream>
 
-AsciiStringAcnParameters::AsciiStringAcnParameters()
-    : m_encoding(AsciiStringEncoding::unspecified)
-{}
+#include <data/visitor.h>
 
-AsciiStringEncoding AsciiStringAcnParameters::mapEncoding(const QString &in)
+namespace MalTester {
+
+class Asn1NodeReconstructingVisitor : public Data::Visitor
 {
-    if (in == "ASCII")
-        return AsciiStringEncoding::ASCII;
-    return AsciiStringEncoding::unspecified;
-}
+public:
+    Asn1NodeReconstructingVisitor(QTextStream &outStream);
+    ~Asn1NodeReconstructingVisitor() override = default;
 
-QString AsciiStringAcnParameters::encodingToString(AsciiStringEncoding encoding)
-{
-    if (encoding == AsciiStringEncoding::ASCII)
-        return QStringLiteral("ASCII");
-    return {};
-}
+    void visit(const Data::Definitions &defs) override;
+    void visit(const Data::File &file) override;
+    void visit(const Data::TypeAssignment &type) override;
+    void visit(const Data::ValueAssignment &value) override;
+    void visit(const Data::Project &project) override;
+    void visit(const Data::Root &root) override;
+
+private:
+    template<typename T>
+    void reconstructImportedCollection(const T &types) const;
+    template<typename T>
+    void reconstructCollection(const T &collection) const;
+
+    void reconstructImports(const Data::Definitions &defs) const;
+
+    QTextStream &m_outStream;
+};
+
+} // namespace MalTester

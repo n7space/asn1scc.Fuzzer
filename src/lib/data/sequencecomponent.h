@@ -39,6 +39,8 @@ class SequenceComponent
 {
 public:
     SequenceComponent() = default;
+    virtual ~SequenceComponent() = default;
+
     SequenceComponent(const QString &name, std::unique_ptr<Types::Type> type)
         : m_name(name)
         , m_type(std::move(type))
@@ -49,7 +51,9 @@ public:
         , m_type(other.m_type->clone())
     {}
 
-    virtual ~SequenceComponent() = default;
+    virtual std::unique_ptr<SequenceComponent> clone() const = 0;
+    virtual QString definitionAsString() const = 0;
+    virtual QString presentWhen() const = 0;
 
     const QString &name() const { return m_name; }
 

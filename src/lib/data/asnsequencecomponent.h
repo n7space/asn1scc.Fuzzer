@@ -40,22 +40,16 @@ public:
                          bool optional,
                          const QString &presentWhen,
                          const SourceLocation &location,
-                         std::unique_ptr<Types::Type> type)
-        : SequenceComponent(name, std::move(type))
-        , m_optional(optional)
-        , m_presentWhen(presentWhen)
-        , m_location(location)
-    {}
+                         std::unique_ptr<Types::Type> type);
 
-    AsnSequenceComponent(const AsnSequenceComponent &other)
-        : SequenceComponent(other)
-        , m_presentWhen(other.m_presentWhen)
-        , m_location(other.m_location)
-    {}
+    AsnSequenceComponent(const AsnSequenceComponent &other);
 
-    const SourceLocation &location() const { return m_location; }
-    const QString &presentWhen() const { return m_presentWhen; }
-    bool isOptional() const { return m_optional; }
+    std::unique_ptr<SequenceComponent> clone() const override;
+    QString definitionAsString() const override;
+    QString presentWhen() const override;
+
+    const SourceLocation &location() const;
+    bool isOptional() const;
 
 private:
     bool m_optional;

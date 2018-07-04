@@ -46,11 +46,11 @@
 
 namespace MalTester {
 
-class TypeComponentReconstructingVisitor : public Data::Types::TypeReadingVisitor
+class Asn1TypeComponentReconstructingVisitor : public Data::Types::TypeReadingVisitor
 {
 public:
-    TypeComponentReconstructingVisitor(QTextStream &outStream, int indent = 0);
-    ~TypeComponentReconstructingVisitor() override = default;
+    Asn1TypeComponentReconstructingVisitor(QTextStream &outStream, int indent = 0);
+    ~Asn1TypeComponentReconstructingVisitor() override = default;
 
     void visit(const Data::Types::Boolean &type) override;
     void visit(const Data::Types::Null &type) override;

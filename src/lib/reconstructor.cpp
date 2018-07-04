@@ -29,10 +29,7 @@
 #include <QTextStream>
 
 #include <acnnodereconstructingvisitor.h>
-#include <nodereconstructingvisitor.h>
-
-#include <iostream>
-#include <QDebug>
+#include <asn1nodereconstructingvisitor.h>
 
 using namespace MalTester;
 
@@ -51,7 +48,7 @@ void Reconstructor::reconstruct()
 void Reconstructor::reconstructAsn1File(const Data::File &file)
 {
     QTextStream outStream(&m_reconstructedFiles[file.name()].first);
-    NodeReconstructingVisitor visitor(outStream);
+    Asn1NodeReconstructingVisitor visitor(outStream);
     visitor.visit(file);
 }
 

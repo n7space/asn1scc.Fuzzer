@@ -29,7 +29,7 @@ using namespace MalTester::Data::Types;
 
 Type::~Type() {}
 
-AlignToNext Type::mapAlignToNext(const QStringRef &in)
+AlignToNext Type::mapAlignToNext(const QString &in)
 {
     if (in == "byte")
         return AlignToNext::byte;
@@ -37,15 +37,43 @@ AlignToNext Type::mapAlignToNext(const QStringRef &in)
         return AlignToNext::word;
     if (in == "dword")
         return AlignToNext::dword;
-
     return AlignToNext::unspecified;
 }
 
-Endianness Type::mapEndianess(const QStringRef &in)
+Endianness Type::mapEndianess(const QString &in)
 {
     if (in == "big")
         return Endianness::big;
     if (in == "little")
         return Endianness::little;
     return Endianness::unspecified;
+}
+
+QString Type::alignToNextToString(AlignToNext param)
+{
+    switch (param) {
+    case AlignToNext::byte:
+        return QStringLiteral("byte");
+    case AlignToNext::word:
+        return QStringLiteral("word");
+    case AlignToNext::dword:
+        return QStringLiteral("dword");
+    case AlignToNext::unspecified:
+        return {};
+    }
+
+    return {};
+}
+QString Type::endiannessToString(Endianness param)
+{
+    switch (param) {
+    case Endianness::big:
+        return QStringLiteral("big");
+    case Endianness::little:
+        return QStringLiteral("little");
+    case Endianness::unspecified:
+        return {};
+    }
+
+    return {};
 }

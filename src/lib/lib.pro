@@ -16,6 +16,8 @@ SOURCES += \
     data/typereference.cpp \
     data/valueassignment.cpp \
     data/visitor.cpp \
+    data/acnsequencecomponent.cpp \
+    data/asnsequencecomponent.cpp \
     data/singlevalue.cpp \
     data/multiplevalue.cpp \
     data/namedvalue.cpp \
@@ -50,9 +52,10 @@ SOURCES += \
     astfileprocessor.cpp \
     testgenerator.cpp \
     reconstructor.cpp \
-    nodereconstructingvisitor.cpp \
+    asn1nodereconstructingvisitor.cpp \
     acnnodereconstructingvisitor.cpp \
-    typecomponentreconstructingvisitor.cpp \
+    asn1typecomponentreconstructingvisitor.cpp \
+    acntypecomponentreconstructingvisitor.cpp \
     typeconstraintsreconstructingvisitor.cpp
 
 HEADERS += \
@@ -130,7 +133,8 @@ HEADERS += \
     astfileprocessor.h \
     testgenerator.h \
     reconstructor.h \
-    typecomponentreconstructingvisitor.h \
+    asn1typecomponentreconstructingvisitor.h \
     typeconstraintsreconstructingvisitor.h \
-    nodereconstructingvisitor.h \
-    acnnodereconstructingvisitor.h
+    asn1nodereconstructingvisitor.h \
+    acnnodereconstructingvisitor.h \
+    acntypecomponentreconstructingvisitor.h

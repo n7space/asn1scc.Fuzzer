@@ -32,7 +32,7 @@
 #include <data/project.h>
 #include <data/root.h>
 
-#include "typecomponentreconstructingvisitor.h"
+#include "acntypecomponentreconstructingvisitor.h"
 
 using namespace MalTester;
 
@@ -43,6 +43,7 @@ AcnNodeReconstructingVisitor::AcnNodeReconstructingVisitor(QTextStream &outStrea
 void AcnNodeReconstructingVisitor::visit(const Data::Definitions &defs)
 {
     m_outStream << defs.name() << QStringLiteral(" DEFINITIONS ::= BEGIN") << QStringLiteral("\n");
+    reconstructCollection(defs.types());
     m_outStream << QStringLiteral("END\n\n");
 }
 
@@ -53,7 +54,12 @@ void AcnNodeReconstructingVisitor::visit(const Data::File &file)
 
 void AcnNodeReconstructingVisitor::visit(const Data::TypeAssignment &type)
 {
-    Q_UNUSED(type);
+    m_outStream << type.name() << QStringLiteral(" ");
+
+    AcnTypeComponentReconstructingVisitor visitor(m_outStream);
+    type.type()->accept(visitor);
+
+    m_outStream << QStringLiteral("\n");
 }
 
 void AcnNodeReconstructingVisitor::visit(const Data::ValueAssignment &assignment)
@@ -69,17 +75,6 @@ void AcnNodeReconstructingVisitor::visit(const Data::Project &project)
 void AcnNodeReconstructingVisitor::visit(const Data::Root &root)
 {
     Q_UNUSED(root);
-}
-
-void AcnNodeReconstructingVisitor::reconstructImports(const Data::Definitions &defs) const
-{
-    Q_UNUSED(defs);
-}
-
-template<typename T>
-void AcnNodeReconstructingVisitor::reconstructImportedCollection(const T &types) const
-{
-    Q_UNUSED(types);
 }
 
 template<typename T>

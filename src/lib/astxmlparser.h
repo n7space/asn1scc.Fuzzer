@@ -91,7 +91,7 @@ private:
     void readImportedType(const QString &moduleName);
 
     Data::SourceLocation readLocationFromAttributes();
-    QStringRef readIsAlignedToNext();
+    QString readIsAlignedToNext();
 
     Data::ValuePtr findAndReadValueAssignmentValue();
     Data::ValuePtr readValueAssignmentValue();
@@ -107,7 +107,7 @@ private:
     std::unique_ptr<Data::Types::Type> readTypeDetails(const QString &name,
                                                        const Data::SourceLocation &location,
                                                        const bool isParametrized,
-                                                       const QStringRef &typeAlignment);
+                                                       const QString &typeAlignment);
     std::unique_ptr<Data::Types::Type> buildTypeFromName(const QString &name,
                                                          const Data::SourceLocation &location,
                                                          bool isParametrized);

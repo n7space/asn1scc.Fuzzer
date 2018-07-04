@@ -108,7 +108,8 @@ public:
         type.setAcnSize(m_attributes.value(QStringLiteral("size")).toString());
         type.setTerminationPattern(
             m_attributes.value(QStringLiteral("termination-pattern")).toString());
-        type.setEncoding(IA5String::mapEncoding(m_attributes.value(QStringLiteral("encoding"))));
+        type.setEncoding(
+            IA5String::mapEncoding(m_attributes.value(QStringLiteral("encoding")).toString()));
     }
 
     void visit(Data::Types::NumericString &type) override
@@ -118,7 +119,8 @@ public:
         type.setAcnSize(m_attributes.value(QStringLiteral("size")).toString());
         type.setTerminationPattern(
             m_attributes.value(QStringLiteral("termination-pattern")).toString());
-        type.setEncoding(NumericString::mapEncoding(m_attributes.value(QStringLiteral("encoding"))));
+        type.setEncoding(
+            NumericString::mapEncoding(m_attributes.value(QStringLiteral("encoding")).toString()));
     }
 
     void visit(Data::Types::Enumerated &type) override
@@ -149,8 +151,10 @@ public:
     {
         using namespace Data::Types;
 
-        type.setEndianness(Type::mapEndianess(m_attributes.value(QLatin1String("endianness"))));
-        type.setEncoding(Real::mapEncoding(m_attributes.value(QLatin1String("encoding"))));
+        type.setEndianness(
+            Type::mapEndianess(m_attributes.value(QLatin1String("endianness")).toString()));
+        type.setEncoding(
+            Real::mapEncoding(m_attributes.value(QLatin1String("encoding")).toString()));
     }
 
     void visit(Data::Types::LabelType &type) override { Q_UNUSED(type); }
@@ -165,8 +169,10 @@ private:
         using namespace Data::Types;
 
         type.setSize(m_attributes.value(QLatin1String("size")).toInt());
-        type.setEndianness(Type::mapEndianess(m_attributes.value(QLatin1String("endianness"))));
-        type.setEncoding(Integer::mapEncoding(m_attributes.value(QLatin1String("encoding"))));
+        type.setEndianness(
+            Type::mapEndianess(m_attributes.value(QLatin1String("endianness")).toString()));
+        type.setEncoding(
+            Integer::mapEncoding(m_attributes.value(QLatin1String("encoding")).toString()));
     }
 
     const QXmlStreamAttributes &m_attributes;
@@ -655,9 +661,9 @@ Data::SourceLocation AstXmlParser::readLocationFromAttributes()
     return {m_currentFile, readLineAttribute(), readCharPossitionInLineAttribute()};
 }
 
-QStringRef AstXmlParser::readIsAlignedToNext()
+QString AstXmlParser::readIsAlignedToNext()
 {
-    return m_xmlReader.attributes().value(QLatin1String("align-to-next"));
+    return m_xmlReader.attributes().value(QLatin1String("align-to-next")).toString();
 }
 
 std::unique_ptr<Data::Types::Type> AstXmlParser::findAndReadType()
@@ -742,7 +748,7 @@ bool AstXmlParser::isParametrizedTypeInstance() const
 std::unique_ptr<Data::Types::Type> AstXmlParser::readTypeDetails(const QString &name,
                                                                  const Data::SourceLocation &location,
                                                                  const bool isParametrized,
-                                                                 const QStringRef &typeAlignment)
+                                                                 const QString &typeAlignment)
 {
     auto type = buildTypeFromName(name, location, isParametrized);
     type->setAlignToNext(Data::Types::Type::mapAlignToNext(typeAlignment));

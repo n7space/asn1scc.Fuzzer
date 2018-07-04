@@ -47,11 +47,7 @@ public:
 
 private:
     template<typename T>
-    void reconstructImportedCollection(const T &types) const;
-    template<typename T>
     void reconstructCollection(const T &collection) const;
-
-    void reconstructImports(const Data::Definitions &defs) const;
 
     QTextStream &m_outStream;
 };

@@ -27,9 +27,10 @@
 #include <QObject>
 #include <QTest>
 
+#include "acnnodereconstructingvisitor_tests.h"
+#include "asn1nodereconstructingvisitor_tests.h"
 #include "astxmlconstraintparser_tests.h"
 #include "astxmlparser_tests.h"
-#include "nodereconstructingvisitor_tests.h"
 #include "reconstructor_tests.h"
 
 #include "data/constraints/printingvisitor_tests.h"
@@ -49,7 +50,8 @@ int main(int argc, char *argv[])
     };
 
     runTest(new MalTester::Tests::AstXmlParserTests);
-    runTest(new MalTester::Tests::NodeReconstructingVisitorTests);
+    runTest(new MalTester::Tests::Asn1NodeReconstructingVisitorTests);
+    runTest(new MalTester::Tests::AcnNodeReconstructingVisitorTests);
     runTest(new MalTester::Tests::ReconstructorTests);
     runTest(new MalTester::Tests::AstXmlConstraintParserTests);
     runTest(new MalTester::Data::Tests::RangeTests);

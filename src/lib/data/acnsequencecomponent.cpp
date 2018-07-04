@@ -23,37 +23,39 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-#pragma once
 
-#include <QString>
-#include <QTextStream>
+#include "acnsequencecomponent.h"
 
-#include <data/visitor.h>
+using namespace MalTester::Data;
 
-namespace MalTester {
+AcnSequenceComponent::AcnSequenceComponent(const QString &id,
+                                           const QString &name,
+                                           std::unique_ptr<Types::Type> type)
+    : SequenceComponent(name, std::move(type))
+    , m_id(id)
+{}
 
-class NodeReconstructingVisitor : public Data::Visitor
+AcnSequenceComponent::AcnSequenceComponent(const AcnSequenceComponent &other)
+    : SequenceComponent(other)
+    , m_id(other.id())
+{}
+
+std::unique_ptr<SequenceComponent> AcnSequenceComponent::clone() const
 {
-public:
-    NodeReconstructingVisitor(QTextStream &outStream);
-    ~NodeReconstructingVisitor() override = default;
+    return std::make_unique<AcnSequenceComponent>(*this);
+}
 
-    void visit(const Data::Definitions &defs) override;
-    void visit(const Data::File &file) override;
-    void visit(const Data::TypeAssignment &type) override;
-    void visit(const Data::ValueAssignment &value) override;
-    void visit(const Data::Project &project) override;
-    void visit(const Data::Root &root) override;
+QString AcnSequenceComponent::definitionAsString() const
+{
+    return name() + QChar(' ') + type().name();
+}
 
-private:
-    template<typename T>
-    void reconstructImportedCollection(const T &types) const;
-    template<typename T>
-    void reconstructCollection(const T &collection) const;
+QString AcnSequenceComponent::presentWhen() const
+{
+    return QString();
+}
 
-    void reconstructImports(const Data::Definitions &defs) const;
-
-    QTextStream &m_outStream;
-};
-
-} // namespace MalTester
+const QString &AcnSequenceComponent::id() const
+{
+    return m_id;
+}

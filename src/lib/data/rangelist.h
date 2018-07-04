@@ -44,6 +44,12 @@ public:
     RangeList(std::initializer_list<Range<T>> ranges)
         : m_ranges(ranges)
     {}
+    RangeList(const QList<Range<T>> &ranges)
+        : m_ranges(ranges)
+    {}
+    RangeList(QList<Range<T>> &&ranges)
+        : m_ranges(std::move(ranges))
+    {}
 
     using const_iterator = typename QList<Range<T>>::const_iterator;
 
@@ -63,6 +69,18 @@ public:
 private:
     QList<Range<T>> m_ranges;
 };
+
+template<typename T>
+inline RangeList<T> difference(const Range<T> &range, const RangeList<T> &list)
+{
+    RangeList<T> result{range};
+
+    for (const auto &r : list)
+        result.intersect(range.difference(r));
+
+    result.compact();
+    return result;
+}
 
 template<typename T>
 QString RangeList<T>::asString() const

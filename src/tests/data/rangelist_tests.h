@@ -44,6 +44,8 @@ private slots:
 
     void test_intersection();
     void test_intersect();
+
+    void test_difference();
 };
 
 } // namespace Tests

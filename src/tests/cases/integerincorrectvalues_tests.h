@@ -23,40 +23,25 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
+#pragma once
 
 #include <QObject>
-#include <QTest>
 
-#include "astxmlconstraintparser_tests.h"
-#include "astxmlparser_tests.h"
-#include "nodereconstructingvisitor_tests.h"
-#include "reconstructor_tests.h"
+namespace MalTester {
+namespace Cases {
+namespace Tests {
 
-#include "data/constraints/printingvisitor_tests.h"
-
-#include "data/integerranges_tests.h"
-#include "data/range_tests.h"
-#include "data/rangelist_tests.h"
-
-#include "cases/integerincorrectvalues_tests.h"
-
-int main(int argc, char *argv[])
+class IntegerIncorrectValuesTests : public QObject
 {
-    int ret = 0;
-    const auto runTest = [&ret, argc, argv](QObject *obj) {
-        ret += QTest::qExec(obj, argc, argv);
-        delete obj;
-    };
+    Q_OBJECT
+public:
+    explicit IntegerIncorrectValuesTests(QObject *parent = 0);
 
-    runTest(new MalTester::Tests::AstXmlParserTests);
-    runTest(new MalTester::Tests::NodeReconstructingVisitorTests);
-    runTest(new MalTester::Tests::ReconstructorTests);
-    runTest(new MalTester::Tests::AstXmlConstraintParserTests);
-    runTest(new MalTester::Data::Tests::RangeTests);
-    runTest(new MalTester::Data::Tests::RangeListTests);
-    runTest(new MalTester::Data::Tests::IntegerRangesTests);
-    runTest(new MalTester::Data::Constraints::Tests::PrintingVisitorTests);
-    runTest(new MalTester::Cases::Tests::IntegerIncorrectValuesTests);
+private slots:
+    void test_empty();
+    void test_values();
+};
 
-    return ret;
-}
+} // namespace Tests
+} // namespace Cases
+} // namespace MalTester

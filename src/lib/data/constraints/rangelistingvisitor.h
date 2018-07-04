@@ -28,6 +28,8 @@
 #include <algorithm>
 #include <stdexcept>
 
+#include <data/rangelist.h>
+
 #include "constraintvisitor.h"
 
 #include "constraintlist.h"
@@ -35,8 +37,6 @@
 #include "logicoperators.h"
 #include "rangeconstraint.h"
 #include "sizeconstraint.h"
-
-#include "rangelist.h"
 
 namespace MalTester {
 namespace Data {
@@ -65,7 +65,7 @@ private:
 template<typename ValueType>
 inline RangeList<typename ValueType::Type> toRangeList(const Constraint<ValueType> &c)
 {
-    RangeListingVisitor<ValueType> v(stream);
+    RangeListingVisitor<ValueType> v;
     c.accept(v);
     return v.result();
 }
@@ -79,27 +79,25 @@ void RangeListingVisitor<ValueType>::visit(const RangeConstraint<ValueType> &con
 template<typename ValueType>
 void RangeListingVisitor<ValueType>::visit(const AndConstraint<ValueType> &constraint)
 {
-    const auto l = toRangeList(*constraint.leftChild());
-    const auto r = toRangeList(*constraint.rightChild());
-    m_result = l.intersection(r);
+    m_result = toRangeList(constraint.leftChild());
+    m_result.intersect(toRangeList(constraint.rightChild()));
 }
 
 template<typename ValueType>
 void RangeListingVisitor<ValueType>::visit(const OrConstraint<ValueType> &constraint)
 {
-    const auto l = toRangeList(*constraint.leftChild());
-    const auto r = toRangeList(*constraint.rightChild());
-    m_result = l.merge(r);
+    m_result = toRangeList(constraint.leftChild());
+    m_result.merge(toRangeList(constraint.rightChild()));
 }
 
 template<typename ValueType>
-void RangeListingVisitor<ValueType>::visit(const FromConstraint<ValueType> &constraint)
+void RangeListingVisitor<ValueType>::visit(const FromConstraint<ValueType> &)
 {
     throw std::runtime_error("Unable to flatten FROM constaint");
 }
 
 template<typename ValueType>
-void RangeListingVisitor<ValueType>::visit(const SizeConstraint<ValueType> &constraint)
+void RangeListingVisitor<ValueType>::visit(const SizeConstraint<ValueType> &)
 {
     throw std::runtime_error("Unable to flatten SIZE constaint");
 }
@@ -107,12 +105,9 @@ void RangeListingVisitor<ValueType>::visit(const SizeConstraint<ValueType> &cons
 template<typename ValueType>
 void RangeListingVisitor<ValueType>::visit(const ConstraintList<ValueType> &constraint)
 {
-    m_result = std::accumulate(constraint.constraints().begin(),
-                               constraint.constraints().end(),
-                               Result(),
-                               [](const Result &r, const std::unique_ptr<Constraint<ValueType>> &c) {
-                                   return r.merge(toRangeList(c));
-                               });
+    for (const auto &c : constraint.constraints())
+        m_result.merge(toRangeList(*c));
+    m_result.compact();
 }
 
 } // namespace Constraints

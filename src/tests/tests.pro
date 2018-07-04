@@ -14,6 +14,8 @@ SOURCES += \
     reconstructor_tests.cpp \
     astxmlconstraintparser_tests.cpp \
     \
+    cases/integerincorrectvalues_tests.cpp \
+    \
     data/range_tests.cpp \
     data/rangelist_tests.cpp \
     data/integerranges_tests.cpp \
@@ -27,6 +29,8 @@ HEADERS += \
     nodereconstructingvisitor_tests.h \
     reconstructor_tests.h \
     astxmlconstraintparser_tests.h \
+    \
+    cases/integerincorrectvalues_tests.h \
     \
     data/range_tests.h \
     data/rangelist_tests.h \

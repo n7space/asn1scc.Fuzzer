@@ -25,29 +25,29 @@
 ****************************************************************************/
 #pragma once
 
-#include <data/constraints/withconstraints.h>
-
-#include "integeracnparams.h"
-#include "type.h"
+#include <QObject>
 
 namespace MalTester {
 namespace Data {
-namespace Types {
+namespace Constraints {
+namespace Tests {
 
-class Integer : public Type,
-                public IntegerAcnParameters,
-                public Constraints::WithConstraints<Data::IntegerValue>
+class PrintingVisitorTests : public QObject
 {
+    Q_OBJECT
 public:
-    Integer() = default;
-    Integer(const Integer &other) = default;
+    explicit PrintingVisitorTests(QObject *parent = 0);
 
-    QString name() const override;
-    void accept(TypeMutatingVisitor &visitor) override;
-    void accept(TypeReadingVisitor &visitor) const override;
-    std::unique_ptr<Type> clone() const override;
+private slots:
+    void test_fromConstraintToString();
+    void test_sizeConstraintToString();
+    void test_rangeConstraintToString();
+    void test_andConstraintToString();
+    void test_orConstraintToString();
+    void test_listToString();
 };
 
-} // namespace Types
+} // namespace Tests
+} // namespace Constraints
 } // namespace Data
 } // namespace MalTester

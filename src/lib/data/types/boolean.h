@@ -29,11 +29,13 @@
 
 #include <data/types/type.h>
 
+#include <data/constraints/withconstraints.h>
+
 namespace MalTester {
 namespace Data {
 namespace Types {
 
-class Boolean : public Type
+class Boolean : public Type, public Constraints::WithConstraints<Data::BooleanValue>
 {
 public:
     Boolean() = default;

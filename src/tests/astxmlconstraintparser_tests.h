@@ -23,31 +23,60 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
+
 #pragma once
 
-#include <data/constraints/withconstraints.h>
+#include <QObject>
 
-#include "integeracnparams.h"
-#include "type.h"
+#include <astxmlconstraintparser.h>
 
 namespace MalTester {
-namespace Data {
-namespace Types {
+namespace Tests {
 
-class Integer : public Type,
-                public IntegerAcnParameters,
-                public Constraints::WithConstraints<Data::IntegerValue>
+class AstXmlConstraintParserTests : public QObject
 {
+    Q_OBJECT
 public:
-    Integer() = default;
-    Integer(const Integer &other) = default;
+    explicit AstXmlConstraintParserTests(QObject *parent = 0);
 
-    QString name() const override;
-    void accept(TypeMutatingVisitor &visitor) override;
-    void accept(TypeReadingVisitor &visitor) const override;
-    std::unique_ptr<Type> clone() const override;
+private slots:
+    void test_emptyXml();
+
+    void test_simpleIntegerValue();
+    void test_simpleRealValue();
+    void test_simpleBooleanValue();
+    void test_simpleEnumValue();
+    void test_simpleStringValue();
+    void test_simpleBitStringValue();
+    void test_simpleOctetStringValue();
+
+    void test_range();
+    void test_rangeWithoutMinOrMax();
+
+    void test_multipleValues();
+
+    void test_or();
+    void test_and();
+
+    void test_nestedLogicalOperators();
+
+    void test_from();
+
+    void test_size();
+    void test_mixed();
+    void test_mixedInReverseOrder();
+
+    void test_complex();
+
+private:
+    template<typename T>
+    void parsingFails(const QString &xmlData);
+
+    template<typename T>
+    void parse(const QString &xmlData);
+
+    QString m_dumpedConstraint;
 };
 
-} // namespace Types
-} // namespace Data
+} // namespace Tests
 } // namespace MalTester

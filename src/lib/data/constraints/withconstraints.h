@@ -27,31 +27,30 @@
 
 #include <memory>
 
-#include <QString>
+#include <data/values.h>
 
-#include <data/expressiontree/expressionnode.h>
+#include "constraintlist.h"
 
 namespace MalTester {
 namespace Data {
-namespace ExpressionTree {
+namespace Constraints {
 
-class ConstrainingOperator : public ExpressionNode
+template<typename ValueType>
+class WithConstraints
 {
 public:
-    ConstrainingOperator(const QString &type, const ExpressionNode *child);
-    ConstrainingOperator(const ConstrainingOperator &other);
+    using Constraints = ConstraintList<ValueType>;
 
-    std::unique_ptr<ExpressionNode> clone() const override;
-    QString asString() const override;
+    WithConstraints() = default;
+    WithConstraints(const WithConstraints &other) = default;
+
+    const Constraints &constraints() const { return m_constraints; }
+    Constraints &constraints() { return m_constraints; }
 
 private:
-    enum class NodeType { SIZE, FROM, UNKNOWN };
-    static NodeType stringToOperatorType(const QString &name);
-
-    NodeType m_type;
-    std::unique_ptr<const ExpressionNode> m_child;
+    Constraints m_constraints;
 };
 
-} // namespace ExpressionTree
+} // namespace Constraints
 } // namespace Data
 } // namespace MalTester

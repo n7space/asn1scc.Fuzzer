@@ -25,36 +25,24 @@
 ****************************************************************************/
 #pragma once
 
-#include <memory>
-
-#include <QString>
-
-#include <data/expressiontree/constrainingoperator.h>
-#include <data/expressiontree/expressionnode.h>
-#include <data/expressiontree/logicoperator.h>
-#include <data/expressiontree/ranges.h>
+#include <QObject>
 
 namespace MalTester {
 namespace Data {
-namespace ExpressionTree {
+namespace Constraints {
+namespace Tests {
 
-class ExpressionTree
+class RangeContraintLiteralTests : public QObject
 {
+    Q_OBJECT
 public:
-    ExpressionTree();
-    ~ExpressionTree();
+    explicit RangeContraintLiteralTests(QObject *parent = 0);
 
-    ExpressionTree(const ExpressionTree &other);
-
-    void appendSubtree(const ExpressionNode *node);
-
-    QString expression() const;
-
-private:
-    class Root;
-    std::unique_ptr<Root> m_root;
+private slots:
+    void test_asString();
 };
 
-} // namespace ExpressionTree
+} // namespace Tests
+} // namespace Constraints
 } // namespace Data
 } // namespace MalTester

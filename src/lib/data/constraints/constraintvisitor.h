@@ -25,29 +25,42 @@
 ****************************************************************************/
 #pragma once
 
-#include <data/constraints/withconstraints.h>
-
-#include "integeracnparams.h"
-#include "type.h"
-
 namespace MalTester {
 namespace Data {
-namespace Types {
+namespace Constraints {
 
-class Integer : public Type,
-                public IntegerAcnParameters,
-                public Constraints::WithConstraints<Data::IntegerValue>
+template<typename ValueType>
+class ConstraintList;
+
+template<typename ValueType>
+class RangeConstraint;
+
+template<typename ValueType>
+class AndConstraint;
+
+template<typename ValueType>
+class OrConstraint;
+
+template<typename ValueType>
+class FromConstraint;
+
+template<typename ValueType>
+class SizeConstraint;
+
+template<typename ValueType>
+class ConstraintVisitor
 {
 public:
-    Integer() = default;
-    Integer(const Integer &other) = default;
+    virtual ~ConstraintVisitor() = default;
 
-    QString name() const override;
-    void accept(TypeMutatingVisitor &visitor) override;
-    void accept(TypeReadingVisitor &visitor) const override;
-    std::unique_ptr<Type> clone() const override;
+    virtual void visit(const RangeConstraint<ValueType> &constraint) = 0;
+    virtual void visit(const AndConstraint<ValueType> &constraint) = 0;
+    virtual void visit(const OrConstraint<ValueType> &constraint) = 0;
+    virtual void visit(const FromConstraint<ValueType> &constraint) = 0;
+    virtual void visit(const SizeConstraint<ValueType> &constraint) = 0;
+    virtual void visit(const ConstraintList<ValueType> &constraint) = 0;
 };
 
-} // namespace Types
+} // namespace Constraints
 } // namespace Data
 } // namespace MalTester

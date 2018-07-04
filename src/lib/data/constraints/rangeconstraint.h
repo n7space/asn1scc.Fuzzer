@@ -25,29 +25,36 @@
 ****************************************************************************/
 #pragma once
 
-#include <data/constraints/withconstraints.h>
-
-#include "integeracnparams.h"
-#include "type.h"
+#include "constraint.h"
+#include "constraintvisitor.h"
+#include "range.h"
 
 namespace MalTester {
 namespace Data {
-namespace Types {
+namespace Constraints {
 
-class Integer : public Type,
-                public IntegerAcnParameters,
-                public Constraints::WithConstraints<Data::IntegerValue>
+template<typename ValueType>
+class RangeConstraint : public Constraint<ValueType>
 {
 public:
-    Integer() = default;
-    Integer(const Integer &other) = default;
+    explicit RangeConstraint(const Range<typename ValueType::Type> &range)
+        : m_range(range)
+    {}
+    ~RangeConstraint() override = default;
 
-    QString name() const override;
-    void accept(TypeMutatingVisitor &visitor) override;
-    void accept(TypeReadingVisitor &visitor) const override;
-    std::unique_ptr<Type> clone() const override;
+    const Range<typename ValueType::Type> &range() const { return m_range; }
+
+    void accept(ConstraintVisitor<ValueType> &visitor) const override { visitor.visit(*this); }
+
+    std::unique_ptr<Constraint<ValueType>> clone() const override
+    {
+        return std::make_unique<RangeConstraint>(m_range);
+    }
+
+private:
+    Range<typename ValueType::Type> m_range;
 };
 
-} // namespace Types
+} // namespace Constraints
 } // namespace Data
 } // namespace MalTester

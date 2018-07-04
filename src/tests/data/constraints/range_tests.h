@@ -25,23 +25,28 @@
 ****************************************************************************/
 #pragma once
 
-#include <memory>
-
-#include <QString>
+#include <QObject>
 
 namespace MalTester {
 namespace Data {
-namespace ExpressionTree {
+namespace Constraints {
+namespace Tests {
 
-class ExpressionNode
+class RangeTests : public QObject
 {
+    Q_OBJECT
 public:
-    virtual ~ExpressionNode() = default;
+    explicit RangeTests(QObject *parent = 0);
 
-    virtual std::unique_ptr<ExpressionNode> clone() const = 0;
-    virtual QString asString() const = 0;
+private slots:
+    void test_intersects();
+    void test_intersection();
+
+    void test_canMerge();
+    void test_merge();
 };
 
-} // namespace ExpressionTree
+} // namespace Tests
+} // namespace Constraints
 } // namespace Data
 } // namespace MalTester

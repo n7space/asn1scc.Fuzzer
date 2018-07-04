@@ -27,14 +27,15 @@
 
 #include <QString>
 
-#include "constraints.h"
 #include "type.h"
+
+#include <data/constraints/withconstraints.h>
 
 namespace MalTester {
 namespace Data {
 namespace Types {
 
-class SequenceOf : public Type, public WithConstraints
+class SequenceOf : public Type, public Constraints::WithConstraints<Data::IntegerValue>
 {
 public:
     SequenceOf() = default;
@@ -45,8 +46,8 @@ public:
     void accept(TypeReadingVisitor &visitor) const override;
     std::unique_ptr<Type> clone() const override;
 
-    QString size() const { return m_size; }
-    void setSize(const QString &size) { m_size = size; }
+    QString acnSize() const { return m_acnSize; }
+    void setAcnSize(const QString &size) { m_acnSize = size; }
 
     const Type &itemsType() const { return *m_itemsType; }
     Type &itemsType() { return *m_itemsType; }
@@ -54,7 +55,7 @@ public:
     void setItemsType(std::unique_ptr<Type> itemsType) { m_itemsType = std::move(itemsType); }
 
 private:
-    QString m_size;
+    QString m_acnSize;
     std::unique_ptr<Type> m_itemsType;
 };
 

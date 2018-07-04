@@ -32,11 +32,9 @@
 #include <data/acnsequencecomponent.h>
 #include <data/asnsequencecomponent.h>
 
-#include <data/asnsequencecomponent.h>
 #include <data/types/bitstring.h>
 #include <data/types/boolean.h>
 #include <data/types/choice.h>
-#include <data/types/constraints.h>
 #include <data/types/enumerated.h>
 #include <data/types/ia5string.h>
 #include <data/types/integer.h>
@@ -47,6 +45,8 @@
 #include <data/types/sequence.h>
 #include <data/types/sequenceof.h>
 #include <data/types/userdefinedtype.h>
+
+#include <data/constraints/printingvisitor.h>
 
 using namespace MalTester::Tests;
 using namespace MalTester;
@@ -795,7 +795,7 @@ void AstXmlParserTests::test_enumeratedConstraints()
     const auto type = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyEnum");
     const auto enumType = dynamic_cast<const Data::Types::Enumerated *>(type->type());
 
-    QCOMPARE(enumType->constraints().rangesTree().expression(), QStringLiteral("(((0 | 1) | 2))"));
+    QCOMPARE(toString(enumType->constraints()), QStringLiteral("(((ldev1 | ldev2) | ldev3))"));
 }
 
 void AstXmlParserTests::test_enumeratedWithAcnParams()
@@ -908,7 +908,7 @@ void AstXmlParserTests::test_singleIntegerTypeAssignmentWithSimpleConstraint()
     const auto type = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyInt");
     const auto intType = dynamic_cast<const Data::Types::Integer *>(type->type());
 
-    QCOMPARE(intType->constraints().rangesTree().expression(), QStringLiteral("(1)"));
+    QCOMPARE(toString(intType->constraints()), QStringLiteral("(1)"));
 }
 
 void AstXmlParserTests::test_singleIntegerTypeAssignmentWithRangedConstraints()
@@ -973,7 +973,7 @@ void AstXmlParserTests::test_singleIntegerTypeAssignmentWithRangedConstraints()
 
     const auto type = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyInt");
     const auto intType = dynamic_cast<const Data::Types::Integer *>(type->type());
-    QCOMPARE(intType->constraints().rangesTree().expression(),
+    QCOMPARE(toString(intType->constraints()),
              QStringLiteral("((((((10 .. 20 | 30 .. 40) | 42) | 44) | 46) | 50 .. 80))"));
 }
 
@@ -1067,7 +1067,7 @@ void AstXmlParserTests::test_singleRealTypeAssignmentWithSimpleConstraint()
 
     const auto type = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyReal");
     const auto realType = dynamic_cast<const Data::Types::Real *>(type->type());
-    QCOMPARE(realType->constraints().rangesTree().expression(), QStringLiteral("(1.1)"));
+    QCOMPARE(toString(realType->constraints()), QStringLiteral("(1.1)"));
 }
 
 void AstXmlParserTests::test_singleRealTypeAssignmentWithRangedConstraints()
@@ -1114,8 +1114,7 @@ void AstXmlParserTests::test_singleRealTypeAssignmentWithRangedConstraints()
 
     const auto type = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyReal");
     const auto realType = dynamic_cast<const Data::Types::Real *>(type->type());
-    QCOMPARE(realType->constraints().rangesTree().expression(),
-             QStringLiteral("((1.1 .. 2.5 | 4.5 .. 5.5))"));
+    QCOMPARE(toString(realType->constraints()), QStringLiteral("((1.1 .. 2.5 | 4.5 .. 5.5))"));
 }
 
 void AstXmlParserTests::test_singleRealTypeAssignmentWithAcnParams()
@@ -1216,8 +1215,7 @@ void AstXmlParserTests::test_sequenceOfAssignmentWithSimpleConstraint()
 
     const auto type = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MySeq0");
     const auto sequenceOfType = dynamic_cast<const Data::Types::SequenceOf *>(type->type());
-    QCOMPARE(sequenceOfType->constraints().rangesTree().expression(),
-             QStringLiteral("((SIZE (10)))"));
+    QCOMPARE(toString(sequenceOfType->constraints()), QStringLiteral("(SIZE(10))"));
 }
 
 void AstXmlParserTests::test_sequenceOfAssignmentWithMultipleRangeConstraints()
@@ -1274,8 +1272,8 @@ void AstXmlParserTests::test_sequenceOfAssignmentWithMultipleRangeConstraints()
 
     const auto type = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MySeq0");
     const auto sequenceOfType = dynamic_cast<const Data::Types::SequenceOf *>(type->type());
-    QCOMPARE(sequenceOfType->constraints().rangesTree().expression(),
-             QStringLiteral("(((SIZE (0 .. 10)) | (SIZE (20 .. 22))))"));
+    QCOMPARE(toString(sequenceOfType->constraints()),
+             QStringLiteral("((SIZE(0 .. 10) | SIZE(20 .. 22)))"));
 }
 
 void AstXmlParserTests::test_sequenceOfAssignmentWithRangeConstraintInsideSizeConstraint()
@@ -1330,8 +1328,8 @@ void AstXmlParserTests::test_sequenceOfAssignmentWithRangeConstraintInsideSizeCo
 
     const auto type = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MySeq0");
     const auto sequenceOfType = dynamic_cast<const Data::Types::SequenceOf *>(type->type());
-    QCOMPARE(sequenceOfType->constraints().rangesTree().expression(),
-             QStringLiteral("((SIZE ((0 .. 10 | 20 .. 22))))"));
+    QCOMPARE(toString(sequenceOfType->constraints()),
+             QStringLiteral("(SIZE((0 .. 10 | 20 .. 22)))"));
 }
 
 void AstXmlParserTests::test_sequenceOfAssignmentWithAcnParams()
@@ -1371,7 +1369,7 @@ void AstXmlParserTests::test_sequenceOfAssignmentWithAcnParams()
     const auto sequenceOfType = dynamic_cast<const Data::Types::SequenceOf *>(type->type());
 
     QVERIFY(sequenceOfType != nullptr);
-    QCOMPARE(sequenceOfType->size(), QStringLiteral("n"));
+    QCOMPARE(sequenceOfType->acnSize(), QStringLiteral("n"));
 }
 
 void AstXmlParserTests::test_sequenceOfValueAssignment()
@@ -2006,7 +2004,7 @@ void AstXmlParserTests::test_sequenceComponents()
     QCOMPARE(dynamic_cast<const Data::AsnSequenceComponent &>(*comp).isOptional(), false);
     const auto &intComponent = dynamic_cast<const Data::Types::Integer &>(comp->type());
 
-    QCOMPARE(intComponent.constraints().rangesTree().expression(), QStringLiteral("(1 .. 10)"));
+    QCOMPARE(toString(intComponent.constraints()), QStringLiteral("(1 .. 10)"));
 
     comp = seqType->component(QStringLiteral("b1"));
     QVERIFY(comp != nullptr);
@@ -2288,8 +2286,7 @@ void AstXmlParserTests::test_octetStringWithSizeConstraint()
         = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyOctetString");
 
     const auto ocetStringType = dynamic_cast<const Data::Types::OctetString *>(type->type());
-    QCOMPARE(ocetStringType->constraints().rangesTree().expression(),
-             QStringLiteral("((SIZE (10)))"));
+    QCOMPARE(toString(ocetStringType->constraints()), QStringLiteral("(SIZE(10))"));
 }
 
 void AstXmlParserTests::test_octetStringWithRangedSizeConstraint()
@@ -2350,8 +2347,8 @@ void AstXmlParserTests::test_octetStringWithRangedSizeConstraint()
         = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyOctetString");
 
     const auto ocetStringType = dynamic_cast<const Data::Types::OctetString *>(type->type());
-    QCOMPARE(ocetStringType->constraints().rangesTree().expression(),
-             QStringLiteral("((SIZE (((1 .. 2 | 4 .. 5) | 7 .. 8))))"));
+    QCOMPARE(toString(ocetStringType->constraints()),
+             QStringLiteral("(SIZE(((1 .. 2 | 4 .. 5) | 7 .. 8)))"));
 }
 
 void AstXmlParserTests::test_octetStringWithValueDefined()
@@ -2383,7 +2380,7 @@ void AstXmlParserTests::test_octetStringWithValueDefined()
         = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyOctetString");
 
     const auto ocetStringType = dynamic_cast<const Data::Types::OctetString *>(type->type());
-    QCOMPARE(ocetStringType->constraints().rangesTree().expression(), QStringLiteral("('599'H)"));
+    QCOMPARE(toString(ocetStringType->constraints()), QStringLiteral(R"(("599"H))"));
 }
 
 void AstXmlParserTests::test_octetStringAcnParams()
@@ -2431,7 +2428,7 @@ void AstXmlParserTests::test_octetStringAcnParams()
 
     const auto &octetStringType = dynamic_cast<const Data::Types::OctetString &>(
         userDefinedComponent->type());
-    QCOMPARE(octetStringType.size(), QStringLiteral("number"));
+    QCOMPARE(octetStringType.acnSize(), QStringLiteral("number"));
 }
 
 void AstXmlParserTests::test_octetStringValueAssignment()
@@ -2468,7 +2465,7 @@ void AstXmlParserTests::test_octetStringValueAssignment()
 
     auto octetStringType
         = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->value("myOctet");
-    QCOMPARE(octetStringType->value()->asString(), QStringLiteral("'01'H"));
+    QCOMPARE(octetStringType->value()->asString(), QStringLiteral("\"01\"H"));
 }
 
 void AstXmlParserTests::test_iA5StringWithSizeConstraint()
@@ -2509,8 +2506,7 @@ void AstXmlParserTests::test_iA5StringWithSizeConstraint()
         = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyIA5String");
     const auto myIA5String = dynamic_cast<const Data::Types::IA5String *>(type->type());
 
-    QCOMPARE(myIA5String->constraints().rangesTree().expression(),
-             QStringLiteral("((SIZE (1 .. 10)))"));
+    QCOMPARE(toString(myIA5String->constraints()), QStringLiteral("(SIZE(1 .. 10))"));
 }
 
 void AstXmlParserTests::test_iA5StringWithValueConstraint()
@@ -2583,10 +2579,9 @@ void AstXmlParserTests::test_iA5StringWithValueConstraint()
         = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyIA5String");
     const auto myIA5String = dynamic_cast<const Data::Types::IA5String *>(type->type());
 
-    QCOMPARE(
-        myIA5String->constraints().rangesTree().expression(),
-        QStringLiteral(
-            "(((SIZE (1 .. 10)) ^ (FROM (((\"A\" .. \"D\" | \"X\" .. \"Z\") | \"1\" .. \"9\")))))"));
+    QCOMPARE(toString(myIA5String->constraints()),
+             QStringLiteral(
+                 "((SIZE(1 .. 10) ^ FROM(((\"A\" .. \"D\" | \"X\" .. \"Z\") | \"1\" .. \"9\"))))"));
 }
 
 void AstXmlParserTests::test_iA5StringWithValueDefined()
@@ -2618,7 +2613,7 @@ void AstXmlParserTests::test_iA5StringWithValueDefined()
         = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyIA5String");
     const auto myIA5String = dynamic_cast<const Data::Types::IA5String *>(type->type());
 
-    QCOMPARE(myIA5String->constraints().rangesTree().expression(), QStringLiteral("(\"Text\")"));
+    QCOMPARE(toString(myIA5String->constraints()), QStringLiteral("(\"Text\")"));
 }
 
 void AstXmlParserTests::test_iA5StringAcnParams()
@@ -2652,7 +2647,7 @@ void AstXmlParserTests::test_iA5StringAcnParams()
         = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyIA5String");
     const auto myIA5String = dynamic_cast<const Data::Types::IA5String *>(type->type());
 
-    QCOMPARE(myIA5String->size(), QStringLiteral("null-terminated"));
+    QCOMPARE(myIA5String->acnSize(), QStringLiteral("null-terminated"));
     QCOMPARE(myIA5String->encoding(), Data::Types::AsciiStringEncoding::ASCII);
     QCOMPARE(myIA5String->terminationPattern(), QStringLiteral("186"));
 }
@@ -2731,8 +2726,7 @@ void AstXmlParserTests::test_numericStringWithSizeConstraint()
         = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyNumericString");
     const auto numericString = dynamic_cast<const Data::Types::NumericString *>(type->type());
 
-    QCOMPARE(numericString->constraints().rangesTree().expression(),
-             QStringLiteral("((SIZE (10 .. 100)))"));
+    QCOMPARE(toString(numericString->constraints()), QStringLiteral("(SIZE(10 .. 100))"));
 }
 
 void AstXmlParserTests::test_numericStringWithValueConstraint()
@@ -2798,9 +2792,9 @@ void AstXmlParserTests::test_numericStringWithValueConstraint()
         = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyNumericString");
     const auto numericString = dynamic_cast<const Data::Types::NumericString *>(type->type());
 
-    QCOMPARE(numericString->constraints().rangesTree().expression(),
+    QCOMPARE(toString(numericString->constraints()),
              QStringLiteral(
-                 "(((SIZE (10)) ^ (FROM ((\"1\" .. \"5\" | (\"6\" .. \"9\" ^ \"1\" .. \"8\"))))))"));
+                 "((SIZE(10) ^ FROM((\"1\" .. \"5\" | (\"6\" .. \"9\" ^ \"1\" .. \"8\")))))"));
 }
 
 void AstXmlParserTests::test_numericStringWithValueDefined()
@@ -2832,8 +2826,7 @@ void AstXmlParserTests::test_numericStringWithValueDefined()
         = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyNumericString");
     const auto numericString = dynamic_cast<const Data::Types::NumericString *>(type->type());
 
-    QCOMPARE(numericString->constraints().rangesTree().expression(),
-             QStringLiteral("(\"12345_ABCD\")"));
+    QCOMPARE(toString(numericString->constraints()), QStringLiteral("(\"12345_ABCD\")"));
 }
 
 void AstXmlParserTests::test_numericStringAcnParams()
@@ -2867,7 +2860,7 @@ void AstXmlParserTests::test_numericStringAcnParams()
         = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyNumericString");
     const auto numericString = dynamic_cast<const Data::Types::NumericString *>(type->type());
 
-    QCOMPARE(numericString->size(), QStringLiteral("null-terminated"));
+    QCOMPARE(numericString->acnSize(), QStringLiteral("null-terminated"));
     QCOMPARE(numericString->encoding(), Data::Types::AsciiStringEncoding::ASCII);
     QCOMPARE(numericString->terminationPattern(), QStringLiteral("254"));
 }
@@ -2902,7 +2895,7 @@ void AstXmlParserTests::test_bitStringWithSizeConstraint()
     const auto type
         = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyBitString");
     const auto bitString = dynamic_cast<const Data::Types::BitString *>(type->type());
-    QCOMPARE(bitString->constraints().rangesTree().expression(), QStringLiteral("((SIZE (12)))"));
+    QCOMPARE(toString(bitString->constraints()), QStringLiteral("(SIZE(12))"));
 }
 
 void AstXmlParserTests::test_bitStringWithRangedSizeConstraint()
@@ -2962,8 +2955,8 @@ void AstXmlParserTests::test_bitStringWithRangedSizeConstraint()
     const auto type
         = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyBitString");
     const auto bitString = dynamic_cast<const Data::Types::BitString *>(type->type());
-    QCOMPARE(bitString->constraints().rangesTree().expression(),
-             QStringLiteral("((SIZE (((10 .. 20 | 40 .. 50) | 70 .. 80))))"));
+    QCOMPARE(toString(bitString->constraints()),
+             QStringLiteral("(SIZE(((10 .. 20 | 40 .. 50) | 70 .. 80)))"));
 }
 
 void AstXmlParserTests::test_bitStringWithValueDefined()
@@ -2994,7 +2987,7 @@ void AstXmlParserTests::test_bitStringWithValueDefined()
     const auto type
         = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyBitString");
     const auto bitString = dynamic_cast<const Data::Types::BitString *>(type->type());
-    QCOMPARE(bitString->constraints().rangesTree().expression(), QStringLiteral("('10101011'B)"));
+    QCOMPARE(toString(bitString->constraints()), QStringLiteral(R"(("10101011"B))"));
 }
 
 void AstXmlParserTests::test_bitStringAcnParams()
@@ -3042,7 +3035,7 @@ void AstXmlParserTests::test_bitStringAcnParams()
 
     const auto &octetStringType = dynamic_cast<const Data::Types::BitString &>(
         userDefinedComponent->type());
-    QCOMPARE(octetStringType.size(), QStringLiteral("number"));
+    QCOMPARE(octetStringType.acnSize(), QStringLiteral("number"));
 }
 
 void AstXmlParserTests::test_bitStringValueAssignment()
@@ -3078,7 +3071,7 @@ void AstXmlParserTests::test_bitStringValueAssignment()
         R"(</AstRoot>)");
 
     auto type = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->value("myBit");
-    QCOMPARE(type->value()->asString(), QStringLiteral("'101'B"));
+    QCOMPARE(type->value()->asString(), QStringLiteral("\"101\"B"));
 }
 
 void AstXmlParserTests::test_notRelatedConstraintsInNumericString()
@@ -3141,9 +3134,9 @@ void AstXmlParserTests::test_notRelatedConstraintsInNumericString()
     auto type = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MySeq");
     auto numericString = dynamic_cast<const Data::Types::NumericString *>(type->type());
 
-    QCOMPARE(numericString->constraints().rangesTree().expression(),
+    QCOMPARE(toString(numericString->constraints()),
              QStringLiteral(
-                 "((SIZE (10)))((FROM ((\"1\" .. \"5\" | (\"6\" .. \"9\" ^ \"1\" .. \"8\")))))"));
+                 "(SIZE(10)) (FROM((\"1\" .. \"5\" | (\"6\" .. \"9\" ^ \"1\" .. \"8\"))))"));
 }
 
 void AstXmlParserTests::test_nestedValueAssignments()

@@ -25,38 +25,29 @@
 ****************************************************************************/
 #pragma once
 
-#include <QString>
-
-#include <data/value.h>
+#include <QObject>
 
 namespace MalTester {
 namespace Data {
+namespace Constraints {
+namespace Tests {
 
-inline QString printAsSelf(const QString &value)
+class RangeListTests : public QObject
 {
-    return value;
-}
+    Q_OBJECT
+public:
+    explicit RangeListTests(QObject *parent = 0);
 
-inline QString printAsASCIIString(const QString &value)
-{
-    return QLatin1Char('\"') + value + QLatin1Char('\"');
-}
+private slots:
+    void test_asString();
+    void test_compact();
+    void test_sort();
 
-inline QString printAsBitString(const QString &value)
-{
-    return QLatin1Char('\'') + value + QLatin1String("\'B");
-}
+    void test_intersection();
+    void test_intersect();
+};
 
-inline QString printAsHexString(const QString &value)
-{
-    // TODO: convert to hex here?
-    return QLatin1Char('\'') + value + QLatin1String("\'H");
-}
-
-inline QString printInBooleanFormat(const QString &value)
-{
-    return value.toUpper();
-}
-
+} // namespace Tests
+} // namespace Constraints
 } // namespace Data
 } // namespace MalTester

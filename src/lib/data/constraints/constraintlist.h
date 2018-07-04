@@ -23,60 +23,56 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
+#pragma once
 
-#include "expressiontree.h"
-
+#include <memory>
 #include <vector>
 
-using namespace MalTester::Data::ExpressionTree;
+#include "constraint.h"
+#include "constraintvisitor.h"
 
-class ExpressionTree::Root : public ExpressionNode
+namespace MalTester {
+namespace Data {
+namespace Constraints {
+
+template<typename ValueType>
+class ConstraintList : public Constraint<ValueType>
 {
 public:
-    Root() = default;
-    Root(const Root &other)
+    ConstraintList() {}
+    ConstraintList(const ConstraintList &other);
+
+    const std::vector<std::unique_ptr<Constraint<ValueType>>> &constraints() const
     {
-        for (const auto &child : other.m_children)
-            appendChild(child->clone());
+        return m_constraints;
     }
 
-    std::unique_ptr<ExpressionNode> clone() const override { return std::make_unique<Root>(*this); }
-
-    QString asString() const override
+    void append(std::unique_ptr<Constraint<ValueType>> c)
     {
-        QString res;
-        for (const auto &child : m_children)
-            res += '(' + child->asString() + ')';
-
-        return res;
+        m_constraints.emplace_back(std::move(c));
     }
 
-    void appendChild(std::unique_ptr<const ExpressionNode> child)
-    {
-        m_children.push_back(std::move(child));
-    }
+    void accept(ConstraintVisitor<ValueType> &visitor) const { visitor.visit(*this); }
+
+    std::unique_ptr<Constraint<ValueType>> clone() const override;
 
 private:
-    std::vector<std::unique_ptr<const ExpressionNode>> m_children;
+    std::vector<std::unique_ptr<Constraint<ValueType>>> m_constraints;
 };
 
-ExpressionTree::ExpressionTree()
-    : m_root(new Root)
-{}
-
-ExpressionTree::~ExpressionTree() {}
-
-ExpressionTree::ExpressionTree(const ExpressionTree &other)
+template<typename ValueType>
+ConstraintList<ValueType>::ConstraintList(const ConstraintList &other)
 {
-    m_root = std::make_unique<Root>(*other.m_root);
+    for (const auto &c : other.constraints())
+        append(c->clone());
 }
 
-void ExpressionTree::appendSubtree(const ExpressionNode *node)
+template<typename ValueType>
+std::unique_ptr<Constraint<ValueType>> ConstraintList<ValueType>::clone() const
 {
-    m_root->appendChild(std::unique_ptr<const ExpressionNode>(node));
+    return std::make_unique<ConstraintList<ValueType>>(*this);
 }
 
-QString ExpressionTree::expression() const
-{
-    return m_root->asString();
-}
+} // namespace Constraints
+} // namespace Data
+} // namespace MalTester

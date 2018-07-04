@@ -29,7 +29,6 @@
 #include <memory>
 
 #include <data/value.h>
-#include <data/valueprinters.h>
 
 #include <QString>
 
@@ -39,7 +38,7 @@ namespace Data {
 class SingleValue : public Value
 {
 public:
-    SingleValue(const QString &value, std::function<QString(const QString &)> printer = printAsSelf);
+    SingleValue(const QString &value, std::function<QString(const QString &)> printer = {});
     SingleValue(const SingleValue &other) = default;
 
     QString asString() const override;

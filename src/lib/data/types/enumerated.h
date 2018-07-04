@@ -30,9 +30,10 @@
 
 #include <data/sourcelocation.h>
 
-#include <data/types/constraints.h>
 #include <data/types/integeracnparams.h>
 #include <data/types/type.h>
+
+#include <data/constraints/withconstraints.h>
 
 namespace MalTester {
 namespace Data {
@@ -59,7 +60,9 @@ private:
     SourceLocation m_location;
 };
 
-class Enumerated : public Type, public WithConstraints, public IntegerAcnParameters
+class Enumerated : public Type,
+                   public IntegerAcnParameters,
+                   public Constraints::WithConstraints<Data::EnumValue>
 {
 public:
     Enumerated();

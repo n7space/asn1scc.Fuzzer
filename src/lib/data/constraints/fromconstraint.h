@@ -25,49 +25,41 @@
 ****************************************************************************/
 #pragma once
 
-#include <functional>
+#include <memory>
 
-#include <QList>
-#include <QPair>
+#include <data/values.h>
 
-#include <data/expressiontree/expressionnode.h>
-#include <data/expressiontree/expressiontree.h>
-
-#include <data/expressiontree/ranges.h>
+#include "constraint.h"
+#include "constraintvisitor.h"
 
 namespace MalTester {
 namespace Data {
-namespace Types {
+namespace Constraints {
 
-class RangeConstraints
+template<typename ValueType>
+class FromConstraint : public Constraint<ValueType>
 {
 public:
-    using RangesTree = ExpressionTree::ExpressionTree;
+    FromConstraint(std::unique_ptr<Constraint<Data::StringValue>> innerConstraints)
+        : m_innerContraints(std::move(innerConstraints))
+    {}
 
-    const RangesTree &rangesTree() const { return m_rangesTree; }
+    const Constraint<Data::StringValue> &innerConstraints() const { return *m_innerContraints; }
 
-    void appendSubtree(const ExpressionTree::ExpressionNode *node)
-    {
-        m_rangesTree.appendSubtree(node);
-    }
+    void accept(ConstraintVisitor<ValueType> &visitor) const { visitor.visit(*this); }
+
+    std::unique_ptr<Constraint<ValueType>> clone() const override;
 
 private:
-    RangesTree m_rangesTree;
+    std::unique_ptr<Constraint<Data::StringValue>> m_innerContraints;
 };
 
-class WithConstraints
+template<typename ValueType>
+std::unique_ptr<Constraint<ValueType>> FromConstraint<ValueType>::clone() const
 {
-public:
-    WithConstraints() = default;
-    WithConstraints(const WithConstraints &other) = default;
+    return std::make_unique<FromConstraint<ValueType>>(m_innerContraints->clone());
+}
 
-    RangeConstraints &constraints() { return m_constraints; }
-    const RangeConstraints &constraints() const { return m_constraints; }
-
-private:
-    RangeConstraints m_constraints;
-};
-
-} // namespace Types
+} // namespace Constraints
 } // namespace Data
 } // namespace MalTester

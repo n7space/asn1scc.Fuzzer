@@ -41,11 +41,6 @@ SOURCES += \
     data/types/real.cpp \
     data/types/asciistringacnparameters.cpp \
     \
-    data/expressiontree/expressiontree.cpp \
-    data/expressiontree/constrainingoperator.cpp \
-    data/expressiontree/logicoperator.cpp \
-    data/expressiontree/ranges.cpp \
-    \
     astxmlparser.cpp \
     astfilegenerator.cpp \
     astfileprocessor.cpp \
@@ -75,11 +70,11 @@ HEADERS += \
     data/acnsequencecomponent.h \
     data/sequencecomponent.h \
     data/acnargument.h \
+    data/values.h \
     data/value.h \
     data/singlevalue.h \
     data/multiplevalue.h \
     data/namedvalue.h \
-    data/valueprinters.h \
     data/choicevalue.h \
     \
     data/types/typefactory.h \
@@ -102,18 +97,25 @@ HEADERS += \
     data/types/sequence.h \
     data/types/sequenceof.h \
     data/types/real.h \
-    data/types/constraints.h \
     data/types/string.h \
     data/types/acnparameterizablecomposite.h \
     data/types/asciistringacnparameters.h \
     \
-    data/expressiontree/ranges.h \
-    data/expressiontree/expressiontree.h \
-    data/expressiontree/expressionnode.h \
-    data/expressiontree/logicoperator.h \
-    data/expressiontree/constrainingoperator.h \
+    data/constraints/range.h \
+    data/constraints/rangelist.h \
+    data/constraints/constraint.h \
+    data/constraints/rangeconstraint.h \
+    data/constraints/logicoperators.h \
+    data/constraints/fromconstraint.h \
+    data/constraints/sizeconstraint.h \
+    data/constraints/constraintlist.h \
+    data/constraints/withconstraints.h \
+    data/constraints/constraintvisitor.h \
+    data/constraints/printingvisitor.h \
+    data/constraints/rangelistingvisitor.h \
     \
     astxmlparser.h \
+    astxmlconstraintparser.h \
     runparameters.h \
     astfilegenerator.h \
     astfileprocessor.h \

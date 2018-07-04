@@ -23,8 +23,9 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-
 #include "typecomponentreconstructingvisitor.h"
+
+#include <data/constraints/printingvisitor.h>
 
 #include "typeconstraintsreconstructingvisitor.h"
 
@@ -104,7 +105,7 @@ void TypeComponentReconstructingVisitor::visit(const Data::Types::Sequence &type
 
 void TypeComponentReconstructingVisitor::visit(const Data::Types::SequenceOf &type)
 {
-    m_outStream << QStringLiteral("SEQUENCE ") << type.constraints().rangesTree().expression()
+    m_outStream << QStringLiteral("SEQUENCE ") << toString(type.constraints())
                 << QStringLiteral(" OF ");
 
     TypeComponentReconstructingVisitor visitor(m_outStream, m_indent);

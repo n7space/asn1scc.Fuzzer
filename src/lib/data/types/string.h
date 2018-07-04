@@ -25,26 +25,24 @@
 ****************************************************************************/
 #pragma once
 
-#include "constraints.h"
-
 #include <data/types/type.h>
 
 namespace MalTester {
 namespace Data {
 namespace Types {
 
-class String : public Type, public WithConstraints
+class String : public Type
 {
 protected:
     String() = default;
     String(const String &other) = default;
 
 public:
-    QString size() const { return m_size; }
-    void setSize(const QString &size) { m_size = size; }
+    QString acnSize() const { return m_acnSize; }
+    void setAcnSize(const QString &size) { m_acnSize = size; }
 
 private:
-    QString m_size;
+    QString m_acnSize;
 };
 
 } // namespace Types

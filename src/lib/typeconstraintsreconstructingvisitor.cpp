@@ -23,8 +23,25 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-
 #include "typeconstraintsreconstructingvisitor.h"
+
+#include <data/constraints/printingvisitor.h>
+
+#include <data/types/acnparameterizablecomposite.h>
+#include <data/types/bitstring.h>
+#include <data/types/boolean.h>
+#include <data/types/choice.h>
+#include <data/types/enumerated.h>
+#include <data/types/ia5string.h>
+#include <data/types/integer.h>
+#include <data/types/integeracnparams.h>
+#include <data/types/null.h>
+#include <data/types/numericstring.h>
+#include <data/types/octetstring.h>
+#include <data/types/real.h>
+#include <data/types/sequence.h>
+#include <data/types/sequenceof.h>
+#include <data/types/userdefinedtype.h>
 
 using namespace MalTester;
 
@@ -41,27 +58,27 @@ QString TypeConstraintsReconstructingVisitor::valueFor(const Data::Types::Null &
 
 QString TypeConstraintsReconstructingVisitor::valueFor(const Data::Types::BitString &type) const
 {
-    return type.constraints().rangesTree().expression();
+    return toString(type.constraints());
 }
 
 QString TypeConstraintsReconstructingVisitor::valueFor(const Data::Types::OctetString &type) const
 {
-    return type.constraints().rangesTree().expression();
+    return toString(type.constraints());
 }
 
 QString TypeConstraintsReconstructingVisitor::valueFor(const Data::Types::IA5String &type) const
 {
-    return type.constraints().rangesTree().expression();
+    return toString(type.constraints());
 }
 
 QString TypeConstraintsReconstructingVisitor::valueFor(const Data::Types::NumericString &type) const
 {
-    return type.constraints().rangesTree().expression();
+    return toString(type.constraints());
 }
 
 QString TypeConstraintsReconstructingVisitor::valueFor(const Data::Types::Enumerated &type) const
 {
-    return type.constraints().rangesTree().expression();
+    return toString(type.constraints());
 }
 
 QString TypeConstraintsReconstructingVisitor::valueFor(const Data::Types::Choice &type) const
@@ -78,12 +95,12 @@ QString TypeConstraintsReconstructingVisitor::valueFor(const Data::Types::Sequen
 
 QString TypeConstraintsReconstructingVisitor::valueFor(const Data::Types::SequenceOf &type) const
 {
-    return type.constraints().rangesTree().expression();
+    return toString(type.constraints());
 }
 
 QString TypeConstraintsReconstructingVisitor::valueFor(const Data::Types::Real &type) const
 {
-    return type.constraints().rangesTree().expression();
+    return toString(type.constraints());
 }
 
 QString TypeConstraintsReconstructingVisitor::valueFor(const Data::Types::LabelType &type) const
@@ -94,7 +111,7 @@ QString TypeConstraintsReconstructingVisitor::valueFor(const Data::Types::LabelT
 
 QString TypeConstraintsReconstructingVisitor::valueFor(const Data::Types::Integer &type) const
 {
-    return type.constraints().rangesTree().expression();
+    return toString(type.constraints());
 }
 
 QString TypeConstraintsReconstructingVisitor::valueFor(const Data::Types::UserdefinedType &type) const

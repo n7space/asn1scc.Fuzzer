@@ -45,6 +45,10 @@
 #include <data/types/typefactory.h>
 #include <data/types/userdefinedtype.h>
 
+#include <data/constraints/constraintlist.h>
+#include <data/constraints/rangeconstraint.h>
+#include <data/constraints/sizeconstraint.h>
+
 using namespace MalTester;
 using namespace MalTester::Tests;
 
@@ -147,8 +151,7 @@ void NodeReconstructingVisitorTests::test_multipleImportedValues()
 void NodeReconstructingVisitorTests::test_valueAssignmentSimpleValue()
 {
     auto actual = createSingleValueValueAssignmentValue(QStringLiteral("INTEGER"),
-                                                        QStringLiteral("10"),
-                                                        Data::printAsSelf);
+                                                        QStringLiteral("10"));
     QString expected = "myValue INTEGER ::= 10\n";
 
     QCOMPARE(actual, expected);
@@ -158,8 +161,8 @@ void NodeReconstructingVisitorTests::test_valueAssignmentBitString()
 {
     auto actual = createSingleValueValueAssignmentValue(QStringLiteral("BIT_STRING"),
                                                         QStringLiteral("1010"),
-                                                        Data::printAsBitString);
-    QString expected = "myValue BIT STRING ::= '1010'B\n";
+                                                        Data::BitStringValue::asString);
+    QString expected = "myValue BIT STRING ::= \"1010\"B\n";
 
     QCOMPARE(actual, expected);
 }
@@ -168,7 +171,7 @@ void NodeReconstructingVisitorTests::test_valueAssignmentBoolean()
 {
     auto actual = createSingleValueValueAssignmentValue(QStringLiteral("BOOLEAN"),
                                                         QStringLiteral("true"),
-                                                        Data::printInBooleanFormat);
+                                                        Data::BooleanValue::reformatString);
     QString expected = "myValue BOOLEAN ::= TRUE\n";
 
     QCOMPARE(actual, expected);
@@ -178,8 +181,8 @@ void NodeReconstructingVisitorTests::test_valueAssignmentOctetString()
 {
     auto actual = createSingleValueValueAssignmentValue(QStringLiteral("OCTET_STRING"),
                                                         QStringLiteral("1010"),
-                                                        Data::printAsHexString);
-    QString expected = "myValue OCTET STRING ::= '1010'H\n";
+                                                        Data::OctetStringValue::asString);
+    QString expected = "myValue OCTET STRING ::= \"1010\"H\n";
 
     QCOMPARE(actual, expected);
 }
@@ -188,7 +191,7 @@ void NodeReconstructingVisitorTests::test_valueAssignmentIA5String()
 {
     auto actual = createSingleValueValueAssignmentValue(QStringLiteral("IA5String"),
                                                         QStringLiteral("MyValue"),
-                                                        Data::printAsASCIIString);
+                                                        Data::StringValue::asString);
     QString expected = "myValue IA5String ::= \"MyValue\"\n";
 
     QCOMPARE(actual, expected);
@@ -240,12 +243,10 @@ void NodeReconstructingVisitorTests::test_typeAssignmentBitStringWithValue()
 {
     auto assignment = createTypeAssignmentWithConstraint(
         QStringLiteral("BIT_STRING"),
-        new Data::ExpressionTree::StringRange(QStringLiteral("1111"),
-                                              QStringLiteral("1111"),
-                                              Data::printAsBitString));
+        new Data::Constraints::RangeConstraint<Data::BitStringValue>({"1111", "1111"}));
 
     auto actual = restoreNode(*assignment);
-    QString expected = "MyType ::= BIT STRING('1111'B)\n";
+    QString expected = "MyType ::= BIT STRING(\"1111\"B)\n";
 
     QCOMPARE(actual, expected);
 }
@@ -259,10 +260,10 @@ void NodeReconstructingVisitorTests::test_typeAssignmentOctetStringWithValue()
 {
     auto assignment = createTypeAssignmentWithConstraint(
         QStringLiteral("OCTET_STRING"),
-        new Data::ExpressionTree::StringRange("1010", "1010", Data::printAsHexString));
+        new Data::Constraints::RangeConstraint<Data::OctetStringValue>({"1010", "1010"}));
 
     auto actual = restoreNode(*assignment);
-    QString expected = "MyType ::= OCTET STRING('1010'H)\n";
+    QString expected = "MyType ::= OCTET STRING(\"1010\"H)\n";
 
     QCOMPARE(actual, expected);
 }
@@ -274,10 +275,9 @@ void NodeReconstructingVisitorTests::test_typeAssignmentIA5String()
 
 void NodeReconstructingVisitorTests::test_typeAssignmentIA5StringWithValue()
 {
-    auto assignment
-        = createTypeAssignmentWithConstraint(QStringLiteral("IA5String"),
-                                             new Data::ExpressionTree::StringRange("TextString",
-                                                                                   "TextString"));
+    auto assignment = createTypeAssignmentWithConstraint(
+        QStringLiteral("IA5String"),
+        new Data::Constraints::RangeConstraint<Data::StringValue>({"TextString", "TextString"}));
 
     auto actual = restoreNode(*assignment);
     QString expected = "MyType ::= IA5String(\"TextString\")\n";
@@ -292,10 +292,9 @@ void NodeReconstructingVisitorTests::test_typeAssignmentNumericString()
 
 void NodeReconstructingVisitorTests::test_typeAssignmentNumericStringWithValue()
 {
-    auto assignment
-        = createTypeAssignmentWithConstraint(QStringLiteral("NumericString"),
-                                             new Data::ExpressionTree::StringRange("12345678",
-                                                                                   "12345678"));
+    auto assignment = createTypeAssignmentWithConstraint(
+        QStringLiteral("NumericString"),
+        new Data::Constraints::RangeConstraint<Data::StringValue>({"12345678", "12345678"}));
 
     auto actual = restoreNode(*assignment);
     QString expected = "MyType ::= NumericString(\"12345678\")\n";
@@ -477,20 +476,22 @@ void NodeReconstructingVisitorTests::test_typeAssignmentSequenceOf()
 void NodeReconstructingVisitorTests::test_typeAssignmentSequenceOfWithValue()
 {
     auto internalType = std::make_unique<Data::Types::Integer>();
-    auto &internalConstrainedType = dynamic_cast<Data::Types::WithConstraints &>(*internalType);
-    internalConstrainedType.constraints().appendSubtree(
-        new Data::ExpressionTree::IntegerRange(5, 10));
+
+    internalType->constraints().append(
+        std::make_unique<Data::Constraints::RangeConstraint<Data::IntegerValue>>(
+            Data::Constraints::Range<int>{5, 10}));
 
     auto assignment = createTypeAssignmentWithConstraint(
         QStringLiteral("SEQUENCE_OF"),
-        new Data::ExpressionTree::ConstrainingOperator(QStringLiteral("SIZE"),
-                                                       new Data::ExpressionTree::IntegerRange(10,
-                                                                                              10)));
+        new Data::Constraints::SizeConstraint<Data::IntegerValue>(
+            std::make_unique<Data::Constraints::RangeConstraint<Data::IntegerValue>>(
+                Data::Constraints::Range<int>(10))));
+
     auto &sequenceType = dynamic_cast<Data::Types::SequenceOf &>(*(assignment->type()));
     sequenceType.setItemsType(std::move(internalType));
 
     auto actual = restoreNode(*assignment);
-    QString expected = "MyType ::= SEQUENCE ((SIZE (10))) OF INTEGER(5 .. 10)\n";
+    QString expected = "MyType ::= SEQUENCE (SIZE(10)) OF INTEGER(5 .. 10)\n";
 
     QCOMPARE(actual, expected);
 }
@@ -502,9 +503,10 @@ void NodeReconstructingVisitorTests::test_typeAssignmentReal()
 
 void NodeReconstructingVisitorTests::test_typeAssignmentRealWithValue()
 {
-    auto assignment = createTypeAssignmentWithConstraint(QStringLiteral("REAL"),
-                                                         new Data::ExpressionTree::RealRange(1.1,
-                                                                                             1.1));
+    auto assignment
+        = createTypeAssignmentWithConstraint(QStringLiteral("REAL"),
+                                             new Data::Constraints::RangeConstraint<Data::RealValue>(
+                                                 Data::Constraints::Range<double>(1.1)));
     auto actual = restoreNode(*assignment);
     QString expected = "MyType ::= REAL(1.1)\n";
 
@@ -518,9 +520,10 @@ void NodeReconstructingVisitorTests::test_typeAssignmentInteger()
 
 void NodeReconstructingVisitorTests::test_typeAssignmentIntegerWithValue()
 {
-    auto assignment = createTypeAssignmentWithConstraint(QStringLiteral("INTEGER"),
-                                                         new Data::ExpressionTree::IntegerRange(1,
-                                                                                                2));
+    auto assignment = createTypeAssignmentWithConstraint(
+        QStringLiteral("INTEGER"),
+        new Data::Constraints::RangeConstraint<Data::IntegerValue>(
+            Data::Constraints::Range<int>(1, 2)));
     auto actual = restoreNode(*assignment);
     QString expected = "MyType ::= INTEGER(1 .. 2)\n";
 
@@ -545,8 +548,11 @@ void NodeReconstructingVisitorTests::test_typeAssignmentUserDefined()
 void NodeReconstructingVisitorTests::test_typeAssignmentUserDefinedWithValue()
 {
     auto referedType = Data::Types::TypeFactory::createBuiltinType(QStringLiteral("INTEGER"));
-    auto &constrainedType = dynamic_cast<Data::Types::WithConstraints &>(*referedType);
-    constrainedType.constraints().appendSubtree(new Data::ExpressionTree::IntegerRange(1, 2));
+    auto &constrainedType = dynamic_cast<Data::Constraints::WithConstraints<Data::IntegerValue> &>(
+        *referedType);
+    constrainedType.constraints().append(
+        std::make_unique<Data::Constraints::RangeConstraint<Data::IntegerValue>>(
+            Data::Constraints::Range<int>(1, 2)));
 
     auto type = std::make_unique<Data::Types::UserdefinedType>(QStringLiteral("ReferencedType"),
                                                                QStringLiteral("MyModule"));
@@ -584,13 +590,16 @@ std::unique_ptr<Data::TypeAssignment> NodeReconstructingVisitorTests::createSimp
     return assignment;
 }
 
+template<typename T>
 std::unique_ptr<Data::TypeAssignment>
 NodeReconstructingVisitorTests::createTypeAssignmentWithConstraint(
-    const QString &astTypeName, Data::ExpressionTree::ExpressionNode *range) const
+    const QString &astTypeName, Data::Constraints::Constraint<T> *constraint) const
 {
     auto assignment = createSimpleTypeAssignment(astTypeName);
-    auto &constrainedType = dynamic_cast<Data::Types::WithConstraints &>(*assignment->type());
-    constrainedType.constraints().appendSubtree(range);
+    auto &constrainedType = dynamic_cast<Data::Constraints::WithConstraints<T> &>(
+        *assignment->type());
+    constrainedType.constraints().append(
+        std::unique_ptr<Data::Constraints::Constraint<T>>(constraint));
 
     return assignment;
 }

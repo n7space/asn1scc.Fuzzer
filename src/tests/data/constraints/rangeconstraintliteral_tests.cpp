@@ -23,44 +23,29 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
+#include "rangeconstraintliteral_tests.h"
 
-#include "constrainingoperator.h"
+#include <QtTest>
 
-using namespace MalTester::Data::ExpressionTree;
+#include <data/constraints/rangeconstraintliteral.h>
 
-ConstrainingOperator::ConstrainingOperator(const QString &type, const ExpressionNode *child)
-    : m_type(stringToOperatorType(type))
-    , m_child(child)
+#include <data/values.h>
+
+using namespace MalTester::Data::Constraints::Tests;
+
+RangeContraintLiteralTests::RangeContraintLiteralTests(QObject *parent)
+    : QObject(parent)
 {}
 
-ConstrainingOperator::ConstrainingOperator(const ConstrainingOperator &other)
-    : m_type(other.m_type)
+void RangeContraintLiteralTests::test_asString()
 {
-    m_child = other.m_child ? other.m_child->clone() : nullptr;
-}
+    QCOMPARE(RangeConstraintLiteral<Data::IntegerValue>(Range<int>(10)).asString(),
+             QStringLiteral("10"));
+    QCOMPARE(RangeConstraintLiteral<Data::IntegerValue>(Range<int>(10, 20)).asString(),
+             QStringLiteral("10 .. 20"));
 
-std::unique_ptr<ExpressionNode> ConstrainingOperator::clone() const
-{
-    return std::make_unique<ConstrainingOperator>(*this);
-}
-
-QString ConstrainingOperator::asString() const
-{
-    if (m_type == NodeType::SIZE)
-        return QStringLiteral("(SIZE (") + m_child->asString() + QStringLiteral("))");
-
-    if (m_type == NodeType::FROM)
-        return QStringLiteral("(FROM (") + m_child->asString() + QStringLiteral("))");
-
-    return {};
-}
-
-ConstrainingOperator::NodeType ConstrainingOperator::stringToOperatorType(const QString &name)
-{
-    if (name == QStringLiteral("SIZE"))
-        return NodeType::SIZE;
-    if (name == QStringLiteral("ALPHA"))
-        return NodeType::FROM;
-
-    return NodeType::UNKNOWN;
+    QCOMPARE(RangeConstraintLiteral<Data::StringValue>(Range<QString>("abc")).asString(),
+             QStringLiteral(R"("abc")"));
+    QCOMPARE(RangeConstraintLiteral<Data::EnumValue>(Range<QString>("A", "Z")).asString(),
+             QStringLiteral(R"(A .. Z)"));
 }

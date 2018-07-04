@@ -27,23 +27,7 @@
 
 #include <QString>
 
-#include <data/types/acnparameterizablecomposite.h>
-#include <data/types/bitstring.h>
-#include <data/types/boolean.h>
-#include <data/types/choice.h>
-#include <data/types/constraints.h>
-#include <data/types/enumerated.h>
-#include <data/types/ia5string.h>
-#include <data/types/integer.h>
-#include <data/types/integeracnparams.h>
-#include <data/types/null.h>
-#include <data/types/numericstring.h>
-#include <data/types/octetstring.h>
-#include <data/types/real.h>
-#include <data/types/sequence.h>
-#include <data/types/sequenceof.h>
 #include <data/types/typevisitorwithvalue.h>
-#include <data/types/userdefinedtype.h>
 
 namespace MalTester {
 

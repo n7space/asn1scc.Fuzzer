@@ -27,7 +27,8 @@
 
 #include <QString>
 
-#include "constraints.h"
+#include <data/constraints/withconstraints.h>
+
 #include "type.h"
 
 namespace MalTester {
@@ -36,7 +37,7 @@ namespace Types {
 
 enum class RealEncoding { IEEE754_1985_32, IEEE754_1985_64, unspecified };
 
-class Real : public Type, public WithConstraints
+class Real : public Type, public Constraints::WithConstraints<Data::RealValue>
 {
 public:
     Real();

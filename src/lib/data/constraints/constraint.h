@@ -29,33 +29,24 @@
 
 #include <QString>
 
-#include <data/expressiontree/expressionnode.h>
-
 namespace MalTester {
 namespace Data {
-namespace ExpressionTree {
+namespace Constraints {
 
-class LogicOperator : public ExpressionNode
+template<typename ValueType>
+class ConstraintVisitor;
+
+template<typename ValueType>
+class Constraint
 {
 public:
-    LogicOperator(const QString &type,
-                  const ExpressionNode *leftChild,
-                  const ExpressionNode *rightChild);
+    virtual ~Constraint() = default;
 
-    LogicOperator(const LogicOperator &other);
+    virtual std::unique_ptr<Constraint<ValueType>> clone() const = 0;
 
-    std::unique_ptr<ExpressionNode> clone() const override;
-    QString asString() const override;
-
-private:
-    enum class NodeType { AND, OR, UNKNOWN };
-    static NodeType stringToOperatorType(const QString &name);
-
-    NodeType m_type;
-    std::unique_ptr<const ExpressionNode> m_leftChild;
-    std::unique_ptr<const ExpressionNode> m_rightChild;
+    virtual void accept(ConstraintVisitor<ValueType> &visitor) const = 0;
 };
 
-} // namespace ExpressionTree
+} // namespace Constraints
 } // namespace Data
 } // namespace MalTester

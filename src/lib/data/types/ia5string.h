@@ -31,11 +31,15 @@
 #include <data/types/string.h>
 #include <data/types/type.h>
 
+#include <data/constraints/withconstraints.h>
+
 namespace MalTester {
 namespace Data {
 namespace Types {
 
-class IA5String : public String, public AsciiStringAcnParameters
+class IA5String : public String,
+                  public AsciiStringAcnParameters,
+                  public Constraints::WithConstraints<Data::StringValue>
 {
 public:
     IA5String() = default;

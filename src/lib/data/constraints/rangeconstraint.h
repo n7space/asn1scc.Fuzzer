@@ -46,10 +46,6 @@ public:
 
     void accept(ConstraintVisitor<ValueType> &visitor) const override { visitor.visit(*this); }
 
-    /*RangeList<typename RangeConstraint<T>::ValueType> asRangeList() const TODO override
-    {
-        return {m_range};
-    }*/
     std::unique_ptr<Constraint<ValueType>> clone() const override
     {
         return std::make_unique<RangeConstraint>(m_range);

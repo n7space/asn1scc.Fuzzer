@@ -48,13 +48,6 @@ public:
 
     void accept(ConstraintVisitor<ValueType> &visitor) const { visitor.visit(*this); }
 
-    /*    RangeList<typename RangeConstraint<T>::ValueType> asRangeList() const override
-    {
-        auto list = m_leftChild->asRangeList();
-        list.intersect(m_rightChild->asRangeList());
-        return list;
-    }*/
-
     std::unique_ptr<Constraint<ValueType>> clone() const override
     {
         return std::make_unique<AndConstraint>(m_leftChild->clone(), m_rightChild->clone());
@@ -80,13 +73,6 @@ public:
     const Constraint<ValueType> &rightChild() const { return *m_rightChild; }
 
     void accept(ConstraintVisitor<ValueType> &visitor) const { visitor.visit(*this); }
-
-    /*    RangeList<typename RangeConstraint<T>::ValueType> asRangeList() const override
-    {
-        auto list = m_leftChild->asRangeList();
-        list.merge(m_rightChild->asRangeList());
-        return list;
-    }*/
 
     std::unique_ptr<Constraint<ValueType>> clone() const override
     {

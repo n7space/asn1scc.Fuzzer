@@ -23,37 +23,16 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
+#pragma once
 
-#include <QObject>
-#include <QTest>
+#include "types/integeracnparams.h"
 
-#include "astxmlconstraintparser_tests.h"
-#include "astxmlparser_tests.h"
-#include "nodereconstructingvisitor_tests.h"
-#include "reconstructor_tests.h"
+#include "range.h"
 
-#include "data/constraints/printingvisitor_tests.h"
+namespace MalTester {
+namespace Data {
 
-#include "data/integerranges_tests.h"
-#include "data/range_tests.h"
-#include "data/rangelist_tests.h"
+Range<int> maxValueRangeFor(const Types::IntegerAcnParameters &type);
 
-int main(int argc, char *argv[])
-{
-    int ret = 0;
-    const auto runTest = [&ret, argc, argv](QObject *obj) {
-        ret += QTest::qExec(obj, argc, argv);
-        delete obj;
-    };
-
-    runTest(new MalTester::Tests::AstXmlParserTests);
-    runTest(new MalTester::Tests::NodeReconstructingVisitorTests);
-    runTest(new MalTester::Tests::ReconstructorTests);
-    runTest(new MalTester::Tests::AstXmlConstraintParserTests);
-    runTest(new MalTester::Data::Tests::RangeTests);
-    runTest(new MalTester::Data::Tests::RangeListTests);
-    runTest(new MalTester::Data::Tests::IntegerRangesTests);
-    runTest(new MalTester::Data::Constraints::Tests::PrintingVisitorTests);
-
-    return ret;
-}
+} // namespace Data
+} // namespace MalTester

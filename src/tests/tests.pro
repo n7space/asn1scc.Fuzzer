@@ -16,6 +16,7 @@ SOURCES += \
     \
     data/range_tests.cpp \
     data/rangelist_tests.cpp \
+    data/integerranges_tests.cpp \
     \
     data/constraints/printingvisitor_tests.cpp \
     \
@@ -29,5 +30,6 @@ HEADERS += \
     \
     data/range_tests.h \
     data/rangelist_tests.h \
+    data/integerranges_tests.h \
     \
     data/constraints/printingvisitor_tests.h

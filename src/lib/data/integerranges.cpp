@@ -23,37 +23,35 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
+#include "integerranges.h"
 
-#include <QObject>
-#include <QTest>
+using namespace MalTester::Data;
+using namespace MalTester::Data::Types;
 
-#include "astxmlconstraintparser_tests.h"
-#include "astxmlparser_tests.h"
-#include "nodereconstructingvisitor_tests.h"
-#include "reconstructor_tests.h"
+namespace {
 
-#include "data/constraints/printingvisitor_tests.h"
-
-#include "data/integerranges_tests.h"
-#include "data/range_tests.h"
-#include "data/rangelist_tests.h"
-
-int main(int argc, char *argv[])
+int nineRepeated(int times)
 {
-    int ret = 0;
-    const auto runTest = [&ret, argc, argv](QObject *obj) {
-        ret += QTest::qExec(obj, argc, argv);
-        delete obj;
-    };
+    if (times == 1)
+        return 9;
+    return nineRepeated(times - 1) * 10 + 9;
+}
 
-    runTest(new MalTester::Tests::AstXmlParserTests);
-    runTest(new MalTester::Tests::NodeReconstructingVisitorTests);
-    runTest(new MalTester::Tests::ReconstructorTests);
-    runTest(new MalTester::Tests::AstXmlConstraintParserTests);
-    runTest(new MalTester::Data::Tests::RangeTests);
-    runTest(new MalTester::Data::Tests::RangeListTests);
-    runTest(new MalTester::Data::Tests::IntegerRangesTests);
-    runTest(new MalTester::Data::Constraints::Tests::PrintingVisitorTests);
+} // namespace
 
-    return ret;
+Range<int> MalTester::Data::maxValueRangeFor(const IntegerAcnParameters &type)
+{
+    switch (type.encoding()) {
+    case IntegerEncoding::pos_int:
+        return {0, (1 << type.size()) - 1};
+    case IntegerEncoding::twos_complement:
+        return {-(1 << (type.size() - 1)), (1 << (type.size() - 1)) - 1};
+    case IntegerEncoding::ASCII:
+        return {-nineRepeated((type.size() / 8) - 1), nineRepeated((type.size() / 8) - 1)};
+    case IntegerEncoding::BCD:
+        return {0, nineRepeated(type.size() / 4)};
+    case IntegerEncoding::unspecified:
+        break;
+    }
+    return {0, 0};
 }

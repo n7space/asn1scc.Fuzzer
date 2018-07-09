@@ -43,6 +43,7 @@ SOURCES += \
     data/types/asciistringacnparameters.cpp \
     \
     cases/integerincorrectvalues.cpp \
+    cases/constraintsrelaxingvisitor.cpp \
     \
     astxmlparser.cpp \
     astfilegenerator.cpp \
@@ -119,6 +120,7 @@ HEADERS += \
     data/constraints/rangelistingvisitor.h \
     \
     cases/integerincorrectvalues.h \
+    cases/constraintsrelaxingvisitor.h \
     \
     astxmlparser.h \
     astxmlconstraintparser.h \

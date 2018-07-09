@@ -20,7 +20,6 @@ SOURCES += \
     data/multiplevalue.cpp \
     data/namedvalue.cpp \
     data/choicevalue.cpp \
-    data/integerranges.cpp \
     \
     data/types/type.cpp \
     data/types/typemutatingvisitor.cpp \
@@ -44,6 +43,7 @@ SOURCES += \
     \
     cases/integerincorrectvalues.cpp \
     cases/constraintsrelaxingvisitor.cpp \
+    cases/integerranges.cpp \
     \
     astxmlparser.cpp \
     astfilegenerator.cpp \
@@ -82,7 +82,6 @@ HEADERS += \
     data/choicevalue.h \
     data/range.h \
     data/rangelist.h \
-    data/integerranges.h \
     \
     data/types/typefactory.h \
     data/types/labeltype.h \
@@ -121,6 +120,7 @@ HEADERS += \
     \
     cases/integerincorrectvalues.h \
     cases/constraintsrelaxingvisitor.h \
+    cases/integerranges.h \
     \
     astxmlparser.h \
     astxmlconstraintparser.h \

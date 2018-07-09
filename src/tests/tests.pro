@@ -15,10 +15,10 @@ SOURCES += \
     astxmlconstraintparser_tests.cpp \
     \
     cases/integerincorrectvalues_tests.cpp \
+    cases/integerranges_tests.cpp \
     \
     data/range_tests.cpp \
     data/rangelist_tests.cpp \
-    data/integerranges_tests.cpp \
     \
     data/constraints/printingvisitor_tests.cpp \
     \
@@ -31,9 +31,9 @@ HEADERS += \
     astxmlconstraintparser_tests.h \
     \
     cases/integerincorrectvalues_tests.h \
+    cases/integerranges_tests.h \
     \
     data/range_tests.h \
     data/rangelist_tests.h \
-    data/integerranges_tests.h \
     \
     data/constraints/printingvisitor_tests.h

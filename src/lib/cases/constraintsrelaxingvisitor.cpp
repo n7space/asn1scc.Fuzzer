@@ -31,9 +31,9 @@
 #include <data/types/sequence.h>
 #include <data/types/sequenceof.h>
 
-#include <data/integerranges.h>
-
 #include <data/constraints/rangeconstraint.h>
+
+#include "integerranges.h"
 
 using namespace MalTester::Cases;
 using namespace MalTester::Data::Types;
@@ -104,7 +104,7 @@ void ConstraintsRelaxingVisitor::visit(LabelType &type)
 void ConstraintsRelaxingVisitor::visit(Integer &type)
 {
     type.constraints().clear();
-    type.constraints().append(Data::maxValueRangeFor(type));
+    type.constraints().append(maxValueRangeFor(type));
 }
 
 void ConstraintsRelaxingVisitor::visit(UserdefinedType &type)

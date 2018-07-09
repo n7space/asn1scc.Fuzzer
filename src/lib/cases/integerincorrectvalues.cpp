@@ -29,16 +29,15 @@
 
 #include <data/constraints/rangelistingvisitor.h>
 
-#include <data/integerranges.h>
+#include "integerranges.h"
 
 using namespace MalTester::Cases;
-using namespace MalTester::Data::Constraints;
 using namespace MalTester::Data;
 
 namespace {
 RangeList<int> definedRangesFor(const Types::Integer &integer)
 {
-    RangeListingVisitor<IntegerValue> visitor;
+    Constraints::RangeListingVisitor<IntegerValue> visitor;
     integer.constraints().accept(visitor);
     return visitor.result();
 }

@@ -25,14 +25,14 @@
 ****************************************************************************/
 #pragma once
 
-#include "types/integeracnparams.h"
+#include <data/types/integeracnparams.h>
 
-#include "range.h"
+#include <data/range.h>
 
 namespace MalTester {
-namespace Data {
+namespace Cases {
 
-Range<int> maxValueRangeFor(const Types::IntegerAcnParameters &type);
+Data::Range<int> maxValueRangeFor(const Data::Types::IntegerAcnParameters &type);
 
-} // namespace Data
+} // namespace Cases
 } // namespace MalTester

@@ -23,31 +23,44 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-#pragma once
+#include "integerincorrectvalues.h"
 
-#include <QObject>
+#include <algorithm>
 
-namespace MalTester {
-namespace Data {
-namespace Tests {
+#include <data/constraints/rangelistingvisitor.h>
 
-class RangeListTests : public QObject
+#include <data/integerranges.h>
+
+using namespace MalTester::Cases;
+using namespace MalTester::Data::Constraints;
+using namespace MalTester::Data;
+
+namespace {
+RangeList<int> definedRangesFor(const Types::Integer &integer)
 {
-    Q_OBJECT
-public:
-    explicit RangeListTests(QObject *parent = 0);
+    RangeListingVisitor<IntegerValue> visitor;
+    integer.constraints().accept(visitor);
+    return visitor.result();
+}
+} // namespace
 
-private slots:
-    void test_asString();
-    void test_compact();
-    void test_sort();
+IntegerIncorrectValues::IntegerIncorrectValues(const Types::Integer &integer)
+{
+    const auto maliciousRanges = difference(maxValueRangeFor(integer), definedRangesFor(integer));
 
-    void test_intersection();
-    void test_intersect();
+    for (const auto r : maliciousRanges) {
+        m_items.append(r.begin());
+        if (!r.isSingleItem()) {
+            m_items.append(r.end());
+            m_items.append((r.begin() + r.end()) / 2);
+        }
+    }
 
-    void test_difference();
-};
+    makeItemsUnique();
+}
 
-} // namespace Tests
-} // namespace Data
-} // namespace MalTester
+void IntegerIncorrectValues::makeItemsUnique()
+{
+    std::sort(m_items.begin(), m_items.end());
+    m_items.erase(std::unique(m_items.begin(), m_items.end()), m_items.end());
+}

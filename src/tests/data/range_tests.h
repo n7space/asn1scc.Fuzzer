@@ -43,6 +43,8 @@ private slots:
 
     void test_canMerge();
     void test_merge();
+
+    void test_difference();
 };
 
 } // namespace Tests

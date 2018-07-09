@@ -25,29 +25,25 @@
 ****************************************************************************/
 #pragma once
 
-#include <QObject>
+#include <QList>
+
+#include <data/types/integer.h>
 
 namespace MalTester {
-namespace Data {
-namespace Tests {
+namespace Cases {
 
-class RangeListTests : public QObject
+class IntegerIncorrectValues
 {
-    Q_OBJECT
 public:
-    explicit RangeListTests(QObject *parent = 0);
+    explicit IntegerIncorrectValues(const Data::Types::Integer &integer);
 
-private slots:
-    void test_asString();
-    void test_compact();
-    void test_sort();
+    const QList<int> &items() const { return m_items; }
 
-    void test_intersection();
-    void test_intersect();
+private:
+    void makeItemsUnique();
 
-    void test_difference();
+    QList<int> m_items;
 };
 
-} // namespace Tests
-} // namespace Data
+} // namespace Cases
 } // namespace MalTester

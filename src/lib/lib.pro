@@ -42,6 +42,8 @@ SOURCES += \
     data/types/real.cpp \
     data/types/asciistringacnparameters.cpp \
     \
+    cases/integerincorrectvalues.cpp \
+    \
     astxmlparser.cpp \
     astfilegenerator.cpp \
     astfileprocessor.cpp \
@@ -115,6 +117,8 @@ HEADERS += \
     data/constraints/constraintvisitor.h \
     data/constraints/printingvisitor.h \
     data/constraints/rangelistingvisitor.h \
+    \
+    cases/integerincorrectvalues.h \
     \
     astxmlparser.h \
     astxmlconstraintparser.h \

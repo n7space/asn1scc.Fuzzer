@@ -34,7 +34,7 @@ template<typename T>
 class Range
 {
 public:
-    explicit Range(const T &singleItem)
+    Range(const T &singleItem)
         : Range(singleItem, singleItem)
     {}
     Range(const T &begin, const T &end)

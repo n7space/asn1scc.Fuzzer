@@ -38,6 +38,11 @@ template<typename ValueType>
 class RangeConstraint : public Constraint<ValueType>
 {
 public:
+    static std::unique_ptr<RangeConstraint> create(const Range<typename ValueType::Type> &range)
+    {
+        return std::make_unique<RangeConstraint>(range);
+    }
+
     explicit RangeConstraint(const Range<typename ValueType::Type> &range)
         : m_range(range)
     {}

@@ -35,14 +35,6 @@ using namespace MalTester::Cases::Tests;
 using namespace MalTester::Data::Types;
 using namespace MalTester::Data;
 
-using RangeConstraint = Constraints::RangeConstraint<IntegerValue>;
-namespace {
-std::unique_ptr<RangeConstraint> makeRange(int b, int e)
-{
-    return std::make_unique<RangeConstraint>(Range<int>(b, e));
-}
-} // namespace
-
 IntegerIncorrectValuesTests::IntegerIncorrectValuesTests(QObject *parent)
     : QObject(parent)
 {}
@@ -52,7 +44,7 @@ void IntegerIncorrectValuesTests::test_empty()
     Integer i;
     i.setSize(8);
     i.setEncoding(IntegerEncoding::pos_int);
-    i.constraints().append(makeRange(0, 255));
+    i.constraints().append({0, 255});
 
     const auto v = IntegerIncorrectValues(i).items();
 
@@ -63,8 +55,8 @@ void IntegerIncorrectValuesTests::test_values()
     Integer i;
     i.setSize(8);
     i.setEncoding(IntegerEncoding::pos_int);
-    i.constraints().append(makeRange(1, 10));
-    i.constraints().append(makeRange(100, 180));
+    i.constraints().append({1, 10});
+    i.constraints().append({100, 180});
 
     const auto v = IntegerIncorrectValues(i).items();
 

@@ -239,16 +239,15 @@ template<typename T>
 typename AstXmlConstraintNodeParser<T>::Constraints AstXmlConstraintNodeParser<T>::buildRange(
     const QString &val) const
 {
-    const auto range = Data::Range<typename T::Type>(T::fromAstValue(val));
-    return std::make_unique<Data::Constraints::RangeConstraint<T>>(range);
+    return Data::Constraints::RangeConstraint<T>::create({T::fromAstValue(val)});
 }
 
 template<typename T>
 typename AstXmlConstraintNodeParser<T>::Constraints AstXmlConstraintNodeParser<T>::buildRange(
     const QString &min, const QString &max) const
 {
-    const auto range = Data::Range<typename T::Type>(T::fromAstValue(min), T::fromAstValue(max));
-    return std::make_unique<Data::Constraints::RangeConstraint<T>>(range);
+    return Data::Constraints::RangeConstraint<T>::create(
+        {T::fromAstValue(min), T::fromAstValue(max)});
 }
 
 } // namespace MalTester

@@ -41,7 +41,7 @@ PrintingVisitorTests::PrintingVisitorTests(QObject *parent)
 
 void PrintingVisitorTests::test_fromConstraintToString()
 {
-    auto c = std::make_unique<RangeConstraint<StringValue>>(Range<QString>{"a", "z"});
+    auto c = RangeConstraint<StringValue>::create({"a", "z"});
 
     FromConstraint<IntegerValue> a(std::move(c));
 
@@ -50,7 +50,7 @@ void PrintingVisitorTests::test_fromConstraintToString()
 
 void PrintingVisitorTests::test_sizeConstraintToString()
 {
-    auto c = std::make_unique<RangeConstraint<IntegerValue>>(Range<int>{1, 10});
+    auto c = RangeConstraint<IntegerValue>::create({1, 10});
 
     SizeConstraint<IntegerValue> a(std::move(c));
 
@@ -59,9 +59,8 @@ void PrintingVisitorTests::test_sizeConstraintToString()
 
 void PrintingVisitorTests::test_rangeConstraintToString()
 {
-    QCOMPARE(toString(RangeConstraint<Data::IntegerValue>(Range<int>(10))), QStringLiteral("10"));
-    QCOMPARE(toString(RangeConstraint<Data::IntegerValue>(Range<int>(10, 20))),
-             QStringLiteral("10 .. 20"));
+    QCOMPARE(toString(RangeConstraint<Data::IntegerValue>(10)), QStringLiteral("10"));
+    QCOMPARE(toString(RangeConstraint<Data::IntegerValue>({10, 20})), QStringLiteral("10 .. 20"));
 
     QCOMPARE(toString(RangeConstraint<Data::StringValue>(Range<QString>("abc"))),
              QStringLiteral(R"("abc")"));
@@ -71,8 +70,8 @@ void PrintingVisitorTests::test_rangeConstraintToString()
 
 void PrintingVisitorTests::test_andConstraintToString()
 {
-    auto l = std::make_unique<RangeConstraint<IntegerValue>>(Range<int>{10, 20});
-    auto r = std::make_unique<RangeConstraint<IntegerValue>>(Range<int>{50, 60});
+    auto l = RangeConstraint<IntegerValue>::create({10, 20});
+    auto r = RangeConstraint<IntegerValue>::create({50, 60});
 
     AndConstraint<IntegerValue> a(std::move(l), std::move(r));
 
@@ -81,8 +80,8 @@ void PrintingVisitorTests::test_andConstraintToString()
 
 void PrintingVisitorTests::test_orConstraintToString()
 {
-    auto l = std::make_unique<RangeConstraint<IntegerValue>>(Range<int>{10, 20});
-    auto r = std::make_unique<RangeConstraint<IntegerValue>>(Range<int>{50, 60});
+    auto l = RangeConstraint<IntegerValue>::create({10, 20});
+    auto r = RangeConstraint<IntegerValue>::create({50, 60});
 
     OrConstraint<IntegerValue> o(std::move(l), std::move(r));
 
@@ -93,8 +92,8 @@ void PrintingVisitorTests::test_listToString()
 {
     ConstraintList<IntegerValue> l;
 
-    l.append(std::make_unique<RangeConstraint<IntegerValue>>(Range<int>{10, 20}));
-    l.append(std::make_unique<RangeConstraint<IntegerValue>>(Range<int>{100, 200}));
+    l.append({10, 20});
+    l.append({100, 200});
 
     QCOMPARE(toString(l), QLatin1Literal("(10 .. 20) (100 .. 200)"));
 }

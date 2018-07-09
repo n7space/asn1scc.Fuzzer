@@ -27,10 +27,10 @@
 
 #include <QtTest>
 
-#include <data/constraints/rangelist.h>
+#include <data/rangelist.h>
 
-using namespace MalTester::Data::Constraints::Tests;
-using namespace MalTester::Data::Constraints;
+using namespace MalTester::Data::Tests;
+using namespace MalTester::Data;
 
 RangeListTests::RangeListTests(QObject *parent)
     : QObject(parent)

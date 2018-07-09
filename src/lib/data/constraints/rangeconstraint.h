@@ -25,9 +25,10 @@
 ****************************************************************************/
 #pragma once
 
+#include <data/range.h>
+
 #include "constraint.h"
 #include "constraintvisitor.h"
-#include "range.h"
 
 namespace MalTester {
 namespace Data {

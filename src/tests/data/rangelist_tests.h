@@ -29,24 +29,23 @@
 
 namespace MalTester {
 namespace Data {
-namespace Constraints {
 namespace Tests {
 
-class RangeTests : public QObject
+class RangeListTests : public QObject
 {
     Q_OBJECT
 public:
-    explicit RangeTests(QObject *parent = 0);
+    explicit RangeListTests(QObject *parent = 0);
 
 private slots:
-    void test_intersects();
-    void test_intersection();
+    void test_asString();
+    void test_compact();
+    void test_sort();
 
-    void test_canMerge();
-    void test_merge();
+    void test_intersection();
+    void test_intersect();
 };
 
 } // namespace Tests
-} // namespace Constraints
 } // namespace Data
 } // namespace MalTester

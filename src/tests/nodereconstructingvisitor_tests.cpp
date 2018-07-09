@@ -479,13 +479,13 @@ void NodeReconstructingVisitorTests::test_typeAssignmentSequenceOfWithValue()
 
     internalType->constraints().append(
         std::make_unique<Data::Constraints::RangeConstraint<Data::IntegerValue>>(
-            Data::Constraints::Range<int>{5, 10}));
+            Data::Range<int>{5, 10}));
 
     auto assignment = createTypeAssignmentWithConstraint(
         QStringLiteral("SEQUENCE_OF"),
         new Data::Constraints::SizeConstraint<Data::IntegerValue>(
             std::make_unique<Data::Constraints::RangeConstraint<Data::IntegerValue>>(
-                Data::Constraints::Range<int>(10))));
+                Data::Range<int>(10))));
 
     auto &sequenceType = dynamic_cast<Data::Types::SequenceOf &>(*(assignment->type()));
     sequenceType.setItemsType(std::move(internalType));
@@ -506,7 +506,7 @@ void NodeReconstructingVisitorTests::test_typeAssignmentRealWithValue()
     auto assignment
         = createTypeAssignmentWithConstraint(QStringLiteral("REAL"),
                                              new Data::Constraints::RangeConstraint<Data::RealValue>(
-                                                 Data::Constraints::Range<double>(1.1)));
+                                                 Data::Range<double>(1.1)));
     auto actual = restoreNode(*assignment);
     QString expected = "MyType ::= REAL(1.1)\n";
 
@@ -522,8 +522,7 @@ void NodeReconstructingVisitorTests::test_typeAssignmentIntegerWithValue()
 {
     auto assignment = createTypeAssignmentWithConstraint(
         QStringLiteral("INTEGER"),
-        new Data::Constraints::RangeConstraint<Data::IntegerValue>(
-            Data::Constraints::Range<int>(1, 2)));
+        new Data::Constraints::RangeConstraint<Data::IntegerValue>(Data::Range<int>(1, 2)));
     auto actual = restoreNode(*assignment);
     QString expected = "MyType ::= INTEGER(1 .. 2)\n";
 
@@ -552,7 +551,7 @@ void NodeReconstructingVisitorTests::test_typeAssignmentUserDefinedWithValue()
         *referedType);
     constrainedType.constraints().append(
         std::make_unique<Data::Constraints::RangeConstraint<Data::IntegerValue>>(
-            Data::Constraints::Range<int>(1, 2)));
+            Data::Range<int>(1, 2)));
 
     auto type = std::make_unique<Data::Types::UserdefinedType>(QStringLiteral("ReferencedType"),
                                                                QStringLiteral("MyModule"));

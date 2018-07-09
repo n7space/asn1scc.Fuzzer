@@ -33,8 +33,9 @@
 #include "reconstructor_tests.h"
 
 #include "data/constraints/printingvisitor_tests.h"
-#include "data/constraints/range_tests.h"
-#include "data/constraints/rangelist_tests.h"
+
+#include "data/range_tests.h"
+#include "data/rangelist_tests.h"
 
 int main(int argc, char *argv[])
 {
@@ -48,8 +49,8 @@ int main(int argc, char *argv[])
     runTest(new MalTester::Tests::NodeReconstructingVisitorTests);
     runTest(new MalTester::Tests::ReconstructorTests);
     runTest(new MalTester::Tests::AstXmlConstraintParserTests);
-    runTest(new MalTester::Data::Constraints::Tests::RangeTests);
-    runTest(new MalTester::Data::Constraints::Tests::RangeListTests);
+    runTest(new MalTester::Data::Tests::RangeTests);
+    runTest(new MalTester::Data::Tests::RangeListTests);
     runTest(new MalTester::Data::Constraints::Tests::PrintingVisitorTests);
 
     return ret;

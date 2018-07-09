@@ -27,7 +27,6 @@
 
 namespace MalTester {
 namespace Data {
-namespace Constraints {
 
 template<typename T>
 class Range
@@ -109,6 +108,5 @@ Range<T> Range<T>::intersection(const Range &other) const
     return {qMax(begin(), other.begin()), qMin(end(), other.end())};
 }
 
-} // namespace Constraints
 } // namespace Data
 } // namespace MalTester

@@ -35,7 +35,6 @@
 
 namespace MalTester {
 namespace Data {
-namespace Constraints {
 
 template<typename T>
 class RangeList
@@ -132,6 +131,5 @@ void RangeList<T>::intersect(const RangeList &other)
     m_ranges = list;
 }
 
-} // namespace Constraints
 } // namespace Data
 } // namespace MalTester

@@ -25,37 +25,25 @@
 ****************************************************************************/
 #pragma once
 
-#include <data/range.h>
-
-#include "constraint.h"
-#include "constraintvisitor.h"
+#include <QObject>
 
 namespace MalTester {
 namespace Data {
-namespace Constraints {
+namespace Tests {
 
-template<typename ValueType>
-class RangeConstraint : public Constraint<ValueType>
+class IntegerRangesTests : public QObject
 {
+    Q_OBJECT
 public:
-    explicit RangeConstraint(const Range<typename ValueType::Type> &range)
-        : m_range(range)
-    {}
-    ~RangeConstraint() override = default;
+    explicit IntegerRangesTests(QObject *parent = 0);
 
-    const Range<typename ValueType::Type> &range() const { return m_range; }
-
-    void accept(ConstraintVisitor<ValueType> &visitor) const override { visitor.visit(*this); }
-
-    std::unique_ptr<Constraint<ValueType>> clone() const override
-    {
-        return std::make_unique<RangeConstraint>(m_range);
-    }
-
-private:
-    Range<typename ValueType::Type> m_range;
+private slots:
+    void test_uint8();
+    void test_int16();
+    void test_ascii();
+    void test_bcd();
 };
 
-} // namespace Constraints
+} // namespace Tests
 } // namespace Data
 } // namespace MalTester

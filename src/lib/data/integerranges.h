@@ -25,29 +25,14 @@
 ****************************************************************************/
 #pragma once
 
-#include <QObject>
+#include "types/integeracnparams.h"
+
+#include "range.h"
 
 namespace MalTester {
 namespace Data {
-namespace Constraints {
-namespace Tests {
 
-class RangeListTests : public QObject
-{
-    Q_OBJECT
-public:
-    explicit RangeListTests(QObject *parent = 0);
+Range<int> maxValueRangeFor(const Types::IntegerAcnParameters &type);
 
-private slots:
-    void test_asString();
-    void test_compact();
-    void test_sort();
-
-    void test_intersection();
-    void test_intersect();
-};
-
-} // namespace Tests
-} // namespace Constraints
 } // namespace Data
 } // namespace MalTester

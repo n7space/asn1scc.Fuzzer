@@ -20,6 +20,7 @@ SOURCES += \
     data/multiplevalue.cpp \
     data/namedvalue.cpp \
     data/choicevalue.cpp \
+    data/integerranges.cpp \
     \
     data/types/type.cpp \
     data/types/typemutatingvisitor.cpp \
@@ -76,6 +77,9 @@ HEADERS += \
     data/multiplevalue.h \
     data/namedvalue.h \
     data/choicevalue.h \
+    data/range.h \
+    data/rangelist.h \
+    data/integerranges.h \
     \
     data/types/typefactory.h \
     data/types/labeltype.h \
@@ -101,8 +105,6 @@ HEADERS += \
     data/types/acnparameterizablecomposite.h \
     data/types/asciistringacnparameters.h \
     \
-    data/constraints/range.h \
-    data/constraints/rangelist.h \
     data/constraints/constraint.h \
     data/constraints/rangeconstraint.h \
     data/constraints/logicoperators.h \

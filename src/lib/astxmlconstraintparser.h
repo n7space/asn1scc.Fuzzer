@@ -239,7 +239,7 @@ template<typename T>
 typename AstXmlConstraintNodeParser<T>::Constraints AstXmlConstraintNodeParser<T>::buildRange(
     const QString &val) const
 {
-    const auto range = Data::Constraints::Range<typename T::Type>(T::fromAstValue(val));
+    const auto range = Data::Range<typename T::Type>(T::fromAstValue(val));
     return std::make_unique<Data::Constraints::RangeConstraint<T>>(range);
 }
 
@@ -247,8 +247,7 @@ template<typename T>
 typename AstXmlConstraintNodeParser<T>::Constraints AstXmlConstraintNodeParser<T>::buildRange(
     const QString &min, const QString &max) const
 {
-    const auto range = Data::Constraints::Range<typename T::Type>(T::fromAstValue(min),
-                                                                  T::fromAstValue(max));
+    const auto range = Data::Range<typename T::Type>(T::fromAstValue(min), T::fromAstValue(max));
     return std::make_unique<Data::Constraints::RangeConstraint<T>>(range);
 }
 

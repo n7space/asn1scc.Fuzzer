@@ -27,9 +27,9 @@
 
 #include <QtTest>
 
-#include <data/constraints/range.h>
+#include <data/range.h>
 
-using namespace MalTester::Data::Constraints::Tests;
+using namespace MalTester::Data::Tests;
 
 RangeTests::RangeTests(QObject *parent)
     : QObject(parent)

@@ -14,8 +14,10 @@ SOURCES += \
     reconstructor_tests.cpp \
     astxmlconstraintparser_tests.cpp \
     \
-    data/constraints/range_tests.cpp \
-    data/constraints/rangelist_tests.cpp \
+    data/range_tests.cpp \
+    data/rangelist_tests.cpp \
+    data/integerranges_tests.cpp \
+    \
     data/constraints/printingvisitor_tests.cpp \
     \
     main.cpp
@@ -26,6 +28,8 @@ HEADERS += \
     reconstructor_tests.h \
     astxmlconstraintparser_tests.h \
     \
-    data/constraints/range_tests.h \
-    data/constraints/rangelist_tests.h \
+    data/range_tests.h \
+    data/rangelist_tests.h \
+    data/integerranges_tests.h \
+    \
     data/constraints/printingvisitor_tests.h

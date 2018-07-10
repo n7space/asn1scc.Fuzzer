@@ -173,6 +173,8 @@ private:
             Type::mapEndianess(m_attributes.value(QLatin1String("endianness")).toString()));
         type.setEncoding(
             Integer::mapEncoding(m_attributes.value(QLatin1String("encoding")).toString()));
+        type.setAcnMinSizeInBits(m_attributes.value(QLatin1String("acnMinSizeInBits")).toInt());
+        type.setAcnMaxSizeInBits(m_attributes.value(QLatin1String("acnMaxSizeInBits")).toInt());
     }
 
     const QXmlStreamAttributes &m_attributes;

@@ -988,7 +988,7 @@ void AstXmlParserTests::test_singleIntegerTypeAssignmentWithAcnParams()
         R"(        <TypeAssignments>)"
         R"(          <TypeAssignment Name="MyInt" Line="4" CharPositionInLine="10">)"
         R"(            <Asn1Type id="Constrained.MyInt" Line="3" CharPositionInLine="14" ParameterizedTypeInstance="false" align-to-next="dword">)"
-        R"(              <INTEGER endianness="big" size="8" encoding="BCD">)"
+        R"(              <INTEGER endianness="big" size="8" encoding="BCD" acnMaxSizeInBits="72" acnMinSizeInBits="8">)"
         R"(                <Constraints>)"
         R"(                  <IntegerValue>1</IntegerValue>)"
         R"(                </Constraints>)"
@@ -1010,6 +1010,8 @@ void AstXmlParserTests::test_singleIntegerTypeAssignmentWithAcnParams()
     QCOMPARE(type->encoding(), Data::Types::IntegerEncoding::BCD);
     QCOMPARE(type->endianness(), Data::Types::Endianness::big);
     QCOMPARE(type->alignToNext(), Data::Types::AlignToNext::dword);
+    QCOMPARE(type->acnMinSizeInBits(), 8);
+    QCOMPARE(type->acnMaxSizeInBits(), 72);
 }
 
 void AstXmlParserTests::test_singleIntegerValueAssignment()

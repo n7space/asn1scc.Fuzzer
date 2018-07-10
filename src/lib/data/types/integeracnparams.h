@@ -50,6 +50,12 @@ public:
     void setSize(const int size) { m_size = size; }
     int size() const { return m_size; }
 
+    int acnMinSizeInBits() const { return m_acnMinSizeInBits; }
+    void setAcnMinSizeInBits(int s) { m_acnMinSizeInBits = s; }
+
+    int acnMaxSizeInBits() const { return m_acnMaxSizeInBits; }
+    void setAcnMaxSizeInBits(int s) { m_acnMaxSizeInBits = s; }
+
     void setEncoding(const IntegerEncoding encoding) { m_encoding = encoding; }
     IntegerEncoding encoding() const { return m_encoding; }
 
@@ -63,6 +69,8 @@ private:
     IntegerEncoding m_encoding;
     Endianness m_endianness;
     int m_size;
+    int m_acnMinSizeInBits;
+    int m_acnMaxSizeInBits;
 };
 
 } // namespace Types

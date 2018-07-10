@@ -162,7 +162,7 @@ void NodeReconstructingVisitorTests::test_valueAssignmentBitString()
     auto actual = createSingleValueValueAssignmentValue(QStringLiteral("BIT_STRING"),
                                                         QStringLiteral("1010"),
                                                         Data::BitStringValue::asString);
-    QString expected = "myValue BIT STRING ::= \"1010\"B\n";
+    QString expected = "myValue BIT STRING ::= '1010'B\n";
 
     QCOMPARE(actual, expected);
 }
@@ -182,7 +182,7 @@ void NodeReconstructingVisitorTests::test_valueAssignmentOctetString()
     auto actual = createSingleValueValueAssignmentValue(QStringLiteral("OCTET_STRING"),
                                                         QStringLiteral("1010"),
                                                         Data::OctetStringValue::asString);
-    QString expected = "myValue OCTET STRING ::= \"1010\"H\n";
+    QString expected = "myValue OCTET STRING ::= '1010'H\n";
 
     QCOMPARE(actual, expected);
 }
@@ -246,7 +246,7 @@ void NodeReconstructingVisitorTests::test_typeAssignmentBitStringWithValue()
         new Data::Constraints::RangeConstraint<Data::BitStringValue>({"1111", "1111"}));
 
     auto actual = restoreNode(*assignment);
-    QString expected = "MyType ::= BIT STRING(\"1111\"B)\n";
+    QString expected = "MyType ::= BIT STRING('1111'B)\n";
 
     QCOMPARE(actual, expected);
 }
@@ -263,7 +263,7 @@ void NodeReconstructingVisitorTests::test_typeAssignmentOctetStringWithValue()
         new Data::Constraints::RangeConstraint<Data::OctetStringValue>({"1010", "1010"}));
 
     auto actual = restoreNode(*assignment);
-    QString expected = "MyType ::= OCTET STRING(\"1010\"H)\n";
+    QString expected = "MyType ::= OCTET STRING('1010'H)\n";
 
     QCOMPARE(actual, expected);
 }

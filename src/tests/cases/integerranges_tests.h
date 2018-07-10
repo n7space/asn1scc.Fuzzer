@@ -23,35 +23,27 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-#include "integerranges.h"
+#pragma once
 
-using namespace MalTester::Data;
-using namespace MalTester::Data::Types;
+#include <QObject>
 
-namespace {
+namespace MalTester {
+namespace Cases {
+namespace Tests {
 
-int nineRepeated(int times)
+class IntegerRangesTests : public QObject
 {
-    if (times == 1)
-        return 9;
-    return nineRepeated(times - 1) * 10 + 9;
-}
+    Q_OBJECT
+public:
+    explicit IntegerRangesTests(QObject *parent = 0);
 
-} // namespace
+private slots:
+    void test_uint8();
+    void test_int16();
+    void test_ascii();
+    void test_bcd();
+};
 
-Range<int> MalTester::Data::maxValueRangeFor(const IntegerAcnParameters &type)
-{
-    switch (type.encoding()) {
-    case IntegerEncoding::pos_int:
-        return {0, (1 << type.size()) - 1};
-    case IntegerEncoding::twos_complement:
-        return {-(1 << (type.size() - 1)), (1 << (type.size() - 1)) - 1};
-    case IntegerEncoding::ASCII:
-        return {-nineRepeated((type.size() / 8) - 1), nineRepeated((type.size() / 8) - 1)};
-    case IntegerEncoding::BCD:
-        return {0, nineRepeated(type.size() / 4)};
-    case IntegerEncoding::unspecified:
-        break;
-    }
-    return {0, 0};
-}
+} // namespace Tests
+} // namespace Cases
+} // namespace MalTester

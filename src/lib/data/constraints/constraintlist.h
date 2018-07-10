@@ -30,6 +30,7 @@
 
 #include "constraint.h"
 #include "constraintvisitor.h"
+#include "rangeconstraint.h"
 
 namespace MalTester {
 namespace Data {
@@ -51,6 +52,13 @@ public:
     {
         m_constraints.emplace_back(std::move(c));
     }
+
+    void append(const Range<typename ValueType::Type> &r)
+    {
+        append(std::make_unique<RangeConstraint<ValueType>>(r));
+    }
+
+    void clear() { m_constraints.clear(); }
 
     void accept(ConstraintVisitor<ValueType> &visitor) const { visitor.visit(*this); }
 

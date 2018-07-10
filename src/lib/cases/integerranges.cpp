@@ -23,42 +23,36 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-#include "integerincorrectvalues_tests.h"
+#include "integerranges.h"
 
-#include <QtTest>
-
-#include <cases/integerincorrectvalues.h>
-
-#include <data/constraints/rangeconstraint.h>
-
-using namespace MalTester::Cases::Tests;
+using namespace MalTester::Cases;
 using namespace MalTester::Data::Types;
 using namespace MalTester::Data;
 
-IntegerIncorrectValuesTests::IntegerIncorrectValuesTests(QObject *parent)
-    : QObject(parent)
-{}
+namespace {
 
-void IntegerIncorrectValuesTests::test_empty()
+int nineRepeated(int times)
 {
-    Integer i;
-    i.setSize(8);
-    i.setEncoding(IntegerEncoding::pos_int);
-    i.constraints().append({0, 255});
-
-    const auto v = IntegerIncorrectValues(i).items();
-
-    QVERIFY(v.isEmpty());
+    if (times == 1)
+        return 9;
+    return nineRepeated(times - 1) * 10 + 9;
 }
-void IntegerIncorrectValuesTests::test_values()
+
+} // namespace
+
+Range<int> MalTester::Cases::maxValueRangeFor(const IntegerAcnParameters &type)
 {
-    Integer i;
-    i.setSize(8);
-    i.setEncoding(IntegerEncoding::pos_int);
-    i.constraints().append({1, 10});
-    i.constraints().append({100, 180});
-
-    const auto v = IntegerIncorrectValues(i).items();
-
-    QCOMPARE(v, (QList<int>{0, 11, 55, 99, 181, 218, 255}));
+    switch (type.encoding()) {
+    case IntegerEncoding::pos_int:
+        return {0, (1 << type.size()) - 1};
+    case IntegerEncoding::twos_complement:
+        return {-(1 << (type.size() - 1)), (1 << (type.size() - 1)) - 1};
+    case IntegerEncoding::ASCII:
+        return {-nineRepeated((type.size() / 8) - 1), nineRepeated((type.size() / 8) - 1)};
+    case IntegerEncoding::BCD:
+        return {0, nineRepeated(type.size() / 4)};
+    case IntegerEncoding::unspecified:
+        break;
+    }
+    return {0, 0};
 }

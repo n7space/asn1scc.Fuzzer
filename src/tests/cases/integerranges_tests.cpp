@@ -30,9 +30,9 @@
 
 #include <QtTest>
 
-#include <data/integerranges.h>
+#include <cases/integerranges.h>
 
-using namespace MalTester::Data::Tests;
+using namespace MalTester::Cases::Tests;
 using namespace MalTester::Data::Types;
 
 IntegerRangesTests::IntegerRangesTests(QObject *parent)

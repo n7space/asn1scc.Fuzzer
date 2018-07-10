@@ -25,25 +25,31 @@
 ****************************************************************************/
 #pragma once
 
-#include <QObject>
+#include <data/types/typemutatingvisitor.h>
 
 namespace MalTester {
-namespace Data {
-namespace Tests {
+namespace Cases {
 
-class IntegerRangesTests : public QObject
+class ConstraintsRelaxingVisitor : public Data::Types::TypeMutatingVisitor
 {
-    Q_OBJECT
 public:
-    explicit IntegerRangesTests(QObject *parent = 0);
+    ~ConstraintsRelaxingVisitor() override;
 
-private slots:
-    void test_uint8();
-    void test_int16();
-    void test_ascii();
-    void test_bcd();
+    void visit(Data::Types::Boolean &type) override;
+    void visit(Data::Types::Null &type) override;
+    void visit(Data::Types::BitString &type) override;
+    void visit(Data::Types::OctetString &type) override;
+    void visit(Data::Types::IA5String &type) override;
+    void visit(Data::Types::NumericString &type) override;
+    void visit(Data::Types::Enumerated &type) override;
+    void visit(Data::Types::Choice &type) override;
+    void visit(Data::Types::Sequence &type) override;
+    void visit(Data::Types::SequenceOf &type) override;
+    void visit(Data::Types::Real &type) override;
+    void visit(Data::Types::LabelType &type) override;
+    void visit(Data::Types::Integer &type) override;
+    void visit(Data::Types::UserdefinedType &type) override;
 };
 
-} // namespace Tests
-} // namespace Data
+} // namespace Cases
 } // namespace MalTester

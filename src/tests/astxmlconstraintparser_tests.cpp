@@ -82,14 +82,14 @@ void AstXmlConstraintParserTests::test_simpleBitStringValue()
 {
     parse<Data::BitStringValue>("<BitStringValue>0101</BitStringValue>");
 
-    QCOMPARE(m_dumpedConstraint, QLatin1Literal(R"(("0101"B))"));
+    QCOMPARE(m_dumpedConstraint, QLatin1Literal("('0101'B)"));
 }
 
 void AstXmlConstraintParserTests::test_simpleOctetStringValue()
 {
     parse<Data::OctetStringValue>("<OctetStringValue>10</OctetStringValue>");
 
-    QCOMPARE(m_dumpedConstraint, QLatin1Literal(R"(("10"H))")); // TODO fix asn1scc and OctetStr
+    QCOMPARE(m_dumpedConstraint, QLatin1Literal("('10'H)"));
 }
 
 void AstXmlConstraintParserTests::test_range()

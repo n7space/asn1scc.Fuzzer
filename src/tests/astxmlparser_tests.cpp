@@ -2380,7 +2380,7 @@ void AstXmlParserTests::test_octetStringWithValueDefined()
         = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyOctetString");
 
     const auto ocetStringType = dynamic_cast<const Data::Types::OctetString *>(type->type());
-    QCOMPARE(toString(ocetStringType->constraints()), QStringLiteral(R"(("599"H))"));
+    QCOMPARE(toString(ocetStringType->constraints()), QStringLiteral("('599'H)"));
 }
 
 void AstXmlParserTests::test_octetStringAcnParams()
@@ -2465,7 +2465,7 @@ void AstXmlParserTests::test_octetStringValueAssignment()
 
     auto octetStringType
         = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->value("myOctet");
-    QCOMPARE(octetStringType->value()->asString(), QStringLiteral("\"01\"H"));
+    QCOMPARE(octetStringType->value()->asString(), QStringLiteral("'01'H"));
 }
 
 void AstXmlParserTests::test_iA5StringWithSizeConstraint()
@@ -2987,7 +2987,7 @@ void AstXmlParserTests::test_bitStringWithValueDefined()
     const auto type
         = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyBitString");
     const auto bitString = dynamic_cast<const Data::Types::BitString *>(type->type());
-    QCOMPARE(toString(bitString->constraints()), QStringLiteral(R"(("10101011"B))"));
+    QCOMPARE(toString(bitString->constraints()), QStringLiteral("('10101011'B)"));
 }
 
 void AstXmlParserTests::test_bitStringAcnParams()
@@ -3071,7 +3071,7 @@ void AstXmlParserTests::test_bitStringValueAssignment()
         R"(</AstRoot>)");
 
     auto type = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->value("myBit");
-    QCOMPARE(type->value()->asString(), QStringLiteral("\"101\"B"));
+    QCOMPARE(type->value()->asString(), QStringLiteral("'101'B"));
 }
 
 void AstXmlParserTests::test_notRelatedConstraintsInNumericString()

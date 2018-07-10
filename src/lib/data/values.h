@@ -74,17 +74,14 @@ struct BitStringValue
     using Type = QString;
     static QLatin1String astNodeName() { return QLatin1Literal("BitStringValue"); }
     static Type fromAstValue(const QString &value) { return value; }
-    static QString asString(Type t) { return '"' + t + "\"B"; }
+    static QString asString(Type t) { return "'" + t + "'B"; }
 };
 struct OctetStringValue
 {
     using Type = QString;
     static QLatin1String astNodeName() { return QLatin1Literal("OctetStringValue"); }
     static Type fromAstValue(const QString &value) { return value; }
-    static QString asString(Type t)
-    {
-        return '"' + t + "\"H"; /* TODO value is not really hex right now */
-    }
+    static QString asString(Type t) { return "'" + t + "'H"; }
 };
 
 } // namespace Data

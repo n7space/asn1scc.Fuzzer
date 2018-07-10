@@ -62,7 +62,8 @@ public:
     void setEndianness(const Endianness endianness) { m_endianness = endianness; }
     Endianness endianness() const { return m_endianness; }
 
-    static IntegerEncoding mapEncoding(const QString &in);
+    static IntegerEncoding mapEncoding(QStringRef in);
+    static IntegerEncoding mapEncoding(const QString &in) { return mapEncoding(&in); }
     static QString encodingToString(IntegerEncoding encoding);
 
 private:

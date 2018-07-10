@@ -29,7 +29,7 @@ using namespace MalTester::Data::Types;
 
 Type::~Type() {}
 
-AlignToNext Type::mapAlignToNext(const QString &in)
+AlignToNext Type::mapAlignToNext(QStringRef in)
 {
     if (in == "byte")
         return AlignToNext::byte;
@@ -40,7 +40,7 @@ AlignToNext Type::mapAlignToNext(const QString &in)
     return AlignToNext::unspecified;
 }
 
-Endianness Type::mapEndianess(const QString &in)
+Endianness Type::mapEndianess(QStringRef in)
 {
     if (in == "big")
         return Endianness::big;

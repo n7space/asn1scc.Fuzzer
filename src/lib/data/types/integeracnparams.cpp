@@ -36,7 +36,7 @@ IntegerAcnParameters::IntegerAcnParameters()
     , m_acnMaxSizeInBits(0)
 {}
 
-IntegerEncoding IntegerAcnParameters::mapEncoding(const QString &in)
+IntegerEncoding IntegerAcnParameters::mapEncoding(QStringRef in)
 {
     if (in == "pos-int")
         return IntegerEncoding::pos_int;

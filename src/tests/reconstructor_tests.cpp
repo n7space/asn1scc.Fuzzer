@@ -28,8 +28,6 @@
 
 #include <QtTest>
 
-#include <reconstructor.h>
-
 using namespace MalTester;
 using namespace MalTester::Tests;
 
@@ -41,51 +39,44 @@ void ReconstructorTests::test_emptyProject()
 {
     auto project = createProject(QStringLiteral("MyProject"));
 
-    Reconstructor rec(project);
-    rec.reconstruct();
+    Reconstructor rec(createFactory());
+    rec.reconstruct(*project);
 
-    const auto &files = rec.reconstructedFiles();
-
-    QVERIFY(files.empty());
+    QVERIFY(m_files.empty());
 }
 
 void ReconstructorTests::test_emptyFile()
 {
     auto project = createProject(QStringLiteral("MyProject"));
-    project->add(createFile(QStringLiteral("MyFile_1")));
+    project->add(createFile(QStringLiteral("MyFile_1.asn")));
 
-    Reconstructor rec(project);
-    rec.reconstruct();
+    Reconstructor rec(createFactory());
+    rec.reconstruct(*project);
 
-    const auto &files = rec.reconstructedFiles();
-
-    QCOMPARE(files.size(), std::size_t{1});
-    QCOMPARE(files.at(QStringLiteral("MyFile_1")).first, QStringLiteral(""));
+    QCOMPARE(m_files.size(), std::size_t{2});
+    QCOMPARE(m_files.at(QStringLiteral("MyFile_1.asn")), QStringLiteral(""));
+    QCOMPARE(m_files.at(QStringLiteral("MyFile_1.acn")), QStringLiteral(""));
 }
 
 void ReconstructorTests::test_singleFileWithSingleModule()
 {
     auto project = createProject(QStringLiteral("MyProject"));
-    auto file = createFile(QStringLiteral("MyFile_1"));
+    auto file = createFile(QStringLiteral("MyFile_1.asn1"));
 
     file->add(createDefinitions(QStringLiteral("MyModule_1")));
     project->add(std::move(file));
 
-    Reconstructor rec(project);
-    rec.reconstruct();
+    Reconstructor rec(createFactory());
+    rec.reconstruct(*project);
 
-    const auto &files = rec.reconstructedFiles();
+    QCOMPARE(m_files.size(), std::size_t{2});
 
-    QCOMPARE(files.size(), std::size_t{1});
+    const QString expected = "MyModule_1 DEFINITIONS ::= BEGIN\n"
+                             "END\n"
+                             "\n";
 
-    // clang-format off
-    QString expected =
-        "MyModule_1 DEFINITIONS ::= BEGIN\n"
-        "END\n"
-        "\n";
-    // clang-format on
-
-    QCOMPARE(files.at(QStringLiteral("MyFile_1")).first, expected);
+    QCOMPARE(m_files.at(QStringLiteral("MyFile_1.asn1")), expected);
+    QCOMPARE(m_files.at(QStringLiteral("MyFile_1.acn")), expected);
 }
 
 void ReconstructorTests::test_singleFileWithMultipleModules()
@@ -97,24 +88,20 @@ void ReconstructorTests::test_singleFileWithMultipleModules()
     file->add(createDefinitions(QStringLiteral("MyModule_2")));
     project->add(std::move(file));
 
-    Reconstructor rec(project);
-    rec.reconstruct();
+    Reconstructor rec(createFactory());
+    rec.reconstruct(*project);
 
-    const auto &files = rec.reconstructedFiles();
+    QCOMPARE(m_files.size(), std::size_t{2});
 
-    QCOMPARE(files.size(), std::size_t{1});
+    const QString expected = "MyModule_1 DEFINITIONS ::= BEGIN\n"
+                             "END\n"
+                             "\n"
+                             "MyModule_2 DEFINITIONS ::= BEGIN\n"
+                             "END\n"
+                             "\n";
 
-    // clang-format off
-    QString expected =
-        "MyModule_1 DEFINITIONS ::= BEGIN\n"
-        "END\n"
-        "\n"
-        "MyModule_2 DEFINITIONS ::= BEGIN\n"
-        "END\n"
-        "\n";
-    // clang-format on
-
-    QCOMPARE(files.at(QStringLiteral("MyFile_1")).first, expected);
+    QCOMPARE(m_files.at(QStringLiteral("MyFile_1")), expected);
+    QCOMPARE(m_files.at(QStringLiteral("MyFile_1.acn")), expected);
 }
 
 void ReconstructorTests::test_multipleFiles()
@@ -123,12 +110,10 @@ void ReconstructorTests::test_multipleFiles()
     project->add(createFile(QStringLiteral("MyFile_1")));
     project->add(createFile(QStringLiteral("MyFile_2")));
 
-    Reconstructor rec(project);
-    rec.reconstruct();
+    Reconstructor rec(createFactory());
+    rec.reconstruct(*project);
 
-    const auto &files = rec.reconstructedFiles();
-
-    QCOMPARE(files.size(), std::size_t{2});
+    QCOMPARE(m_files.size(), std::size_t{4});
 }
 
 std::unique_ptr<Data::File> ReconstructorTests::createFile(const QString &path) const
@@ -144,4 +129,14 @@ std::unique_ptr<Data::Project> ReconstructorTests::createProject(const QString &
 std::unique_ptr<Data::Definitions> ReconstructorTests::createDefinitions(const QString &name) const
 {
     return std::make_unique<Data::Definitions>(name, Data::SourceLocation());
+}
+
+Reconstructor::StreamFactory ReconstructorTests::createFactory()
+{
+    return [this](const QString &name) { return std::make_unique<QTextStream>(&m_files[name]); };
+}
+
+void ReconstructorTests::init()
+{
+    m_files.clear();
 }

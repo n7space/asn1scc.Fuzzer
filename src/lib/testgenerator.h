@@ -27,8 +27,6 @@
 
 #include <memory>
 
-#include <QTemporaryDir>
-
 #include <data/project.h>
 
 #include <runparameters.h>
@@ -44,6 +42,9 @@ public:
 
 private:
     std::unique_ptr<Data::Project> createDataTree() const;
+    std::unique_ptr<Data::Project> createRelaxedCopyOf(const Data::Project &project) const;
+    void dumpRelaxedModelFrom(const Data::Project &project) const;
+    bool createOutputDirectory() const;
 
     const RunParameters m_params;
 };

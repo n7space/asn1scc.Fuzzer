@@ -49,6 +49,7 @@ public:
     ~Definitions() override;
 
     void accept(Visitor &visitor) const override;
+    void accept(MutatingVisitor &visitor) override;
 
     void addType(std::unique_ptr<TypeAssignment> type);
     void addValue(std::unique_ptr<ValueAssignment> value);

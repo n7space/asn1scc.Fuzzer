@@ -33,6 +33,7 @@ namespace MalTester {
 namespace Data {
 
 class Visitor;
+class MutatingVisitor;
 
 class Node
 {
@@ -49,6 +50,7 @@ public:
     virtual ~Node();
 
     virtual void accept(Visitor &visitor) const = 0;
+    virtual void accept(MutatingVisitor &visitor) = 0;
 
     template<typename VisitorType, typename... Args>
     typename VisitorType::ValueType valueFor(Args... args) const

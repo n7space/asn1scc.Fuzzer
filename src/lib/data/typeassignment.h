@@ -46,6 +46,7 @@ public:
     ~TypeAssignment() override;
 
     void accept(Visitor &visitor) const override;
+    void accept(MutatingVisitor &visitor) override;
 
     const Types::Type *type() const { return m_type.get(); }
     Types::Type *type() { return m_type.get(); }

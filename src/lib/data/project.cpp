@@ -25,6 +25,7 @@
 ****************************************************************************/
 #include "project.h"
 
+#include "mutatingvisitor.h"
 #include "visitor.h"
 
 using namespace MalTester::Data;
@@ -44,6 +45,11 @@ Project::Project(const Project &other)
 Project::~Project() {}
 
 void Project::accept(Visitor &visitor) const
+{
+    visitor.visit(*this);
+}
+
+void Project::accept(MutatingVisitor &visitor)
 {
     visitor.visit(*this);
 }

@@ -43,6 +43,7 @@ public:
     ~Project() override;
 
     void accept(Visitor &visitor) const override;
+    void accept(MutatingVisitor &visitor) override;
 
     void add(std::unique_ptr<File> file);
     void remove(const QString &path);

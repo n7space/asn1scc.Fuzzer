@@ -25,6 +25,7 @@
 ****************************************************************************/
 #include "valueassignment.h"
 
+#include "mutatingvisitor.h"
 #include "visitor.h"
 
 using namespace MalTester::Data;
@@ -49,6 +50,11 @@ ValueAssignment::ValueAssignment(const ValueAssignment &other)
 ValueAssignment::~ValueAssignment() {}
 
 void ValueAssignment::accept(Visitor &visitor) const
+{
+    visitor.visit(*this);
+}
+
+void ValueAssignment::accept(MutatingVisitor &visitor)
 {
     visitor.visit(*this);
 }

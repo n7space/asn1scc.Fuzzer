@@ -23,32 +23,33 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-#include "typeassignment.h"
+#pragma once
 
-#include "mutatingvisitor.h"
-#include "visitor.h"
+namespace MalTester {
+namespace Data {
 
-using namespace MalTester::Data;
+class Definitions;
+class File;
+class Root;
+class TypeAssignment;
+class ValueAssignment;
+class Project;
 
-TypeAssignment::TypeAssignment(const QString &name,
-                               const SourceLocation &location,
-                               std::unique_ptr<Types::Type> type)
-    : Node(name, location)
-    , m_type(std::move(type))
-{}
-
-TypeAssignment::TypeAssignment(const TypeAssignment &other)
-    : TypeAssignment(other.name(), other.location(), other.type()->clone())
-{}
-
-TypeAssignment::~TypeAssignment() {}
-
-void TypeAssignment::accept(Visitor &visitor) const
+class MutatingVisitor
 {
-    visitor.visit(*this);
-}
+protected:
+    MutatingVisitor() {}
 
-void TypeAssignment::accept(MutatingVisitor &visitor)
-{
-    visitor.visit(*this);
-}
+public:
+    virtual ~MutatingVisitor();
+
+    virtual void visit(Root &root) = 0;
+    virtual void visit(Definitions &defs) = 0;
+    virtual void visit(File &file) = 0;
+    virtual void visit(TypeAssignment &type) = 0;
+    virtual void visit(ValueAssignment &value) = 0;
+    virtual void visit(Project &project) = 0;
+};
+
+} // namespace Data
+} // namespace MalTester

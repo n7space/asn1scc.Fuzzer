@@ -25,6 +25,7 @@
 ****************************************************************************/
 #include "definitions.h"
 
+#include "mutatingvisitor.h"
 #include "visitor.h"
 
 using namespace MalTester::Data;
@@ -49,6 +50,11 @@ Definitions::Definitions(const Definitions &other)
 Definitions::~Definitions() {}
 
 void Definitions::accept(Visitor &visitor) const
+{
+    visitor.visit(*this);
+}
+
+void Definitions::accept(MutatingVisitor &visitor)
 {
     visitor.visit(*this);
 }

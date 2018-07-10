@@ -25,10 +25,9 @@
 ****************************************************************************/
 #pragma once
 
-#include <map>
-#include <memory>
+#include <functional>
 
-#include <QString>
+#include <QTextStream>
 
 #include <data/project.h>
 
@@ -37,24 +36,16 @@ namespace MalTester {
 class Reconstructor
 {
 public:
-    using AcnComponent = QString;
-    using Asn1Component = QString;
-    using Asn1AcnPair = std::pair<Asn1Component, AcnComponent>;
+    using StreamFactory = std::function<std::unique_ptr<QTextStream>(const QString &name)>;
+    Reconstructor(const StreamFactory &streamFactory);
 
-    Reconstructor(std::unique_ptr<Data::Project> &project);
-
-    void reconstruct();
-    const std::map<QString, Asn1AcnPair> &reconstructedFiles() const
-    {
-        return m_reconstructedFiles;
-    }
+    void reconstruct(const Data::Project &project);
 
 private:
     void reconstructAsn1File(const Data::File &file);
     void reconstructAcnFile(const Data::File &file);
 
-    std::map<QString, Asn1AcnPair> m_reconstructedFiles;
-    std::unique_ptr<Data::Project> m_project;
+    StreamFactory m_streamFactory;
 };
 
 } // namespace MalTester

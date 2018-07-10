@@ -62,8 +62,11 @@ public:
     void setAlignToNext(const AlignToNext alignToNext) { m_alignment = alignToNext; }
     AlignToNext alignToNext() const { return m_alignment; }
 
-    static AlignToNext mapAlignToNext(const QString &in);
-    static Endianness mapEndianess(const QString &in);
+    static AlignToNext mapAlignToNext(QStringRef in);
+    static AlignToNext mapAlignToNext(const QString &in) { return mapAlignToNext(&in); }
+
+    static Endianness mapEndianess(QStringRef in);
+    static Endianness mapEndianess(const QString &in) { return mapEndianess(&in); }
 
     static QString alignToNextToString(AlignToNext param);
     static QString endiannessToString(Endianness param);

@@ -33,13 +33,13 @@
 
 using namespace MalTester;
 
-Reconstructor::Reconstructor(std::unique_ptr<Data::Project> &project)
-    : m_project(std::move(project))
+Reconstructor::Reconstructor(const StreamFactory &streamFactory)
+    : m_streamFactory(streamFactory)
 {}
 
-void Reconstructor::reconstruct()
+void Reconstructor::reconstruct(const Data::Project &project)
 {
-    for (const auto &file : m_project->files()) {
+    for (const auto &file : project.files()) {
         reconstructAsn1File(*file);
         reconstructAcnFile(*file);
     }
@@ -47,14 +47,31 @@ void Reconstructor::reconstruct()
 
 void Reconstructor::reconstructAsn1File(const Data::File &file)
 {
-    QTextStream outStream(&m_reconstructedFiles[file.name()].first);
-    Asn1NodeReconstructingVisitor visitor(outStream);
+    auto outStream = m_streamFactory(file.name());
+    if (outStream == nullptr)
+        return;
+
+    Asn1NodeReconstructingVisitor visitor(*outStream);
     visitor.visit(file);
 }
 
+namespace {
+QString makeAcnFileName(const QString &name)
+{
+    if (name.endsWith(".asn1"))
+        return name.left(name.size() - 3) + "cn";
+    if (name.endsWith(".asn"))
+        return name.left(name.size() - 2) + "cn";
+    return name + ".acn";
+}
+} // namespace
+
 void Reconstructor::reconstructAcnFile(const Data::File &file)
 {
-    QTextStream outStream(&m_reconstructedFiles[file.name()].second);
-    AcnNodeReconstructingVisitor visitor(outStream);
+    auto outStream = m_streamFactory(makeAcnFileName(file.name()));
+    if (outStream == nullptr)
+        return;
+
+    AcnNodeReconstructingVisitor visitor(*outStream);
     visitor.visit(file);
 }

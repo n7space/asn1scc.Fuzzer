@@ -50,19 +50,28 @@ public:
     void setSize(const int size) { m_size = size; }
     int size() const { return m_size; }
 
+    int acnMinSizeInBits() const { return m_acnMinSizeInBits; }
+    void setAcnMinSizeInBits(int s) { m_acnMinSizeInBits = s; }
+
+    int acnMaxSizeInBits() const { return m_acnMaxSizeInBits; }
+    void setAcnMaxSizeInBits(int s) { m_acnMaxSizeInBits = s; }
+
     void setEncoding(const IntegerEncoding encoding) { m_encoding = encoding; }
     IntegerEncoding encoding() const { return m_encoding; }
 
     void setEndianness(const Endianness endianness) { m_endianness = endianness; }
     Endianness endianness() const { return m_endianness; }
 
-    static IntegerEncoding mapEncoding(const QString &in);
+    static IntegerEncoding mapEncoding(QStringRef in);
+    static IntegerEncoding mapEncoding(const QString &in) { return mapEncoding(&in); }
     static QString encodingToString(IntegerEncoding encoding);
 
 private:
     IntegerEncoding m_encoding;
     Endianness m_endianness;
     int m_size;
+    int m_acnMinSizeInBits;
+    int m_acnMaxSizeInBits;
 };
 
 } // namespace Types

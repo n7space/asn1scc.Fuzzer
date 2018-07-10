@@ -25,6 +25,7 @@
 ****************************************************************************/
 #include "typeassignment.h"
 
+#include "mutatingvisitor.h"
 #include "visitor.h"
 
 using namespace MalTester::Data;
@@ -43,6 +44,11 @@ TypeAssignment::TypeAssignment(const TypeAssignment &other)
 TypeAssignment::~TypeAssignment() {}
 
 void TypeAssignment::accept(Visitor &visitor) const
+{
+    visitor.visit(*this);
+}
+
+void TypeAssignment::accept(MutatingVisitor &visitor)
 {
     visitor.visit(*this);
 }

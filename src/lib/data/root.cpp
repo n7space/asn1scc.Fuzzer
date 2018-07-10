@@ -27,6 +27,7 @@
 
 #include <QFileInfo>
 
+#include "mutatingvisitor.h"
 #include "project.h"
 #include "visitor.h"
 
@@ -46,6 +47,11 @@ Root::Root(const Root &other)
 Root::~Root() {}
 
 void Root::accept(Visitor &visitor) const
+{
+    visitor.visit(*this);
+}
+
+void Root::accept(MutatingVisitor &visitor)
 {
     visitor.visit(*this);
 }

@@ -25,6 +25,7 @@
 ****************************************************************************/
 #include "file.h"
 
+#include "mutatingvisitor.h"
 #include "visitor.h"
 
 using namespace MalTester::Data;
@@ -50,6 +51,11 @@ File::File(const File &other)
 File::~File() {}
 
 void File::accept(Visitor &visitor) const
+{
+    visitor.visit(*this);
+}
+
+void File::accept(MutatingVisitor &visitor)
 {
     visitor.visit(*this);
 }

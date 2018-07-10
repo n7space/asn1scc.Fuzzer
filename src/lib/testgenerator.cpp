@@ -23,8 +23,14 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-
 #include "testgenerator.h"
+
+#include <QDir>
+#include <QFile>
+#include <QTemporaryDir>
+#include <QtDebug>
+
+#include <cases/constraintsrelaxingvisitor.h>
 
 #include <astfilegenerator.h>
 #include <astfileprocessor.h>
@@ -42,10 +48,19 @@ void TestGenerator::run() const
     if (ast == nullptr)
         return;
 
-    auto astCpy = std::make_unique<Data::Project>(*ast);
+    if (!createOutputDirectory())
+        return;
 
-    Reconstructor r(astCpy);
-    r.reconstruct();
+    dumpRelaxedModelFrom(*ast);
+}
+
+bool TestGenerator::createOutputDirectory() const
+{
+    if (QDir().mkpath(m_params.m_outputDir))
+        return true;
+
+    qCritical() << "Unable to create output directory: " << m_params.m_outputDir;
+    return false;
 }
 
 std::unique_ptr<Data::Project> TestGenerator::createDataTree() const
@@ -62,4 +77,31 @@ std::unique_ptr<Data::Project> TestGenerator::createDataTree() const
 
     AstFileProcessor astProc(outPath);
     return astProc.process();
+}
+
+std::unique_ptr<Data::Project> TestGenerator::createRelaxedCopyOf(const Data::Project &project) const
+{
+    auto copy = std::make_unique<Data::Project>(project);
+    Cases::ConstraintsRelaxingVisitor v;
+    copy->accept(v);
+    return copy;
+}
+
+namespace {
+std::unique_ptr<QTextStream> openFile(QObject *fileOwner, const QString &path)
+{
+    auto outFile = new QFile(path, fileOwner);
+    if (!outFile->open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate))
+        return nullptr;
+    return std::make_unique<QTextStream>(outFile);
+}
+} // namespace
+
+void TestGenerator::dumpRelaxedModelFrom(const Data::Project &project) const
+{
+    QObject fileOwner;
+    Reconstructor r([this, &fileOwner](const QString &name) {
+        return openFile(&fileOwner, m_params.m_outputDir + "/" + name);
+    });
+    r.reconstruct(*createRelaxedCopyOf(project));
 }

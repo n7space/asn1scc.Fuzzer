@@ -31,7 +31,7 @@ AsciiStringAcnParameters::AsciiStringAcnParameters()
     : m_encoding(AsciiStringEncoding::unspecified)
 {}
 
-AsciiStringEncoding AsciiStringAcnParameters::mapEncoding(const QString &in)
+AsciiStringEncoding AsciiStringAcnParameters::mapEncoding(QStringRef in)
 {
     if (in == "ASCII")
         return AsciiStringEncoding::ASCII;

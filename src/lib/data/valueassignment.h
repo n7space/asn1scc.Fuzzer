@@ -49,6 +49,7 @@ public:
     ~ValueAssignment() override;
 
     void accept(Visitor &visitor) const override;
+    void accept(MutatingVisitor &visitor) override;
 
     const Types::Type *type() const { return m_type.get(); }
     const ValuePtr &value() const { return m_value; }

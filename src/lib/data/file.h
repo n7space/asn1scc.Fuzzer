@@ -45,6 +45,7 @@ public:
     ~File() override;
 
     void accept(Visitor &visitor) const override;
+    void accept(MutatingVisitor &visitor) override;
 
     void add(std::unique_ptr<Definitions> defs);
     void addTypeReference(std::unique_ptr<TypeReference> ref);

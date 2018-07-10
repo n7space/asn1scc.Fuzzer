@@ -33,6 +33,8 @@
 #include <data/file.h>
 #include <data/project.h>
 
+#include <reconstructor.h>
+
 namespace MalTester {
 namespace Tests {
 
@@ -43,6 +45,8 @@ public:
     explicit ReconstructorTests(QObject *parent = 0);
 
 private slots:
+    void init();
+
     void test_emptyProject();
 
     void test_emptyFile();
@@ -54,6 +58,10 @@ private:
     std::unique_ptr<Data::File> createFile(const QString &path) const;
     std::unique_ptr<Data::Project> createProject(const QString &name) const;
     std::unique_ptr<Data::Definitions> createDefinitions(const QString &name) const;
+
+    Reconstructor::StreamFactory createFactory();
+
+    std::map<QString, QString> m_files;
 };
 
 } // namespace Tests

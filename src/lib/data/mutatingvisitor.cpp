@@ -23,30 +23,8 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-#pragma once
+#include "mutatingvisitor.h"
 
-#include <memory>
+using namespace MalTester::Data;
 
-#include <data/project.h>
-
-#include <runparameters.h>
-
-namespace MalTester {
-
-class TestGenerator
-{
-public:
-    TestGenerator(const RunParameters &params);
-
-    void run() const;
-
-private:
-    std::unique_ptr<Data::Project> createDataTree() const;
-    std::unique_ptr<Data::Project> createRelaxedCopyOf(const Data::Project &project) const;
-    void dumpRelaxedModelFrom(const Data::Project &project) const;
-    bool createOutputDirectory() const;
-
-    const RunParameters m_params;
-};
-
-} // namespace MalTester
+MutatingVisitor::~MutatingVisitor() {}

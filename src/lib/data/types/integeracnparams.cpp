@@ -31,10 +31,12 @@ using namespace MalTester::Data::Types;
 IntegerAcnParameters::IntegerAcnParameters()
     : m_encoding(IntegerEncoding::unspecified)
     , m_endianness(Endianness::unspecified)
-    , m_size(0) // TODO?
+    , m_size(0)
+    , m_acnMinSizeInBits(0)
+    , m_acnMaxSizeInBits(0)
 {}
 
-IntegerEncoding IntegerAcnParameters::mapEncoding(const QString &in)
+IntegerEncoding IntegerAcnParameters::mapEncoding(QStringRef in)
 {
     if (in == "pos-int")
         return IntegerEncoding::pos_int;

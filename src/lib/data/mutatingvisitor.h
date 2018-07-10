@@ -25,28 +25,31 @@
 ****************************************************************************/
 #pragma once
 
-#include <memory>
-
-#include <data/project.h>
-
-#include <runparameters.h>
-
 namespace MalTester {
+namespace Data {
 
-class TestGenerator
+class Definitions;
+class File;
+class Root;
+class TypeAssignment;
+class ValueAssignment;
+class Project;
+
+class MutatingVisitor
 {
+protected:
+    MutatingVisitor() {}
+
 public:
-    TestGenerator(const RunParameters &params);
+    virtual ~MutatingVisitor();
 
-    void run() const;
-
-private:
-    std::unique_ptr<Data::Project> createDataTree() const;
-    std::unique_ptr<Data::Project> createRelaxedCopyOf(const Data::Project &project) const;
-    void dumpRelaxedModelFrom(const Data::Project &project) const;
-    bool createOutputDirectory() const;
-
-    const RunParameters m_params;
+    virtual void visit(Root &root) = 0;
+    virtual void visit(Definitions &defs) = 0;
+    virtual void visit(File &file) = 0;
+    virtual void visit(TypeAssignment &type) = 0;
+    virtual void visit(ValueAssignment &value) = 0;
+    virtual void visit(Project &project) = 0;
 };
 
+} // namespace Data
 } // namespace MalTester

@@ -16,6 +16,7 @@ SOURCES += \
     data/typereference.cpp \
     data/valueassignment.cpp \
     data/visitor.cpp \
+    data/mutatingvisitor.cpp \
     data/acnsequencecomponent.cpp \
     data/asnsequencecomponent.cpp \
     data/singlevalue.cpp \
@@ -73,6 +74,7 @@ HEADERS += \
     data/valueassignment.h \
     data/visitor.h \
     data/visitorwithvalue.h \
+    data/mutatingvisitor.h \
     data/acnparameter.h \
     data/asnsequencecomponent.h \
     data/acnsequencecomponent.h \

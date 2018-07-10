@@ -25,12 +25,14 @@
 ****************************************************************************/
 #pragma once
 
+#include <data/mutatingvisitor.h>
 #include <data/types/typemutatingvisitor.h>
 
 namespace MalTester {
 namespace Cases {
 
-class ConstraintsRelaxingVisitor : public Data::Types::TypeMutatingVisitor
+class ConstraintsRelaxingVisitor : public Data::Types::TypeMutatingVisitor,
+                                   public Data::MutatingVisitor
 {
 public:
     ~ConstraintsRelaxingVisitor() override;
@@ -49,6 +51,13 @@ public:
     void visit(Data::Types::LabelType &type) override;
     void visit(Data::Types::Integer &type) override;
     void visit(Data::Types::UserdefinedType &type) override;
+
+    void visit(Data::Root &root) override;
+    void visit(Data::Definitions &defs) override;
+    void visit(Data::File &file) override;
+    void visit(Data::TypeAssignment &type) override;
+    void visit(Data::ValueAssignment &value) override;
+    void visit(Data::Project &project) override;
 };
 
 } // namespace Cases

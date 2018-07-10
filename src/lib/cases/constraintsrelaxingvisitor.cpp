@@ -27,6 +27,11 @@
 
 #include <QtGlobal>
 
+#include <data/definitions.h>
+#include <data/file.h>
+#include <data/project.h>
+#include <data/root.h>
+
 #include <data/types/integer.h>
 #include <data/types/sequence.h>
 #include <data/types/sequenceof.h>
@@ -37,6 +42,7 @@
 
 using namespace MalTester::Cases;
 using namespace MalTester::Data::Types;
+using namespace MalTester::Data;
 
 ConstraintsRelaxingVisitor::~ConstraintsRelaxingVisitor() {}
 
@@ -110,4 +116,39 @@ void ConstraintsRelaxingVisitor::visit(Integer &type)
 void ConstraintsRelaxingVisitor::visit(UserdefinedType &type)
 {
     Q_UNUSED(type);
+}
+
+void ConstraintsRelaxingVisitor::visit(Root &root)
+{
+    for (const auto &p : root.projects())
+        p->accept(*this);
+}
+
+void ConstraintsRelaxingVisitor::visit(Definitions &defs)
+{
+    for (const auto &t : defs.types())
+        t->accept(*this);
+}
+
+void ConstraintsRelaxingVisitor::visit(File &file)
+{
+    for (const auto &d : file.definitionsList())
+        d->accept(*this);
+}
+
+void ConstraintsRelaxingVisitor::visit(TypeAssignment &type)
+{
+    if (type.type() != nullptr)
+        type.type()->accept(*this);
+}
+
+void ConstraintsRelaxingVisitor::visit(ValueAssignment &value)
+{
+    Q_UNUSED(value);
+}
+
+void ConstraintsRelaxingVisitor::visit(Project &project)
+{
+    for (const auto &f : project.files())
+        f->accept(*this);
 }

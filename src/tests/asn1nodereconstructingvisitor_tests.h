@@ -39,11 +39,11 @@
 namespace MalTester {
 namespace Tests {
 
-class NodeReconstructingVisitorTests : public QObject
+class Asn1NodeReconstructingVisitorTests : public QObject
 {
     Q_OBJECT
 public:
-    explicit NodeReconstructingVisitorTests(QObject *parent = 0);
+    explicit Asn1NodeReconstructingVisitorTests(QObject *parent = 0);
 
 private slots:
     void test_singleImportedType();
@@ -94,6 +94,8 @@ private slots:
 
     void test_typeAssignmentUserDefined();
     void test_typeAssignmentUserDefinedWithValue();
+
+    void test_typeAssignmentBooleanAcnParams();
 
 private:
     std::unique_ptr<Data::Definitions> createDefinitions(const QString &name) const;

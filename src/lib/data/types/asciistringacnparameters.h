@@ -47,7 +47,8 @@ public:
     void setTerminationPattern(const QString &pattern) { m_terminationPattern = pattern; }
     const QString &terminationPattern() const { return m_terminationPattern; }
 
-    static AsciiStringEncoding mapEncoding(const QStringRef &in);
+    static AsciiStringEncoding mapEncoding(const QString &in);
+    static QString encodingToString(AsciiStringEncoding encoding);
 
 private:
     QString m_terminationPattern;

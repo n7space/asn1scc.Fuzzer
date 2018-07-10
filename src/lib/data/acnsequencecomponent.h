@@ -43,24 +43,21 @@ public:
     AcnSequenceComponent() = default;
     ~AcnSequenceComponent() override = default;
 
-    AcnSequenceComponent(const QString &id, const QString &name, std::unique_ptr<Types::Type> type)
-        : SequenceComponent(name, std::move(type))
-        , m_id(id)
-    {}
+    AcnSequenceComponent(const QString &id, const QString &name, std::unique_ptr<Types::Type> type);
 
-    AcnSequenceComponent(const AcnSequenceComponent &other)
-        : SequenceComponent(other)
-        , m_id(other.id())
-    {}
+    AcnSequenceComponent(const AcnSequenceComponent &other);
 
-    const QString &id() const { return m_id; }
+    std::unique_ptr<SequenceComponent> clone() const override;
+    QString definitionAsString() const override;
+    QString presentWhen() const override;
+
+    const QString &id() const;
 
 private:
     QString m_id;
 };
 
 using AcnSequenceComponentPtr = std::unique_ptr<AcnSequenceComponent>;
-using AcnSequenceComponentPtrs = std::vector<AcnSequenceComponentPtr>;
 
 } // namespace Data
 } // namespace MalTester

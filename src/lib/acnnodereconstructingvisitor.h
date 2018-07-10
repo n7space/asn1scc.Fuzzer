@@ -32,11 +32,11 @@
 
 namespace MalTester {
 
-class NodeReconstructingVisitor : public Data::Visitor
+class AcnNodeReconstructingVisitor : public Data::Visitor
 {
 public:
-    NodeReconstructingVisitor(QTextStream &outStream);
-    ~NodeReconstructingVisitor() override = default;
+    AcnNodeReconstructingVisitor(QTextStream &outStream);
+    ~AcnNodeReconstructingVisitor() override = default;
 
     void visit(const Data::Definitions &defs) override;
     void visit(const Data::File &file) override;
@@ -47,11 +47,7 @@ public:
 
 private:
     template<typename T>
-    void reconstructImportedCollection(const T &types) const;
-    template<typename T>
     void reconstructCollection(const T &collection) const;
-
-    void reconstructImports(const Data::Definitions &defs) const;
 
     QTextStream &m_outStream;
 };

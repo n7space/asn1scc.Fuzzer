@@ -10,7 +10,8 @@ include(../../includelib.pri)
 
 SOURCES += \
     astxmlparser_tests.cpp \
-    nodereconstructingvisitor_tests.cpp \
+    asn1nodereconstructingvisitor_tests.cpp \
+    acnnodereconstructingvisitor_tests.cpp \
     reconstructor_tests.cpp \
     astxmlconstraintparser_tests.cpp \
     \
@@ -26,7 +27,8 @@ SOURCES += \
 
 HEADERS += \
     astxmlparser_tests.h \
-    nodereconstructingvisitor_tests.h \
+    asn1nodereconstructingvisitor_tests.h \
+    acnnodereconstructingvisitor_tests.h \
     reconstructor_tests.h \
     astxmlconstraintparser_tests.h \
     \

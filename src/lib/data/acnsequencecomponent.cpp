@@ -23,24 +23,39 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-#include "asciistringacnparameters.h"
 
-using namespace MalTester::Data::Types;
+#include "acnsequencecomponent.h"
 
-AsciiStringAcnParameters::AsciiStringAcnParameters()
-    : m_encoding(AsciiStringEncoding::unspecified)
+using namespace MalTester::Data;
+
+AcnSequenceComponent::AcnSequenceComponent(const QString &id,
+                                           const QString &name,
+                                           std::unique_ptr<Types::Type> type)
+    : SequenceComponent(name, std::move(type))
+    , m_id(id)
 {}
 
-AsciiStringEncoding AsciiStringAcnParameters::mapEncoding(const QString &in)
+AcnSequenceComponent::AcnSequenceComponent(const AcnSequenceComponent &other)
+    : SequenceComponent(other)
+    , m_id(other.id())
+{}
+
+std::unique_ptr<SequenceComponent> AcnSequenceComponent::clone() const
 {
-    if (in == "ASCII")
-        return AsciiStringEncoding::ASCII;
-    return AsciiStringEncoding::unspecified;
+    return std::make_unique<AcnSequenceComponent>(*this);
 }
 
-QString AsciiStringAcnParameters::encodingToString(AsciiStringEncoding encoding)
+QString AcnSequenceComponent::definitionAsString() const
 {
-    if (encoding == AsciiStringEncoding::ASCII)
-        return QStringLiteral("ASCII");
-    return {};
+    return name() + QChar(' ') + type().name();
+}
+
+QString AcnSequenceComponent::presentWhen() const
+{
+    return QString();
+}
+
+const QString &AcnSequenceComponent::id() const
+{
+    return m_id;
 }

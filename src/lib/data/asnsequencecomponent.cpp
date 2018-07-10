@@ -23,45 +23,49 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-#include "integeracnparams.h"
+
+#include "asnsequencecomponent.h"
 
 using namespace MalTester::Data;
-using namespace MalTester::Data::Types;
 
-IntegerAcnParameters::IntegerAcnParameters()
-    : m_encoding(IntegerEncoding::unspecified)
-    , m_endianness(Endianness::unspecified)
-    , m_size(0) // TODO?
+AsnSequenceComponent::AsnSequenceComponent(const QString &name,
+                                           bool optional,
+                                           const QString &presentWhen,
+                                           const SourceLocation &location,
+                                           std::unique_ptr<Types::Type> type)
+    : SequenceComponent(name, std::move(type))
+    , m_optional(optional)
+    , m_presentWhen(presentWhen)
+    , m_location(location)
 {}
 
-IntegerEncoding IntegerAcnParameters::mapEncoding(const QString &in)
+AsnSequenceComponent::AsnSequenceComponent(const AsnSequenceComponent &other)
+    : SequenceComponent(other)
+    , m_presentWhen(other.m_presentWhen)
+    , m_location(other.m_location)
+{}
+
+QString AsnSequenceComponent::definitionAsString() const
 {
-    if (in == "pos-int")
-        return IntegerEncoding::pos_int;
-    if (in == "twos-complement")
-        return IntegerEncoding::twos_complement;
-    if (in == "ASCII")
-        return IntegerEncoding::ASCII;
-    if (in == "BCD")
-        return IntegerEncoding::BCD;
-    return IntegerEncoding::unspecified;
+    return name();
 }
 
-QString IntegerAcnParameters::encodingToString(IntegerEncoding encoding)
+QString AsnSequenceComponent::presentWhen() const
 {
-    switch (encoding) {
-    case IntegerEncoding::pos_int:
-        return QStringLiteral("pos-int");
-    case IntegerEncoding::twos_complement:
-        return QStringLiteral("twos-complement");
-    case IntegerEncoding::ASCII:
-        return QStringLiteral("ASCII");
-    case IntegerEncoding::BCD:
-        return QStringLiteral("BCD");
-    case IntegerEncoding::unspecified:
-        return {};
+    return m_presentWhen;
+}
 
-    default:
-        return {};
-    }
+std::unique_ptr<SequenceComponent> AsnSequenceComponent::clone() const
+{
+    return std::make_unique<AsnSequenceComponent>(*this);
+}
+
+const SourceLocation &AsnSequenceComponent::location() const
+{
+    return m_location;
+}
+
+bool AsnSequenceComponent::isOptional() const
+{
+    return m_optional;
 }

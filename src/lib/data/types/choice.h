@@ -49,7 +49,12 @@ public:
                       std::unique_ptr<Type> type);
 
     ChoiceAlternative(const ChoiceAlternative &other);
+    std::unique_ptr<ChoiceAlternative> clone() const
+    {
+        return std::make_unique<ChoiceAlternative>(*this);
+    }
 
+    QString definitionAsString() const { return name(); }
     const QString &name() const { return m_name; }
     const QString &presentWhenName() const { return m_presentWhenName; }
     const QString &adaName() const { return m_adaName; }

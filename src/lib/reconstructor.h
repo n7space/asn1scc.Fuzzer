@@ -37,13 +37,23 @@ namespace MalTester {
 class Reconstructor
 {
 public:
+    using AcnComponent = QString;
+    using Asn1Component = QString;
+    using Asn1AcnPair = std::pair<Asn1Component, AcnComponent>;
+
     Reconstructor(std::unique_ptr<Data::Project> &project);
 
     void reconstruct();
-    const std::map<QString, QString> &reconstructedFiles() const { return m_reconstructedFiles; }
+    const std::map<QString, Asn1AcnPair> &reconstructedFiles() const
+    {
+        return m_reconstructedFiles;
+    }
 
 private:
-    std::map<QString, QString> m_reconstructedFiles;
+    void reconstructAsn1File(const Data::File &file);
+    void reconstructAcnFile(const Data::File &file);
+
+    std::map<QString, Asn1AcnPair> m_reconstructedFiles;
     std::unique_ptr<Data::Project> m_project;
 };
 

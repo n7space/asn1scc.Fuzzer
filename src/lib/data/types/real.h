@@ -54,7 +54,8 @@ public:
     void setEndianness(const Endianness endianness) { m_endianness = endianness; }
     Endianness endianness() const { return m_endianness; }
 
-    static RealEncoding mapEncoding(const QStringRef &ref);
+    static RealEncoding mapEncoding(const QString &ref);
+    static QString encodingToString(RealEncoding encoding);
 
 private:
     RealEncoding m_encoding;

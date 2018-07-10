@@ -75,7 +75,7 @@ inline AcnParameterizableCollection<T>::AcnParameterizableCollection(
         addParameter(std::make_unique<AcnParameter>(*parameter));
 
     for (const auto &component : other.m_components)
-        addComponent(std::make_unique<T>(*component));
+        addComponent(component->clone());
 }
 
 template<typename T>

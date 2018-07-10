@@ -25,53 +25,58 @@
 ****************************************************************************/
 #pragma once
 
+#include <functional>
 #include <memory>
 
-#include <QString>
+#include <QObject>
 
-#include "typereadingvisitor.h"
+#include <data/definitions.h>
+#include <data/file.h>
+#include <data/project.h>
+#include <data/valueassignment.h>
 
 namespace MalTester {
-namespace Data {
-namespace Types {
+namespace Tests {
 
-class TypeMutatingVisitor;
-
-enum class AlignToNext { byte, word, dword, unspecified };
-enum class Endianness { big, little, unspecified };
-
-class Type
+class AcnNodeReconstructingVisitorTests : public QObject
 {
-protected:
-    Type()
-        : m_alignment(AlignToNext::unspecified)
-    {}
-
-    Type(const Type &other) = default;
-
+    Q_OBJECT
 public:
-    virtual ~Type();
+    explicit AcnNodeReconstructingVisitorTests(QObject *parent = 0);
 
-    virtual QString name() const = 0;
+private slots:
+    void test_emptyModule();
+    void test_boolean();
+    void test_null();
+    void test_integer();
+    void test_real();
+    void test_bitString();
+    void test_octetString();
+    void test_IA5String();
+    void test_numericString();
+    void test_enumerated();
+    void test_sequenceOf();
 
-    virtual void accept(TypeMutatingVisitor &visitor) = 0;
-    virtual void accept(TypeReadingVisitor &visitor) const = 0;
+    void test_choice();
+    void test_choiceNested();
+    void test_choiceParametrized();
 
-    virtual std::unique_ptr<Type> clone() const = 0;
+    void test_sequenceNested();
+    void test_sequence();
 
-    void setAlignToNext(const AlignToNext alignToNext) { m_alignment = alignToNext; }
-    AlignToNext alignToNext() const { return m_alignment; }
+    void test_acnParameter();
+    void test_acnArgument();
 
-    static AlignToNext mapAlignToNext(const QString &in);
-    static Endianness mapEndianess(const QString &in);
-
-    static QString alignToNextToString(AlignToNext param);
-    static QString endiannessToString(Endianness param);
+    void test_integerEncodingToString();
+    void test_realEncodingToString();
+    void test_asciiStringEncodingToString();
 
 private:
-    AlignToNext m_alignment;
+    void performTest(const QString &name,
+                     const QString &expectedResult,
+                     std::unique_ptr<Data::Types::Type> type) const;
+    QString restoreNode(const Data::Node &node) const;
 };
 
-} // namespace Types
-} // namespace Data
+} // namespace Tests
 } // namespace MalTester

@@ -38,7 +38,7 @@ UserdefinedType::UserdefinedType(const QString &name, const QString &module)
 {}
 
 UserdefinedType::UserdefinedType(const UserdefinedType &other)
-    : Type()
+    : Type(other)
     , m_name(other.m_name)
     , m_module(other.m_module)
 {

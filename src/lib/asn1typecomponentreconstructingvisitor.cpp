@@ -23,7 +23,8 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-#include "typecomponentreconstructingvisitor.h"
+
+#include "asn1typecomponentreconstructingvisitor.h"
 
 #include <data/constraints/printingvisitor.h>
 
@@ -35,104 +36,103 @@ namespace {
 const int INDENT_SIZE = 4;
 } // namespace
 
-TypeComponentReconstructingVisitor::TypeComponentReconstructingVisitor(QTextStream &outStream,
-                                                                       int indent)
+Asn1TypeComponentReconstructingVisitor::Asn1TypeComponentReconstructingVisitor(
+    QTextStream &outStream, int indent)
     : m_outStream(outStream)
     , m_indent(indent)
 {}
 
-void TypeComponentReconstructingVisitor::visit(const Data::Types::Boolean &type)
+void Asn1TypeComponentReconstructingVisitor::visit(const Data::Types::Boolean &type)
 {
     valueForStraightType(type);
 }
-void TypeComponentReconstructingVisitor::visit(const Data::Types::Null &type)
-{
-    valueForStraightType(type);
-}
-
-void TypeComponentReconstructingVisitor::visit(const Data::Types::BitString &type)
+void Asn1TypeComponentReconstructingVisitor::visit(const Data::Types::Null &type)
 {
     valueForStraightType(type);
 }
 
-void TypeComponentReconstructingVisitor::visit(const Data::Types::OctetString &type)
+void Asn1TypeComponentReconstructingVisitor::visit(const Data::Types::BitString &type)
 {
     valueForStraightType(type);
 }
 
-void TypeComponentReconstructingVisitor::visit(const Data::Types::IA5String &type)
+void Asn1TypeComponentReconstructingVisitor::visit(const Data::Types::OctetString &type)
 {
     valueForStraightType(type);
 }
 
-void TypeComponentReconstructingVisitor::visit(const Data::Types::NumericString &type)
+void Asn1TypeComponentReconstructingVisitor::visit(const Data::Types::IA5String &type)
 {
     valueForStraightType(type);
 }
 
-void TypeComponentReconstructingVisitor::visit(const Data::Types::Enumerated &type)
+void Asn1TypeComponentReconstructingVisitor::visit(const Data::Types::NumericString &type)
 {
-    addLine(type.name());
-    addLine(QStringLiteral("{"), m_indent);
+    valueForStraightType(type);
+}
+
+void Asn1TypeComponentReconstructingVisitor::visit(const Data::Types::Enumerated &type)
+{
+    m_outStream << type.name() << QStringLiteral("\n");
+    m_outStream << QString(m_indent, QChar(' ')) << QStringLiteral("{") << QStringLiteral("\n");
 
     const auto &items = type.items();
     for (auto it = items.begin(); it != items.end(); it++) {
-        addIndent(m_indent + INDENT_SIZE);
-        addWord((*it).name());
-        addWord(QStringLiteral("("));
-        addWord(QString::number((*it).value()));
-        addWord(QStringLiteral(")"));
+        m_outStream << QString(m_indent + INDENT_SIZE, QChar(' '));
+        m_outStream << (*it).name();
+        m_outStream << QStringLiteral("(");
+        m_outStream << QString::number((*it).value());
+        m_outStream << QStringLiteral(")");
 
         if (std::next(it, 1) != items.end())
-            addWord(QStringLiteral(","));
+            m_outStream << QStringLiteral(",");
 
-        finishLine();
+        m_outStream << QStringLiteral("\n");
     }
 
-    addIndent(m_indent);
-    addWord(QStringLiteral("}"));
+    m_outStream << QString(m_indent, QChar(' ')) << QStringLiteral("}");
 }
 
-void TypeComponentReconstructingVisitor::visit(const Data::Types::Choice &type)
+void Asn1TypeComponentReconstructingVisitor::visit(const Data::Types::Choice &type)
 {
     valueForComplexType<Data::Types::Choice>(type, m_indent);
 }
 
-void TypeComponentReconstructingVisitor::visit(const Data::Types::Sequence &type)
+void Asn1TypeComponentReconstructingVisitor::visit(const Data::Types::Sequence &type)
 {
     valueForComplexType<Data::Types::Sequence>(type, m_indent);
 }
 
-void TypeComponentReconstructingVisitor::visit(const Data::Types::SequenceOf &type)
+void Asn1TypeComponentReconstructingVisitor::visit(const Data::Types::SequenceOf &type)
 {
     m_outStream << QStringLiteral("SEQUENCE ") << toString(type.constraints())
                 << QStringLiteral(" OF ");
 
-    TypeComponentReconstructingVisitor visitor(m_outStream, m_indent);
+    Asn1TypeComponentReconstructingVisitor visitor(m_outStream, m_indent);
     type.itemsType().accept(visitor);
 }
 
-void TypeComponentReconstructingVisitor::visit(const Data::Types::Real &type)
+void Asn1TypeComponentReconstructingVisitor::visit(const Data::Types::Real &type)
 {
     valueForStraightType(type);
 }
 
-void TypeComponentReconstructingVisitor::visit(const Data::Types::LabelType &type)
+void Asn1TypeComponentReconstructingVisitor::visit(const Data::Types::LabelType &type)
 {
     Q_UNUSED(type);
 }
 
-void TypeComponentReconstructingVisitor::visit(const Data::Types::Integer &type)
+void Asn1TypeComponentReconstructingVisitor::visit(const Data::Types::Integer &type)
 {
     valueForStraightType(type);
 }
 
-void TypeComponentReconstructingVisitor::visit(const Data::Types::UserdefinedType &type)
+void Asn1TypeComponentReconstructingVisitor::visit(const Data::Types::UserdefinedType &type)
 {
     valueForStraightType(type);
 }
 
-void TypeComponentReconstructingVisitor::valueForStraightType(const Data::Types::Type &type)
+void Asn1TypeComponentReconstructingVisitor::valueForStraightType(const Data::Types::Type &type)
 {
     TypeConstraintsReconstructingVisitor visitor;
     type.accept(visitor);
@@ -141,7 +141,7 @@ void TypeComponentReconstructingVisitor::valueForStraightType(const Data::Types:
 }
 
 template<typename T>
-void TypeComponentReconstructingVisitor::valueForComplexType(const T &type, const int indent)
+void Asn1TypeComponentReconstructingVisitor::valueForComplexType(const T &type, const int indent)
 {
     addLine(type.name());
     addLine(QStringLiteral("{"), indent);
@@ -151,7 +151,7 @@ void TypeComponentReconstructingVisitor::valueForComplexType(const T &type, cons
         addIndent(indent + INDENT_SIZE);
         addWord((*it)->name());
 
-        TypeComponentReconstructingVisitor visitor(m_outStream, indent + INDENT_SIZE);
+        Asn1TypeComponentReconstructingVisitor visitor(m_outStream, indent + INDENT_SIZE);
         (*it)->type().accept(visitor);
 
         if (std::next(it) != components.end())
@@ -164,22 +164,22 @@ void TypeComponentReconstructingVisitor::valueForComplexType(const T &type, cons
     addWord(QStringLiteral("}"));
 }
 
-void TypeComponentReconstructingVisitor::addIndent(int indent)
+void Asn1TypeComponentReconstructingVisitor::addIndent(int indent)
 {
     m_outStream << QString(indent, QChar(' '));
 }
 
-void TypeComponentReconstructingVisitor::addWord(const QString &word)
+void Asn1TypeComponentReconstructingVisitor::addWord(const QString &word)
 {
     m_outStream << word << QStringLiteral(" ");
 }
 
-void TypeComponentReconstructingVisitor::finishLine()
+void Asn1TypeComponentReconstructingVisitor::finishLine()
 {
     m_outStream << QStringLiteral("\n");
 }
 
-void TypeComponentReconstructingVisitor::addLine(QString line, int indent)
+void Asn1TypeComponentReconstructingVisitor::addLine(QString line, int indent)
 {
     addIndent(indent);
     addWord(line);

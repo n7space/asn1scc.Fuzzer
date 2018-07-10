@@ -74,6 +74,7 @@ void IntegerRangesTests::test_ascii()
     QCOMPARE(r.begin(), -999999999);
     QCOMPARE(r.end(), +999999999);
 }
+
 void IntegerRangesTests::test_bcd()
 {
     IntegerAcnParameters p;
@@ -84,4 +85,16 @@ void IntegerRangesTests::test_bcd()
 
     QCOMPARE(r.begin(), 0);
     QCOMPARE(r.end(), 99999);
+}
+
+void IntegerRangesTests::test_unspecified()
+{
+    IntegerAcnParameters p;
+    p.setAcnMaxSizeInBits(4);
+    p.setEncoding(IntegerEncoding::unspecified);
+
+    const auto r = maxValueRangeFor(p);
+
+    QCOMPARE(r.begin(), 0);
+    QCOMPARE(r.end(), 15);
 }

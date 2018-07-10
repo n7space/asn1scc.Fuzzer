@@ -42,6 +42,7 @@ private slots:
     void test_int16();
     void test_ascii();
     void test_bcd();
+    void test_unspecified();
 };
 
 } // namespace Tests

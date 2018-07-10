@@ -52,7 +52,7 @@ Range<int> MalTester::Cases::maxValueRangeFor(const IntegerAcnParameters &type)
     case IntegerEncoding::BCD:
         return {0, nineRepeated(type.size() / 4)};
     case IntegerEncoding::unspecified:
-        break;
+        return {0, (1 << type.acnMaxSizeInBits()) - 1};
     }
     return {0, 0};
 }

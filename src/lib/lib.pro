@@ -47,6 +47,7 @@ SOURCES += \
     cases/integerincorrectvalues.cpp \
     cases/constraintsrelaxingvisitor.cpp \
     cases/integerranges.cpp \
+    cases/testcaseprinter.cpp \
     \
     astxmlparser.cpp \
     astfilegenerator.cpp \
@@ -127,6 +128,8 @@ HEADERS += \
     cases/integerincorrectvalues.h \
     cases/constraintsrelaxingvisitor.h \
     cases/integerranges.h \
+    cases/testcase.h \
+    cases/testcaseprinter.h \
     \
     astxmlparser.h \
     astxmlconstraintparser.h \

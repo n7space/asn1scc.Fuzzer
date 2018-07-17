@@ -40,6 +40,7 @@
 
 #include "cases/integerincorrectvalues_tests.h"
 #include "cases/integerranges_tests.h"
+#include "cases/testcaseprinter_tests.h"
 
 int main(int argc, char *argv[])
 {
@@ -59,6 +60,7 @@ int main(int argc, char *argv[])
     runTest(new MalTester::Data::Constraints::Tests::PrintingVisitorTests);
     runTest(new MalTester::Cases::Tests::IntegerIncorrectValuesTests);
     runTest(new MalTester::Cases::Tests::IntegerRangesTests);
+    runTest(new MalTester::Cases::Tests::TestCasePrinterTests);
 
     return ret;
 }

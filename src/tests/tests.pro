@@ -17,6 +17,7 @@ SOURCES += \
     \
     cases/integerincorrectvalues_tests.cpp \
     cases/integerranges_tests.cpp \
+    cases/testcaseprinter_tests.cpp \
     \
     data/range_tests.cpp \
     data/rangelist_tests.cpp \
@@ -34,6 +35,7 @@ HEADERS += \
     \
     cases/integerincorrectvalues_tests.h \
     cases/integerranges_tests.h \
+    cases/testcaseprinter_tests.h \
     \
     data/range_tests.h \
     data/rangelist_tests.h \

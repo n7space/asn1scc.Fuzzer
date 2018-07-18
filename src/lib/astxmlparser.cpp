@@ -228,6 +228,7 @@ public:
     void visit(Data::Types::Sequence &type) override
     {
         const auto name = readStringAttribute(QStringLiteral("Name"));
+        const auto cName = readStringAttribute(QStringLiteral("CName"));
         const auto presentWhen = readStringAttribute(QStringLiteral("present-when"));
         const auto optional = readStringAttribute(QStringLiteral("Optional")).toLower();
         Data::SourceLocation location(m_currentFile,
@@ -235,6 +236,7 @@ public:
                                       readIntegerAttribute(QStringLiteral("CharPositionInLine")));
 
         type.addComponent(std::make_unique<Data::AsnSequenceComponent>(name,
+                                                                       cName,
                                                                        optional == "true",
                                                                        presentWhen,
                                                                        location,

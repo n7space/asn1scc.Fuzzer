@@ -98,7 +98,7 @@ void TypeTestCaseBuilder::visit(const Choice &type)
 void TypeTestCaseBuilder::visit(const Sequence &type)
 {
     for (const auto &c : type.components()) {
-        TypeTestCaseBuilder b{m_sink, m_path + FieldPath(c->name())};
+        TypeTestCaseBuilder b{m_sink, m_path + FieldPath(c->cName())};
         c->type().accept(b);
     }
 }

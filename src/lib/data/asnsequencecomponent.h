@@ -37,6 +37,7 @@ public:
     ~AsnSequenceComponent() override = default;
 
     AsnSequenceComponent(const QString &name,
+                         const QString &cName,
                          bool optional,
                          const QString &presentWhen,
                          const SourceLocation &location,

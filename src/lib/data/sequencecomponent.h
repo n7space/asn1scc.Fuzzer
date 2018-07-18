@@ -41,13 +41,15 @@ public:
     SequenceComponent() = default;
     virtual ~SequenceComponent() = default;
 
-    SequenceComponent(const QString &name, std::unique_ptr<Types::Type> type)
+    SequenceComponent(const QString &name, const QString &cName, std::unique_ptr<Types::Type> type)
         : m_name(name)
+        , m_cName(cName)
         , m_type(std::move(type))
     {}
 
     SequenceComponent(const SequenceComponent &other)
         : m_name(other.m_name)
+        , m_cName(other.m_cName)
         , m_type(other.m_type->clone())
     {}
 
@@ -56,12 +58,14 @@ public:
     virtual QString presentWhen() const = 0;
 
     const QString &name() const { return m_name; }
+    const QString &cName() const { return m_cName; }
 
     const Types::Type &type() const { return *m_type; }
     Types::Type &type() { return *m_type; }
 
 private:
     QString m_name;
+    QString m_cName;
     std::unique_ptr<Types::Type> m_type;
 };
 

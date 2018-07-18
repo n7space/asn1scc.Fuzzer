@@ -31,7 +31,7 @@ using namespace MalTester::Data;
 AcnSequenceComponent::AcnSequenceComponent(const QString &id,
                                            const QString &name,
                                            std::unique_ptr<Types::Type> type)
-    : SequenceComponent(name, std::move(type))
+    : SequenceComponent(name, name, std::move(type)) // TODO CName in ACN_COMPONENT
     , m_id(id)
 {}
 

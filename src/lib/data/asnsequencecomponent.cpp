@@ -29,11 +29,12 @@
 using namespace MalTester::Data;
 
 AsnSequenceComponent::AsnSequenceComponent(const QString &name,
+                                           const QString &cName,
                                            bool optional,
                                            const QString &presentWhen,
                                            const SourceLocation &location,
                                            std::unique_ptr<Types::Type> type)
-    : SequenceComponent(name, std::move(type))
+    : SequenceComponent(name, cName, std::move(type))
     , m_optional(optional)
     , m_presentWhen(presentWhen)
     , m_location(location)

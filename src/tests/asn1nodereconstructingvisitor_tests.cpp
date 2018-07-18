@@ -375,6 +375,7 @@ void Asn1NodeReconstructingVisitorTests::test_typeAssignmentNestedChoice()
 
     sequenceType->addComponent(
         std::make_unique<Data::AsnSequenceComponent>(QStringLiteral("seq1"),
+                                                     QStringLiteral("seq1"),
                                                      true,
                                                      QStringLiteral(""),
                                                      Data::SourceLocation(),
@@ -383,6 +384,7 @@ void Asn1NodeReconstructingVisitorTests::test_typeAssignmentNestedChoice()
 
     sequenceType->addComponent(
         std::make_unique<Data::AsnSequenceComponent>(QStringLiteral("seq2"),
+                                                     QStringLiteral("seq2"),
                                                      true,
                                                      QStringLiteral(""),
                                                      Data::SourceLocation(),
@@ -418,6 +420,7 @@ void Asn1NodeReconstructingVisitorTests::test_typeAssignmentSequence()
     auto type = std::make_unique<Data::Types::Sequence>();
     type->addComponent(
         std::make_unique<Data::AsnSequenceComponent>(QStringLiteral("seq1"),
+                                                     QStringLiteral("seq1"),
                                                      true,
                                                      QStringLiteral(""),
                                                      Data::SourceLocation(),
@@ -426,6 +429,7 @@ void Asn1NodeReconstructingVisitorTests::test_typeAssignmentSequence()
 
     type->addComponent(
         std::make_unique<Data::AsnSequenceComponent>(QStringLiteral("seq2"),
+                                                     QStringLiteral("seq2"),
                                                      true,
                                                      QStringLiteral(""),
                                                      Data::SourceLocation(),
@@ -453,6 +457,7 @@ void Asn1NodeReconstructingVisitorTests::test_typeAssignmentNestedSequence()
 
     internalType->addComponent(
         std::make_unique<Data::AsnSequenceComponent>(QStringLiteral("n1"),
+                                                     QStringLiteral("n1"),
                                                      true,
                                                      QStringLiteral(""),
                                                      Data::SourceLocation(),
@@ -460,6 +465,7 @@ void Asn1NodeReconstructingVisitorTests::test_typeAssignmentNestedSequence()
                                                          QStringLiteral("INTEGER"))));
     internalType->addComponent(
         std::make_unique<Data::AsnSequenceComponent>(QStringLiteral("n2"),
+                                                     QStringLiteral("n2"),
                                                      true,
                                                      QStringLiteral(""),
                                                      Data::SourceLocation(),
@@ -467,6 +473,7 @@ void Asn1NodeReconstructingVisitorTests::test_typeAssignmentNestedSequence()
                                                          QStringLiteral("REAL"))));
 
     type->addComponent(std::make_unique<Data::AsnSequenceComponent>(QStringLiteral("seq1"),
+                                                                    QStringLiteral("seq1"),
                                                                     true,
                                                                     QStringLiteral(""),
                                                                     Data::SourceLocation(),

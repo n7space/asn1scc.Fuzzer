@@ -44,9 +44,8 @@ struct FieldAssignment
 class TestCase
 {
 public:
-    explicit TestCase(const QString &name, const QString &typeUnderTest)
+    explicit TestCase(const QString &name)
         : m_name(name)
-        , m_typeUnderTest(typeUnderTest)
     {}
 
     const QString &name() const { return m_name; }
@@ -54,6 +53,7 @@ public:
     const FieldAssignment &fieldAssignment() const { return m_fieldAssignment; }
 
     void setAssignment(const FieldAssignment &a) { m_fieldAssignment = a; }
+    void setTypeUnderTest(const QString &t) { m_typeUnderTest = t; }
 
 private:
     QString m_name;

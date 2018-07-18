@@ -49,8 +49,9 @@ static QString print(const TestCase &c)
 
 void TestCasePrinterTests::test_emptyPath()
 {
-    TestCase c{"Name", "MySeq"};
+    TestCase c{"Name"};
     c.setAssignment({{}, {"1410"}});
+    c.setTypeUnderTest("MySeq");
 
     const auto result = print(c);
 
@@ -69,8 +70,9 @@ void TestCasePrinterTests::test_emptyPath()
 
 void TestCasePrinterTests::test_longPath()
 {
-    TestCase c{"Name", "MySeq"};
+    TestCase c{"Name"};
     c.setAssignment({{QStringLiteral("a"), QStringLiteral("b")}, {"1410"}});
+    c.setTypeUnderTest("MySeq");
 
     const auto result = print(c);
 

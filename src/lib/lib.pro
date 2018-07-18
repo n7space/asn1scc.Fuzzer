@@ -48,6 +48,7 @@ SOURCES += \
     cases/constraintsrelaxingvisitor.cpp \
     cases/integerranges.cpp \
     cases/testcaseprinter.cpp \
+    cases/testcasebuilder.cpp \
     \
     astxmlparser.cpp \
     astfilegenerator.cpp \
@@ -130,6 +131,7 @@ HEADERS += \
     cases/integerranges.h \
     cases/testcase.h \
     cases/testcaseprinter.h \
+    cases/testcasebuilder.h \
     \
     astxmlparser.h \
     astxmlconstraintparser.h \

@@ -25,18 +25,16 @@
 ****************************************************************************/
 #pragma once
 
-#include <QList>
 #include <QString>
 
 #include <data/types/typereadingvisitor.h>
 #include <data/visitor.h>
 
 #include "testcase.h"
+#include "testcasesink.h"
 
 namespace MalTester {
 namespace Cases {
-
-using TestCaseSink = QList<TestCase>;
 
 class TestCaseBuilder : public Data::Visitor
 {

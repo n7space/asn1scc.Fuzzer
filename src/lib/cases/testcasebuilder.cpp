@@ -120,7 +120,8 @@ void TypeTestCaseBuilder::visit(const LabelType &type)
 
 void TypeTestCaseBuilder::visit(const Integer &type)
 {
-    for (const auto value : IntegerIncorrectValues(type).items()) {
+    const IntegerIncorrectValues values(type);
+    for (const auto value : values.items()) {
         TestCase c{caseNameFor(value)};
         c.setAssignment({m_path, QString::number(value)});
         m_sink.append(c);
@@ -129,6 +130,8 @@ void TypeTestCaseBuilder::visit(const Integer &type)
 
 QString TypeTestCaseBuilder::caseNameFor(int value) const
 {
+    if (m_path.isEmpty())
+        return QString::number(value);
     return m_path.join('_') + "_" + QString::number(value);
 }
 

@@ -25,31 +25,14 @@
 ****************************************************************************/
 #pragma once
 
-#include <memory>
+#include <QList>
 
-#include <cases/testcasesink.h>
-#include <data/project.h>
-
-#include <runparameters.h>
+#include "testcase.h"
 
 namespace MalTester {
+namespace Cases {
 
-class TestGenerator
-{
-public:
-    TestGenerator(const RunParameters &params);
+using TestCaseSink = QList<TestCase>;
 
-    void run() const;
-
-private:
-    std::unique_ptr<Data::Project> createDataTree() const;
-    std::unique_ptr<Data::Project> createRelaxedCopyOf(const Data::Project &project) const;
-    void dumpRelaxedModelFrom(const Data::Project &project) const;
-    bool createOutputDirectory() const;
-    Cases::TestCaseSink buildTestCases(const Data::Project &project) const;
-    void dumpTestCases(const Cases::TestCaseSink &cases) const;
-
-    const RunParameters m_params;
-};
-
+} // namespace Cases
 } // namespace MalTester

@@ -65,7 +65,7 @@ void TestCasePrinter::printAll(const QString &mainStructure, const QList<TestCas
 
 void TestCasePrinter::printFileHeader(const QString &mainStructure)
 {
-    m_stream << "AllModels.h";
+    m_stream << "#include \"AllModels.h\"";
     m_stream << endl;
     m_stream << QStringLiteral("static void %1_encode(const %1 *v, BitStream *stream)\n"
                                "{\n"
@@ -103,7 +103,7 @@ void TestCasePrinter::printMain(const QString &mainStructure, const QList<TestCa
                     .arg(mainStructure);
 
     for (const auto &t : tests)
-        m_stream << QStringLiteral("test_%1(&v, &stream);\n").arg(t.name());
+        m_stream << QStringLiteral("  test_%1(&v, &stream);\n").arg(t.name());
 
     m_stream << QStringLiteral("\n"
                                "  return 0;\n" // TODO

@@ -31,6 +31,8 @@
 #include <QtDebug>
 
 #include <cases/constraintsrelaxingvisitor.h>
+#include <cases/testcasebuilder.h>
+#include <cases/testcaseprinter.h>
 
 #include <astfilegenerator.h>
 #include <astfileprocessor.h>
@@ -52,6 +54,9 @@ void TestGenerator::run() const
         return;
 
     dumpRelaxedModelFrom(*ast);
+
+    const auto cases = buildTestCases(*ast);
+    dumpTestCases(cases);
 }
 
 bool TestGenerator::createOutputDirectory() const
@@ -104,4 +109,21 @@ void TestGenerator::dumpRelaxedModelFrom(const Data::Project &project) const
         return openFile(name.endsWith(".acn") ? acnFile : asnFile);
     });
     r.reconstruct(*createRelaxedCopyOf(project));
+}
+
+Cases::TestCaseSink TestGenerator::buildTestCases(const Data::Project &project) const
+{
+    Cases::TestCaseBuilder builder(m_params.m_mainStructureName);
+    project.accept(builder);
+    return builder.cases();
+}
+
+void TestGenerator::dumpTestCases(const Cases::TestCaseSink &cases) const
+{
+    QFile out(m_params.m_outputDir + "/test_main.c");
+    if (!out.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate))
+        return;
+    QTextStream stream(&out);
+    Cases::TestCasePrinter printer(stream);
+    printer.printAll(m_params.m_mainStructureName, cases);
 }

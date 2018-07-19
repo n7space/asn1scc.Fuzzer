@@ -130,6 +130,7 @@ HEADERS += \
     cases/constraintsrelaxingvisitor.h \
     cases/integerranges.h \
     cases/testcase.h \
+    cases/testcasesink.h \
     cases/testcaseprinter.h \
     cases/testcasebuilder.h \
     \

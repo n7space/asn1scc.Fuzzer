@@ -25,6 +25,8 @@
 ****************************************************************************/
 #pragma once
 
+#include <QList>
+#include <QString>
 #include <QTextStream>
 
 #include "testcase.h"
@@ -41,8 +43,13 @@ public:
     explicit TestCasePrinter(QTextStream &stream);
 
     void print(const TestCase &test);
+    void printAll(const QString &mainStructure, const QList<TestCase> &tests);
 
 private:
+    void printFileHeader(const QString &mainStructure);
+    void printMain(const QString &mainStructure, const QList<TestCase> &tests);
+    void printBodies(const QList<TestCase> &tests);
+
     QTextStream &m_stream;
 };
 

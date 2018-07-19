@@ -88,20 +88,20 @@ std::unique_ptr<Data::Project> TestGenerator::createRelaxedCopyOf(const Data::Pr
 }
 
 namespace {
-std::unique_ptr<QTextStream> openFile(QObject *fileOwner, const QString &path)
+std::unique_ptr<QTextStream> openFile(QFile &file)
 {
-    auto outFile = new QFile(path, fileOwner);
-    if (!outFile->open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate))
+    if (!file.isOpen() && !file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate))
         return nullptr;
-    return std::make_unique<QTextStream>(outFile);
+    return std::make_unique<QTextStream>(&file);
 }
 } // namespace
 
 void TestGenerator::dumpRelaxedModelFrom(const Data::Project &project) const
 {
-    QObject fileOwner;
-    Reconstructor r([this, &fileOwner](const QString &name) {
-        return openFile(&fileOwner, m_params.m_outputDir + "/" + name);
+    QFile asnFile(m_params.m_outputDir + "/AllModels.asn1");
+    QFile acnFile(m_params.m_outputDir + "/AllModels.acn");
+    Reconstructor r([this, &asnFile, &acnFile](const QString &name) {
+        return openFile(name.endsWith(".acn") ? acnFile : asnFile);
     });
     r.reconstruct(*createRelaxedCopyOf(project));
 }

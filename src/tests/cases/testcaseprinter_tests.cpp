@@ -56,14 +56,14 @@ void TestCasePrinterTests::test_emptyPath()
     const auto result = print(c);
 
     QCOMPARE(result,
-             QStringLiteral("void test_Name(MySeq *v, BitStream *stream)\n"
+             QStringLiteral("static void test_Name(MySeq *v, BitStream *stream)\n"
                             "{\n"
                             "  BitStream_Init(stream, stream->buf, stream->count);\n"
-                            "  MySeq_Init(v);\n"
+                            "  MySeq_Initialize(v);\n"
                             "\n"
                             "  *v = 1410;\n"
                             "\n"
-                            "  MySeq_EncodeACN(stream, v);\n"
+                            "  MySeq_encode(v, stream);\n"
                             "  validate(stream);\n"
                             "}\n"));
 }
@@ -77,14 +77,14 @@ void TestCasePrinterTests::test_longPath()
     const auto result = print(c);
 
     QCOMPARE(result,
-             QStringLiteral("void test_Name(MySeq *v, BitStream *stream)\n"
+             QStringLiteral("static void test_Name(MySeq *v, BitStream *stream)\n"
                             "{\n"
                             "  BitStream_Init(stream, stream->buf, stream->count);\n"
-                            "  MySeq_Init(v);\n"
+                            "  MySeq_Initialize(v);\n"
                             "\n"
                             "  v->a.b = 1410;\n"
                             "\n"
-                            "  MySeq_EncodeACN(stream, v);\n"
+                            "  MySeq_encode(v, stream);\n"
                             "  validate(stream);\n"
                             "}\n"));
 }

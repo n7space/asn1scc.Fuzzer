@@ -172,7 +172,7 @@ void TestCaseBuilder::visit(const TypeAssignment &type)
     // TODO mainStructure should contain definition name
     if (type.type() != nullptr && type.name() == m_mainStructure) {
         buildCasesForAssignment(type);
-        updateTypeUnderTest();
+        updateTypeUnderTest(); // TODO update with C name
     }
 }
 

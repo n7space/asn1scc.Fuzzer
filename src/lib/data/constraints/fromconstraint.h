@@ -46,7 +46,7 @@ public:
 
     const Constraint<Data::StringValue> &innerConstraints() const { return *m_innerContraints; }
 
-    void accept(ConstraintVisitor<ValueType> &visitor) const { visitor.visit(*this); }
+    void accept(ConstraintVisitor<ValueType> &visitor) const override { visitor.visit(*this); }
 
     std::unique_ptr<Constraint<ValueType>> clone() const override;
 

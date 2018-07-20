@@ -46,7 +46,7 @@ public:
     const Constraint<ValueType> &leftChild() const { return *m_leftChild; }
     const Constraint<ValueType> &rightChild() const { return *m_rightChild; }
 
-    void accept(ConstraintVisitor<ValueType> &visitor) const { visitor.visit(*this); }
+    void accept(ConstraintVisitor<ValueType> &visitor) const override { visitor.visit(*this); }
 
     std::unique_ptr<Constraint<ValueType>> clone() const override
     {
@@ -72,7 +72,7 @@ public:
     const Constraint<ValueType> &leftChild() const { return *m_leftChild; }
     const Constraint<ValueType> &rightChild() const { return *m_rightChild; }
 
-    void accept(ConstraintVisitor<ValueType> &visitor) const { visitor.visit(*this); }
+    void accept(ConstraintVisitor<ValueType> &visitor) const override { visitor.visit(*this); }
 
     std::unique_ptr<Constraint<ValueType>> clone() const override
     {

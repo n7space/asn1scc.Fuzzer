@@ -105,8 +105,15 @@ void RangeListingVisitor<ValueType>::visit(const SizeConstraint<ValueType> &)
 template<typename ValueType>
 void RangeListingVisitor<ValueType>::visit(const ConstraintList<ValueType> &constraint)
 {
-    for (const auto &c : constraint.constraints())
-        m_result.merge(toRangeList(*c));
+    const auto &constraints = constraint.constraints();
+    if (constraints.empty())
+        return;
+    m_result = toRangeList(*constraints.front());
+    std::for_each(std::begin(constraints) + 1,
+                  std::end(constraints),
+                  [this](const std::unique_ptr<Constraint<ValueType>> &c) {
+                      m_result.intersect(toRangeList(*c));
+                  });
     m_result.compact();
 }
 

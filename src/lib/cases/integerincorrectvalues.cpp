@@ -45,7 +45,10 @@ RangeList<int> definedRangesFor(const Types::Integer &integer)
 
 IntegerIncorrectValues::IntegerIncorrectValues(const Types::Integer &integer)
 {
-    const auto maliciousRanges = difference(maxValueRangeFor(integer), definedRangesFor(integer));
+    const auto definedRanges = definedRangesFor(integer);
+    if (definedRanges.isEmpty())
+        return;
+    const auto maliciousRanges = difference(maxValueRangeFor(integer), definedRanges);
 
     for (const auto r : maliciousRanges) {
         m_items.append(r.begin());

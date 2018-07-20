@@ -38,8 +38,10 @@ public:
     explicit IntegerIncorrectValuesTests(QObject *parent = 0);
 
 private slots:
-    void test_empty();
-    void test_values();
+    void test_noConstraints();
+    void test_rangeMatchingSize();
+    void test_complexConstraint();
+    void test_constraintList();
 };
 
 } // namespace Tests

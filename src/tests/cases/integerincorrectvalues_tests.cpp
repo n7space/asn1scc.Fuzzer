@@ -29,6 +29,7 @@
 
 #include <cases/integerincorrectvalues.h>
 
+#include <data/constraints/logicoperators.h>
 #include <data/constraints/rangeconstraint.h>
 
 using namespace MalTester::Cases::Tests;
@@ -39,7 +40,18 @@ IntegerIncorrectValuesTests::IntegerIncorrectValuesTests(QObject *parent)
     : QObject(parent)
 {}
 
-void IntegerIncorrectValuesTests::test_empty()
+void IntegerIncorrectValuesTests::test_noConstraints()
+{
+    Integer i;
+    i.setSize(8);
+    i.setEncoding(IntegerEncoding::pos_int);
+
+    const auto v = IntegerIncorrectValues(i).items();
+
+    QVERIFY(v.isEmpty());
+}
+
+void IntegerIncorrectValuesTests::test_rangeMatchingSize()
 {
     Integer i;
     i.setSize(8);
@@ -50,15 +62,32 @@ void IntegerIncorrectValuesTests::test_empty()
 
     QVERIFY(v.isEmpty());
 }
-void IntegerIncorrectValuesTests::test_values()
+
+void IntegerIncorrectValuesTests::test_complexConstraint()
 {
     Integer i;
     i.setSize(8);
     i.setEncoding(IntegerEncoding::pos_int);
-    i.constraints().append({1, 10});
-    i.constraints().append({100, 180});
+    auto left = Constraints::RangeConstraint<IntegerValue>::create({1, 10});
+    auto right = Constraints::RangeConstraint<IntegerValue>::create({100, 180});
+    auto constraint = std::make_unique<Constraints::OrConstraint<IntegerValue>>(std::move(left),
+                                                                                std::move(right));
+    i.constraints().append(std::move(constraint));
 
     const auto v = IntegerIncorrectValues(i).items();
 
     QCOMPARE(v, (QList<int>{0, 11, 55, 99, 181, 218, 255}));
+}
+
+void IntegerIncorrectValuesTests::test_constraintList()
+{
+    Integer i;
+    i.setSize(8);
+    i.setEncoding(IntegerEncoding::pos_int);
+    i.constraints().append({1, 100});
+    i.constraints().append({1, 10});
+
+    const auto v = IntegerIncorrectValues(i).items();
+
+    QCOMPARE(v, (QList<int>{0, 11, 133, 255}));
 }

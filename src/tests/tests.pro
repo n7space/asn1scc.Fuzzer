@@ -7,6 +7,7 @@ CONFIG += c++14
 CONFIG -= app_bundle
 
 include(../../includelib.pri)
+include(../../warnings.pri)
 
 SOURCES += \
     astxmlparser_tests.cpp \

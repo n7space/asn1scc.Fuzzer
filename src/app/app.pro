@@ -6,6 +6,7 @@ CONFIG -= app_bundle
 QT -= gui
 
 include(../../includelib.pri)
+include(../../warnings.pri)
 
 SOURCES += \
     main.cpp \

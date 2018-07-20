@@ -5,6 +5,8 @@ CONFIG += c++14
 
 QT -= gui
 
+include(../../warnings.pri)
+
 SOURCES += \
     data/definitions.cpp \
     data/file.cpp \

@@ -40,14 +40,14 @@ static QString asString(const FieldPath &p)
 
 void TestCasePrinter::print(const QString &mainStructure, const TestCase &test)
 {
-    m_stream << QStringLiteral("static int test_%1(%2 *v, BitStream *stream)\n"
+    m_stream << QStringLiteral("static bool test_%1(%2 *v, BitStream *stream)\n"
                                "{\n"
                                "  %2_Initialize(v);\n"
                                "\n"
                                "  %3 = %4;\n"
                                "\n"
                                "  %2_encode(v, stream);\n"
-                               "  return (validate(stream) == TRUE) ? 0 : 1;\n"
+                               "  return validate(stream);\n"
                                "}\n")
                     .arg(test.name())
                     .arg(mainStructure)
@@ -64,22 +64,30 @@ void TestCasePrinter::print(const TestCaseSink &sink)
 
 void TestCasePrinter::printFileHeader(const QString &mainStructure)
 {
-    m_stream << "#include <stdio.h>\n";
-    m_stream << "#include \"AllModels.h\"\n";
-    m_stream << endl;
-    m_stream << QStringLiteral("static void %1_encode(const %1 *v, BitStream *stream)\n"
+    m_stream << "#include <stdio.h>\n"
+             << "#include <stdbool.h>\n"
+             << endl
+             << "#include \"AllModels.h\"\n"
+             << endl
+             << QStringLiteral("#define RUN_TEST(T, ...) \\\n"
+                               "  (printf(\"Executing \" #T \" ... \"), \\\n"
+                               "   (T(__VA_ARGS__) \\\n"
+                               "      ? (printf(\"PASSED\\n\"), 0) \\\n"
+                               "      : (printf(\"FAILED\\n\"), 1)))\n")
+             << endl
+             << QStringLiteral("static void %1_encode(const %1 *v, BitStream *stream)\n"
                                "{\n"
                                "  BitStream_Init(stream, stream->buf, stream->count);\n"
                                "  int errCode = 0;\n"
                                "  %1_ACN_Encode(v, stream, &errCode, FALSE);\n"
                                // TODO CCSDS ?
                                "}\n")
-                    .arg(mainStructure);
-    m_stream << endl;
-    m_stream << QStringLiteral("static flag validate(BitStream *stream)\n"
+                    .arg(mainStructure)
+             << endl
+             << QStringLiteral("static bool validate(BitStream *stream)\n"
                                "{\n"
                                "  // TODO - fill to perform tests on desired target\n"
-                               "  return FALSE;\n"
+                               "  return false;\n"
                                "}\n")
              << endl;
 }
@@ -105,7 +113,7 @@ void TestCasePrinter::printMain(const TestCaseSink &sink)
                     .arg(sink.mainStructure());
 
     for (const auto &t : sink.cases())
-        m_stream << QStringLiteral("  result += test_%1(&v, &stream);\n").arg(t.name());
+        m_stream << QStringLiteral("  result += RUN_TEST(test_%1, &v, &stream);\n").arg(t.name());
 
     m_stream << QStringLiteral("\n"
                                "  if (result == 0)\n"

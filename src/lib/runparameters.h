@@ -35,7 +35,8 @@ struct RunParameters
     QStringList m_inputFiles;
 
     QString m_mainStructureName;
-    QString m_asn1SccCommand;
+    QString m_asn1SccPath;
+    QStringList m_asn1SccFlags;
     QString m_outputDir;
 
     enum class CcsdsWrap { tc, tm, none } m_ccsdsWrap;

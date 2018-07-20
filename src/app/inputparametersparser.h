@@ -47,6 +47,7 @@ private:
     QStringList readFilesList();
     QString readMainStructureName();
     QString readAsn1SccPath();
+    QStringList readAsn1SccFlags();
     QString readOutputDir();
     RunParameters::CcsdsWrap readCcsdsValue();
 
@@ -54,6 +55,7 @@ private:
 
     QCommandLineOption m_mainStructure;
     QCommandLineOption m_asn1sccPath;
+    QCommandLineOption m_asn1sccFlags;
     QCommandLineOption m_outputDir;
     QCommandLineOption m_wrapAsCcsds;
 

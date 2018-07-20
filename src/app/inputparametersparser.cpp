@@ -30,11 +30,14 @@
 
 using namespace MalTester;
 
-InputParametersParser::InputParametersParser() // clang-format off
+InputParametersParser::InputParametersParser()
+    // clang-format off
     : m_mainStructure({"m", "main-structure"}, "Main structure for generation of malformed messages.", "main structure")
     , m_asn1sccPath  ({"a", "asn1scc-path"},   "Asn1scc compiler path.",                               "asn1scc path", "asn1.exe")
+    , m_asn1sccFlags ({"f", "asn1scc-flags"},  "Asn1scc compiler flags.",                              "asn1scc flags", "--field-prefix AUTO --type-prefix T --acn-enc")
     , m_outputDir    ({"o", "output-dir"},     "Output directory for generated files.",                "output directory")
-    , m_wrapAsCcsds  ({"w", "wrap-as-ccsds"},  "Wrapping main structure inside CCSDS packets",         "[tc, tm]") // clang-format on
+    , m_wrapAsCcsds  ({"w", "wrap-as-ccsds"},  "Wrapping main structure inside CCSDS packets",         "[tc, tm]")
+// clang-format on
 {
     setupParser();
 }
@@ -63,6 +66,7 @@ RunParameters InputParametersParser::parameters() const
 void InputParametersParser::setupParser()
 {
     m_parser.addOption(m_asn1sccPath);
+    m_parser.addOption(m_asn1sccFlags);
     m_parser.addOption(m_outputDir);
     m_parser.addOption(m_mainStructure);
     m_parser.addOption(m_wrapAsCcsds);
@@ -73,7 +77,8 @@ void InputParametersParser::updateRunParams()
 {
     m_params.m_inputFiles = readFilesList();
     m_params.m_mainStructureName = readMainStructureName();
-    m_params.m_asn1SccCommand = readAsn1SccPath();
+    m_params.m_asn1SccPath = readAsn1SccPath();
+    m_params.m_asn1SccFlags = readAsn1SccFlags();
     m_params.m_outputDir = readOutputDir();
     m_params.m_ccsdsWrap = readCcsdsValue();
 }
@@ -99,6 +104,11 @@ QString InputParametersParser::readMainStructureName()
 QString InputParametersParser::readAsn1SccPath()
 {
     return m_parser.value(m_asn1sccPath);
+}
+
+QStringList InputParametersParser::readAsn1SccFlags()
+{
+    return m_parser.value(m_asn1sccFlags).split(QRegExp("\\s+"), QString::SkipEmptyParts);
 }
 
 QString InputParametersParser::readOutputDir()

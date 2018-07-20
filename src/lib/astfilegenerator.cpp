@@ -50,7 +50,7 @@ QProcess *AstFileGenerator::createProcess() const
 {
     auto pr = new QProcess;
 
-    pr->setProgram(m_params.m_asn1SccCommand);
+    pr->setProgram(m_params.m_asn1SccPath);
     pr->setArguments(createRunArgs());
     pr->setProcessChannelMode(QProcess::MergedChannels);
 
@@ -59,7 +59,8 @@ QProcess *AstFileGenerator::createProcess() const
 
 QStringList AstFileGenerator::createRunArgs() const
 {
-    return QStringList() << astArg() << outputPathArg() << inputFilesArg();
+    return QStringList() << m_params.m_asn1SccFlags << astArg() << outputPathArg()
+                         << inputFilesArg();
 }
 
 QString AstFileGenerator::astArg() const
@@ -113,7 +114,7 @@ AstFileGenerator::Result AstFileGenerator::handleTimeout() const
 
 void AstFileGenerator::writeMessage(const QString &message) const
 {
-    auto fullMsg = m_params.m_asn1SccCommand + ": " + message;
+    auto fullMsg = m_params.m_asn1SccPath + ": " + message;
     qCritical("asn1scc.MalTester: %s", qPrintable(fullMsg));
 
     auto processMsg = m_process->readAll();

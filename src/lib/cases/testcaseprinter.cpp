@@ -40,15 +40,14 @@ static QString asString(const FieldPath &p)
 
 void TestCasePrinter::print(const QString &mainStructure, const TestCase &test)
 {
-    m_stream << QStringLiteral("static void test_%1(%2 *v, BitStream *stream)\n"
+    m_stream << QStringLiteral("static int test_%1(%2 *v, BitStream *stream)\n"
                                "{\n"
-                               "  BitStream_Init(stream, stream->buf, stream->count);\n"
                                "  %2_Initialize(v);\n"
                                "\n"
                                "  %3 = %4;\n"
                                "\n"
                                "  %2_encode(v, stream);\n"
-                               "  validate(stream);\n"
+                               "  return (validate(stream) == TRUE) ? 0 : 1;\n"
                                "}\n")
                     .arg(test.name())
                     .arg(mainStructure)
@@ -65,7 +64,8 @@ void TestCasePrinter::print(const TestCaseSink &sink)
 
 void TestCasePrinter::printFileHeader(const QString &mainStructure)
 {
-    m_stream << "#include \"AllModels.h\"";
+    m_stream << "#include <stdio.h>\n";
+    m_stream << "#include \"AllModels.h\"\n";
     m_stream << endl;
     m_stream << QStringLiteral("static void %1_encode(const %1 *v, BitStream *stream)\n"
                                "{\n"
@@ -76,9 +76,10 @@ void TestCasePrinter::printFileHeader(const QString &mainStructure)
                                "}\n")
                     .arg(mainStructure);
     m_stream << endl;
-    m_stream << QStringLiteral("static void validate(BitStream *stream)\n"
+    m_stream << QStringLiteral("static flag validate(BitStream *stream)\n"
                                "{\n"
-                               "  // TODO - fill to perform malformed tests on target\n"
+                               "  // TODO - fill to perform tests on desired target\n"
+                               "  return FALSE;\n"
                                "}\n")
              << endl;
 }
@@ -99,13 +100,19 @@ void TestCasePrinter::printMain(const TestCaseSink &sink)
                                "  byte buf[%1_REQUIRED_BYTES_FOR_ACN_ENCODING];\n"
                                "  BitStream stream;\n"
                                "  BitStream_Init(&stream, buf, sizeof(buf));\n"
+                               "  int result = 0;\n"
                                "\n")
                     .arg(sink.mainStructure());
 
     for (const auto &t : sink.cases())
-        m_stream << QStringLiteral("  test_%1(&v, &stream);\n").arg(t.name());
+        m_stream << QStringLiteral("  result += test_%1(&v, &stream);\n").arg(t.name());
 
     m_stream << QStringLiteral("\n"
-                               "  return 0;\n" // TODO
-                               "}\n");
+                               "  if (result == 0)\n"
+                               "    printf(\"OK - all (%1) tests passed\\n.\");\n"
+                               "  else\n"
+                               "    printf(\"ERROR - Failed %d out of %1 tests\\n.\", result);\n"
+                               "  return result;\n"
+                               "}\n")
+                    .arg(sink.cases().count());
 }

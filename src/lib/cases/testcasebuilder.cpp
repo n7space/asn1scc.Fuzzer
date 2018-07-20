@@ -158,25 +158,18 @@ void TestCaseBuilder::visit(const File &file)
         d->accept(*this);
 }
 
-void TestCaseBuilder::updateTypeUnderTest()
-{
-    for (auto &t : m_sink)
-        t.setTypeUnderTest(m_mainStructure);
-}
-
 void TestCaseBuilder::buildCasesForAssignment(const TypeAssignment &type)
 {
-    TypeTestCaseBuilder b{m_sink};
+    m_result = std::make_unique<TestCaseSink>(type.name()); // TODO CName
+    TypeTestCaseBuilder b{*m_result};
     type.type()->accept(b);
 }
 
 void TestCaseBuilder::visit(const TypeAssignment &type)
 {
     // TODO mainStructure should contain definition name
-    if (type.type() != nullptr && type.name() == m_mainStructure) {
+    if (type.type() != nullptr && type.name() == m_mainStructure)
         buildCasesForAssignment(type);
-        updateTypeUnderTest(); // TODO update with C name
-    }
 }
 
 void TestCaseBuilder::visit(const ValueAssignment &value)

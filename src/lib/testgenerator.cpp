@@ -33,6 +33,7 @@
 #include <cases/constraintsrelaxingvisitor.h>
 #include <cases/testcasebuilder.h>
 #include <cases/testcaseprinter.h>
+#include <cases/testcasesink.h>
 
 #include <astfilegenerator.h>
 #include <astfileprocessor.h>
@@ -43,6 +44,17 @@ using namespace MalTester;
 TestGenerator::TestGenerator(const RunParameters &params)
     : m_params(params)
 {}
+
+void TestGenerator::reportOnNotFoundStructure() const
+{
+    qCritical() << "Structure " << m_params.m_mainStructureName << " not found. "
+                << "No cases were generated.";
+}
+
+static void reportOnNoCasesFound()
+{
+    qCritical() << "No cases were found for structure.";
+}
 
 void TestGenerator::run() const
 {
@@ -55,8 +67,8 @@ void TestGenerator::run() const
 
     dumpRelaxedModelFrom(*ast);
 
-    const auto cases = buildTestCases(*ast);
-    dumpTestCases(cases);
+    auto cases = buildTestCases(*ast);
+    checkAndDumpCases(std::move(cases));
 }
 
 bool TestGenerator::createOutputDirectory() const
@@ -66,6 +78,26 @@ bool TestGenerator::createOutputDirectory() const
 
     qCritical() << "Unable to create output directory: " << m_params.m_outputDir;
     return false;
+}
+
+std::unique_ptr<Cases::TestCaseSink> TestGenerator::buildTestCases(const Data::Project &project) const
+{
+    Cases::TestCaseBuilder builder(m_params.m_mainStructureName);
+    project.accept(builder);
+    return builder.takeResult();
+}
+
+void TestGenerator::checkAndDumpCases(std::unique_ptr<Cases::TestCaseSink> cases) const
+{
+    if (cases == nullptr) {
+        reportOnNotFoundStructure();
+        return;
+    }
+    if (cases->cases().isEmpty()) {
+        reportOnNoCasesFound();
+        return;
+    }
+    dumpTestCases(*cases);
 }
 
 std::unique_ptr<Data::Project> TestGenerator::createDataTree() const
@@ -111,13 +143,6 @@ void TestGenerator::dumpRelaxedModelFrom(const Data::Project &project) const
     r.reconstruct(*createRelaxedCopyOf(project));
 }
 
-Cases::TestCaseSink TestGenerator::buildTestCases(const Data::Project &project) const
-{
-    Cases::TestCaseBuilder builder(m_params.m_mainStructureName);
-    project.accept(builder);
-    return builder.cases();
-}
-
 void TestGenerator::dumpTestCases(const Cases::TestCaseSink &cases) const
 {
     QFile out(m_params.m_outputDir + "/test_main.c");
@@ -125,5 +150,5 @@ void TestGenerator::dumpTestCases(const Cases::TestCaseSink &cases) const
         return;
     QTextStream stream(&out);
     Cases::TestCasePrinter printer(stream);
-    printer.printAll(m_params.m_mainStructureName, cases);
+    printer.print(cases);
 }

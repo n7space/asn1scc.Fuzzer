@@ -30,6 +30,7 @@
 #include <QTextStream>
 
 #include "testcase.h"
+#include "testcasesink.h"
 
 namespace MalTester {
 namespace Cases {
@@ -42,13 +43,13 @@ class TestCasePrinter
 public:
     explicit TestCasePrinter(QTextStream &stream);
 
-    void print(const TestCase &test);
-    void printAll(const QString &mainStructure, const QList<TestCase> &tests);
+    void print(const QString &mainStructure, const TestCase &test);
+    void print(const TestCaseSink &sink);
 
 private:
     void printFileHeader(const QString &mainStructure);
-    void printMain(const QString &mainStructure, const QList<TestCase> &tests);
-    void printBodies(const QList<TestCase> &tests);
+    void printMain(const TestCaseSink &sink);
+    void printBodies(const TestCaseSink &sink);
 
     QTextStream &m_stream;
 };

@@ -26,13 +26,29 @@
 #pragma once
 
 #include <QList>
+#include <QString>
 
 #include "testcase.h"
 
 namespace MalTester {
 namespace Cases {
 
-using TestCaseSink = QList<TestCase>;
+class TestCaseSink
+{
+public:
+    explicit TestCaseSink(const QString &mainStructure)
+        : m_mainStructure(mainStructure)
+    {}
+
+    void append(const TestCase &c) { m_cases.append(c); }
+
+    const QList<TestCase> &cases() const { return m_cases; }
+    const QString &mainStructure() const { return m_mainStructure; }
+
+private:
+    QList<TestCase> m_cases;
+    QString m_mainStructure;
+};
 
 } // namespace Cases
 } // namespace MalTester

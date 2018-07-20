@@ -38,7 +38,7 @@ static QString asString(const FieldPath &p)
     return "v->" + p.join('.');
 }
 
-void TestCasePrinter::print(const TestCase &test)
+void TestCasePrinter::print(const QString &mainStructure, const TestCase &test)
 {
     m_stream << QStringLiteral("static void test_%1(%2 *v, BitStream *stream)\n"
                                "{\n"
@@ -51,16 +51,16 @@ void TestCasePrinter::print(const TestCase &test)
                                "  validate(stream);\n"
                                "}\n")
                     .arg(test.name())
-                    .arg(test.typeUnderTest())
+                    .arg(mainStructure)
                     .arg(asString(test.fieldAssignment().m_path))
                     .arg(test.fieldAssignment().m_value);
 }
 
-void TestCasePrinter::printAll(const QString &mainStructure, const QList<TestCase> &tests)
+void TestCasePrinter::print(const TestCaseSink &sink)
 {
-    printFileHeader(mainStructure);
-    printBodies(tests);
-    printMain(mainStructure, tests);
+    printFileHeader(sink.mainStructure());
+    printBodies(sink);
+    printMain(sink);
 }
 
 void TestCasePrinter::printFileHeader(const QString &mainStructure)
@@ -83,15 +83,15 @@ void TestCasePrinter::printFileHeader(const QString &mainStructure)
              << endl;
 }
 
-void TestCasePrinter::printBodies(const QList<TestCase> &tests)
+void TestCasePrinter::printBodies(const TestCaseSink &sink)
 {
-    for (const auto &t : tests) {
-        print(t);
+    for (const auto &t : sink.cases()) {
+        print(sink.mainStructure(), t);
         m_stream << endl;
     }
 }
 
-void TestCasePrinter::printMain(const QString &mainStructure, const QList<TestCase> &tests)
+void TestCasePrinter::printMain(const TestCaseSink &sink)
 {
     m_stream << QStringLiteral("int main()\n"
                                "{\n"
@@ -100,9 +100,9 @@ void TestCasePrinter::printMain(const QString &mainStructure, const QList<TestCa
                                "  BitStream stream;\n"
                                "  BitStream_Init(&stream, buf, sizeof(buf));\n"
                                "\n")
-                    .arg(mainStructure);
+                    .arg(sink.mainStructure());
 
-    for (const auto &t : tests)
+    for (const auto &t : sink.cases())
         m_stream << QStringLiteral("  test_%1(&v, &stream);\n").arg(t.name());
 
     m_stream << QStringLiteral("\n"

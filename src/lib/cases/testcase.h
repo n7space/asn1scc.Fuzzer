@@ -49,15 +49,12 @@ public:
     {}
 
     const QString &name() const { return m_name; }
-    const QString &typeUnderTest() const { return m_typeUnderTest; }
     const FieldAssignment &fieldAssignment() const { return m_fieldAssignment; }
 
     void setAssignment(const FieldAssignment &a) { m_fieldAssignment = a; }
-    void setTypeUnderTest(const QString &t) { m_typeUnderTest = t; }
 
 private:
     QString m_name;
-    QString m_typeUnderTest;
     FieldAssignment m_fieldAssignment;
 };
 

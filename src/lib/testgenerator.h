@@ -27,12 +27,15 @@
 
 #include <memory>
 
-#include <cases/testcasesink.h>
 #include <data/project.h>
 
 #include <runparameters.h>
 
 namespace MalTester {
+
+namespace Cases {
+class TestCaseSink;
+}
 
 class TestGenerator
 {
@@ -46,8 +49,10 @@ private:
     std::unique_ptr<Data::Project> createRelaxedCopyOf(const Data::Project &project) const;
     void dumpRelaxedModelFrom(const Data::Project &project) const;
     bool createOutputDirectory() const;
-    Cases::TestCaseSink buildTestCases(const Data::Project &project) const;
+    std::unique_ptr<Cases::TestCaseSink> buildTestCases(const Data::Project &project) const;
+    void checkAndDumpCases(std::unique_ptr<Cases::TestCaseSink> cases) const;
     void dumpTestCases(const Cases::TestCaseSink &cases) const;
+    void reportOnNotFoundStructure() const;
 
     const RunParameters m_params;
 };

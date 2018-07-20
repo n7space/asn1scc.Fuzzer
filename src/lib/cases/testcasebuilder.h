@@ -25,6 +25,8 @@
 ****************************************************************************/
 #pragma once
 
+#include <memory>
+
 #include <QString>
 
 #include <data/types/typereadingvisitor.h>
@@ -42,7 +44,7 @@ public:
     explicit TestCaseBuilder(const QString &mainStructure);
     ~TestCaseBuilder() override;
 
-    const TestCaseSink &cases() const { return m_sink; }
+    std::unique_ptr<TestCaseSink> takeResult() { return std::move(m_result); }
 
     void visit(const Data::Root &root) override;
     void visit(const Data::Definitions &defs) override;
@@ -52,11 +54,10 @@ public:
     void visit(const Data::Project &project) override;
 
 private:
-    void updateTypeUnderTest();
     void buildCasesForAssignment(const Data::TypeAssignment &type);
 
     QString m_mainStructure;
-    TestCaseSink m_sink;
+    std::unique_ptr<TestCaseSink> m_result;
 };
 
 class TypeTestCaseBuilder : public Data::Types::TypeReadingVisitor

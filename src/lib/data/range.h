@@ -92,12 +92,6 @@ Range<T> Range<T>::merge(const Range &other) const
 template<typename T>
 bool Range<T>::canMerge(const Range &other) const
 {
-    return intersects(other);
-}
-
-template<>
-inline bool Range<int>::canMerge(const Range &other) const
-{
     if (intersects(other))
         return true;
     return qAbs(begin() - other.begin()) == 1 || qAbs(end() - other.end()) == 1
@@ -112,8 +106,8 @@ Range<T> Range<T>::intersection(const Range &other) const
     return {qMax(begin(), other.begin()), qMin(end(), other.end())};
 }
 
-template<>
-inline QList<Range<int>> Range<int>::difference(const Range &other) const
+template<typename T>
+QList<Range<T>> Range<T>::difference(const Range &other) const
 {
     if (!intersects(other))
         return {*this};

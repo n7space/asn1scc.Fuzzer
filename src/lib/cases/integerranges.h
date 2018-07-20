@@ -25,6 +25,8 @@
 ****************************************************************************/
 #pragma once
 
+#include <cstdint>
+
 #include <data/types/integeracnparams.h>
 
 #include <data/range.h>
@@ -32,7 +34,7 @@
 namespace MalTester {
 namespace Cases {
 
-Data::Range<int> maxValueRangeFor(const Data::Types::IntegerAcnParameters &type);
+Data::Range<std::int64_t> maxValueRangeFor(const Data::Types::IntegerAcnParameters &type);
 
 } // namespace Cases
 } // namespace MalTester

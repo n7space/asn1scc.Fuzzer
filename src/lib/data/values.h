@@ -25,6 +25,8 @@
 ****************************************************************************/
 #pragma once
 
+#include <cstdint>
+
 #include <QString>
 
 namespace MalTester {
@@ -32,16 +34,17 @@ namespace Data {
 
 struct IntegerValue
 {
-    using Type = int;
+    using Type = std::int64_t;
     static QLatin1String astNodeName() { return QLatin1Literal("IntegerValue"); }
-    static Type fromAstValue(const QString &value) { return value.toInt(); /* TODO error check?*/ }
+    static Type fromAstValue(const QString &value) { return value.toLongLong(); }
     static QString asString(Type t) { return QString::number(t); }
 };
+
 struct RealValue
 {
     using Type = double;
     static QLatin1String astNodeName() { return QLatin1Literal("RealValue"); }
-    static Type fromAstValue(const QString &value) { return value.toDouble(); /* TODO error?*/ }
+    static Type fromAstValue(const QString &value) { return value.toDouble(); }
     static QString asString(Type t) { return QString::number(t); }
 };
 

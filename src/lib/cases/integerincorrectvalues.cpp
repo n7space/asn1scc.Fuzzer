@@ -35,7 +35,7 @@ using namespace MalTester::Cases;
 using namespace MalTester::Data;
 
 namespace {
-RangeList<int> definedRangesFor(const Types::Integer &integer)
+RangeList<std::int64_t> definedRangesFor(const Types::Integer &integer)
 {
     Constraints::RangeListingVisitor<IntegerValue> visitor;
     integer.constraints().accept(visitor);

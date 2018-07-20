@@ -31,7 +31,7 @@ using namespace MalTester::Data;
 
 namespace {
 
-int nineRepeated(int times)
+std::int64_t nineRepeated(int times)
 {
     if (times == 1)
         return 9;
@@ -40,19 +40,19 @@ int nineRepeated(int times)
 
 } // namespace
 
-Range<int> MalTester::Cases::maxValueRangeFor(const IntegerAcnParameters &type)
+Range<std::int64_t> MalTester::Cases::maxValueRangeFor(const IntegerAcnParameters &type)
 {
     switch (type.encoding()) {
     case IntegerEncoding::pos_int:
-        return {0, (1 << type.size()) - 1};
+        return {0, (1LL << type.size()) - 1};
     case IntegerEncoding::twos_complement:
-        return {-(1 << (type.size() - 1)), (1 << (type.size() - 1)) - 1};
+        return {-(1LL << (type.size() - 1)), (1LL << (type.size() - 1)) - 1};
     case IntegerEncoding::ASCII:
         return {-nineRepeated((type.size() / 8) - 1), nineRepeated((type.size() / 8) - 1)};
     case IntegerEncoding::BCD:
         return {0, nineRepeated(type.size() / 4)};
     case IntegerEncoding::unspecified:
-        return {0, (1 << type.acnMaxSizeInBits()) - 1};
+        return {0, (1LL << type.acnMaxSizeInBits()) - 1};
     }
     return {0, 0};
 }

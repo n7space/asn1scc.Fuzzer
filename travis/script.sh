@@ -20,3 +20,6 @@ make || exit 1
 
 echo "Running Unit Tests"
 src/tests/tests || exit 1
+
+echo "Running Integration Tests"
+PATH=${BUILD_DIR}/src/app:$PATH cram "${PROJECT_DIR}"/tests/*.t || exit 1

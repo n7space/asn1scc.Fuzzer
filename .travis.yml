@@ -31,6 +31,8 @@ addons:
     - gcc-5
     - qt510-meta-minimal
     - qt510tools
+    - python-setuptools
+    - python-pip
 
 install:
   - travis/install.sh

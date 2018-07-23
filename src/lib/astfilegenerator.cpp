@@ -23,8 +23,9 @@
 ** along with this m_processogram.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-
 #include "astfilegenerator.h"
+
+#include <QtDebug>
 
 using namespace MalTester;
 
@@ -59,18 +60,12 @@ QProcess *AstFileGenerator::createProcess() const
 
 QStringList AstFileGenerator::createRunArgs() const
 {
-    return QStringList() << m_params.m_asn1SccFlags << astArg() << outputPathArg()
-                         << inputFilesArg();
+    return QStringList() << m_params.m_asn1SccFlags << astArg() << inputFilesArg();
 }
 
-QString AstFileGenerator::astArg() const
+QStringList AstFileGenerator::astArg() const
 {
-    return QLatin1String("--xml-ast");
-}
-
-QString AstFileGenerator::outputPathArg() const
-{
-    return m_outputPath;
+    return QStringList() << QLatin1String("--xml-ast") << m_outputPath;
 }
 
 QStringList AstFileGenerator::inputFilesArg() const
@@ -81,9 +76,9 @@ QStringList AstFileGenerator::inputFilesArg() const
 AstFileGenerator::Result AstFileGenerator::processFinished() const
 {
     switch (m_process->exitStatus()) {
-    case (QProcess::NormalExit):
+    case QProcess::NormalExit:
         return handleNormalExit();
-    case (QProcess::CrashExit):
+    case QProcess::CrashExit:
         return handleCrashExit();
     default:
         return Result::Unknown;
@@ -114,10 +109,10 @@ AstFileGenerator::Result AstFileGenerator::handleTimeout() const
 
 void AstFileGenerator::writeMessage(const QString &message) const
 {
-    auto fullMsg = m_params.m_asn1SccPath + ": " + message;
-    qCritical("asn1scc.MalTester: %s", qPrintable(fullMsg));
+    qCritical().noquote().nospace() << "asn1scc: " << message << " [" << m_params.m_asn1SccPath
+                                    << ' ' << m_process->arguments().join(' ') << "]";
 
-    auto processMsg = m_process->readAll();
+    const auto processMsg = m_process->readAll();
     if (!processMsg.isEmpty())
-        qCritical("asn1scc.MalTester: %s", qPrintable(processMsg));
+        qCritical().noquote() << processMsg;
 }

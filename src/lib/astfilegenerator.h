@@ -54,8 +54,7 @@ private:
     QProcess *createProcess() const;
 
     QStringList createRunArgs() const;
-    QString astArg() const;
-    QString outputPathArg() const;
+    QStringList astArg() const;
     QStringList inputFilesArg() const;
 
     Result processFinished() const;

@@ -47,7 +47,8 @@ TestGenerator::TestGenerator(const RunParameters &params)
 
 void TestGenerator::reportOnNotFoundStructure() const
 {
-    qCritical() << "Structure " << m_params.m_mainStructureName << " not found. "
+    qCritical() << "Structure" << m_params.m_mainStructure.name()
+                << "(module:" << m_params.m_mainStructure.module() << ") not found."
                 << "No cases were generated.";
 }
 
@@ -82,7 +83,7 @@ bool TestGenerator::createOutputDirectory() const
 
 std::unique_ptr<Cases::TestCaseSink> TestGenerator::buildTestCases(const Data::Project &project) const
 {
-    Cases::TestCaseBuilder builder(m_params.m_mainStructureName);
+    Cases::TestCaseBuilder builder(m_params.m_mainStructure);
     project.accept(builder);
     return builder.takeResult();
 }

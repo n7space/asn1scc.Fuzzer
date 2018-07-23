@@ -29,6 +29,7 @@
 
 #include <QString>
 
+#include <data/typereference.h>
 #include <data/types/typereadingvisitor.h>
 #include <data/visitor.h>
 
@@ -41,7 +42,7 @@ namespace Cases {
 class TestCaseBuilder : public Data::Visitor
 {
 public:
-    explicit TestCaseBuilder(const QString &mainStructure);
+    explicit TestCaseBuilder(const Data::TypeReference &mainStructure);
     ~TestCaseBuilder() override;
 
     std::unique_ptr<TestCaseSink> takeResult() { return std::move(m_result); }
@@ -56,7 +57,7 @@ public:
 private:
     void buildCasesForAssignment(const Data::TypeAssignment &type);
 
-    QString m_mainStructure;
+    Data::TypeReference m_mainStructure;
     std::unique_ptr<TestCaseSink> m_result;
 };
 

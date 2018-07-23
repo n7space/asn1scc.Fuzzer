@@ -45,7 +45,7 @@ private:
     void updateRunParams();
 
     QStringList readFilesList();
-    QString readMainStructureName();
+    Data::TypeReference readMainStructure();
     QString readAsn1SccPath();
     QStringList readAsn1SccFlags();
     QString readOutputDir();

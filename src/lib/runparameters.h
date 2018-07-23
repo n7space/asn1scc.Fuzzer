@@ -28,13 +28,15 @@
 #include <QString>
 #include <QStringList>
 
+#include <data/typereference.h>
+
 namespace MalTester {
 
 struct RunParameters
 {
     QStringList m_inputFiles;
 
-    QString m_mainStructureName;
+    Data::TypeReference m_mainStructure;
     QString m_asn1SccPath;
     QStringList m_asn1SccFlags;
     QString m_outputDir;

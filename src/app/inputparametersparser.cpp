@@ -76,7 +76,7 @@ void InputParametersParser::setupParser()
 void InputParametersParser::updateRunParams()
 {
     m_params.m_inputFiles = readFilesList();
-    m_params.m_mainStructureName = readMainStructureName();
+    m_params.m_mainStructure = readMainStructure();
     m_params.m_asn1SccPath = readAsn1SccPath();
     m_params.m_asn1SccFlags = readAsn1SccFlags();
     m_params.m_outputDir = readOutputDir();
@@ -93,12 +93,18 @@ QStringList InputParametersParser::readFilesList()
     return args;
 }
 
-QString InputParametersParser::readMainStructureName()
+Data::TypeReference InputParametersParser::readMainStructure()
 {
     if (!m_parser.isSet(m_mainStructure))
         printUsageAndExit("Main structure name must be set");
 
-    return m_parser.value(m_mainStructure);
+    const auto pair = m_parser.value(m_mainStructure).split('.', QString::SkipEmptyParts);
+    if (pair.count() != 2 && pair.count() != 1)
+        printUsageAndExit("Main structure must be provided in format Module.Type or UniqueTypeName");
+
+    if (pair.count() == 2)
+        return {pair[1], pair[0]};
+    return {pair[0], {}};
 }
 
 QString InputParametersParser::readAsn1SccPath()

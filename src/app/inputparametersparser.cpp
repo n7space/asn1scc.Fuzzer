@@ -144,9 +144,9 @@ RunParameters::CcsdsWrap InputParametersParser::readCcsdsValue()
 bool InputParametersParser::printUsageAndFail(const QString &message)
 {
     if (!message.isEmpty())
-        qInfo() << message;
+        qInfo().noquote() << message;
 
-    qInfo() << m_parser.helpText();
+    qInfo().noquote() << m_parser.helpText();
 
     m_failed = true;
     return false;

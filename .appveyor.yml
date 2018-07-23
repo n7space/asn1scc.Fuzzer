@@ -13,6 +13,12 @@ environment:
 configuration:
   - Release
 
+init:
+  - cmd: git config --global core.autocrlf true
+
+install:
+  - cmd: pip install cram
+
 before_build:
   - cmd: '%QTDIR%\bin\qtenv2.bat'
   - cmd: '"%ProgramFiles(x86)%\Microsoft Visual Studio %VSVER%\VC\vcvarsall.bat" %ENV_MSVC_PLATFORM%'
@@ -23,3 +29,5 @@ build_script:
   - cmd: qmake %APPVEYOR_BUILD_FOLDER%/maltester.pro -r "CONFIG+=%configuration%"
   - cmd: nmake.exe
   - cmd: "%BUILD_DIR%/src/tests/release/tests.exe"
+  - cmd: SET PATH=%BUILD_DIR%\src\app\release;%PATH%
+  - cmd: FOR %%t IN ("%APPVEYOR_BUILD_FOLDER%\tests\*.t") DO python -m cram -v -E -y --shell="C:\Program Files\Git\bin\sh.exe" %%t

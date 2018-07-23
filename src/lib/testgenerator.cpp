@@ -45,31 +45,26 @@ TestGenerator::TestGenerator(const RunParameters &params)
     : m_params(params)
 {}
 
-void TestGenerator::reportOnNotFoundStructure() const
+bool TestGenerator::reportOnNotFoundStructure() const
 {
     qCritical() << "Structure" << m_params.m_mainStructure.name()
                 << "(module:" << m_params.m_mainStructure.module() << ") not found."
                 << "No cases were generated.";
+    return false;
 }
 
-static void reportOnNoCasesFound()
+static bool reportOnNoCasesFound()
 {
     qCritical() << "No cases were found for structure.";
+    return false;
 }
 
-void TestGenerator::run() const
+bool TestGenerator::run() const
 {
-    auto ast = createDataTree();
+    const auto ast = createDataTree();
     if (ast == nullptr)
-        return;
-
-    if (!createOutputDirectory())
-        return;
-
-    dumpRelaxedModelFrom(*ast);
-
-    auto cases = buildTestCases(*ast);
-    checkAndDumpCases(std::move(cases));
+        return false;
+    return createOutputDirectory() && dumpRelaxedModelFrom(*ast) && dumpCases(buildCasesFor(*ast));
 }
 
 bool TestGenerator::createOutputDirectory() const
@@ -81,24 +76,20 @@ bool TestGenerator::createOutputDirectory() const
     return false;
 }
 
-std::unique_ptr<Cases::TestCaseSink> TestGenerator::buildTestCases(const Data::Project &project) const
+std::unique_ptr<Cases::TestCaseSink> TestGenerator::buildCasesFor(const Data::Project &project) const
 {
     Cases::TestCaseBuilder builder(m_params.m_mainStructure);
     project.accept(builder);
     return builder.takeResult();
 }
 
-void TestGenerator::checkAndDumpCases(std::unique_ptr<Cases::TestCaseSink> cases) const
+bool TestGenerator::dumpCases(std::unique_ptr<Cases::TestCaseSink> cases) const
 {
-    if (cases == nullptr) {
-        reportOnNotFoundStructure();
-        return;
-    }
-    if (cases->cases().isEmpty()) {
-        reportOnNoCasesFound();
-        return;
-    }
-    dumpTestCases(*cases);
+    if (cases == nullptr)
+        return reportOnNotFoundStructure();
+    if (cases->cases().isEmpty())
+        return reportOnNoCasesFound();
+    return dumpTestCases(*cases);
 }
 
 std::unique_ptr<Data::Project> TestGenerator::createDataTree() const
@@ -128,28 +119,33 @@ std::unique_ptr<Data::Project> TestGenerator::createRelaxedCopyOf(const Data::Pr
 namespace {
 std::unique_ptr<QTextStream> openFile(QFile &file)
 {
-    if (!file.isOpen() && !file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate))
+    if (!file.isOpen() && !file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate)) {
+        qCritical() << "Unable to write to:" << file.fileName();
         return nullptr;
+    }
     return std::make_unique<QTextStream>(&file);
 }
 } // namespace
 
-void TestGenerator::dumpRelaxedModelFrom(const Data::Project &project) const
+bool TestGenerator::dumpRelaxedModelFrom(const Data::Project &project) const
 {
     QFile asnFile(m_params.m_outputDir + "/AllModels.asn1");
     QFile acnFile(m_params.m_outputDir + "/AllModels.acn");
     Reconstructor r([this, &asnFile, &acnFile](const QString &name) {
         return openFile(name.endsWith(".acn") ? acnFile : asnFile);
     });
-    r.reconstruct(*createRelaxedCopyOf(project));
+    return r.reconstruct(*createRelaxedCopyOf(project));
 }
 
-void TestGenerator::dumpTestCases(const Cases::TestCaseSink &cases) const
+bool TestGenerator::dumpTestCases(const Cases::TestCaseSink &cases) const
 {
     QFile out(m_params.m_outputDir + "/test_main.c");
-    if (!out.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate))
-        return;
+    if (!out.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate)) {
+        qCritical() << "Unable to write to: " << out.fileName();
+        return false;
+    }
     QTextStream stream(&out);
     Cases::TestCasePrinter printer(stream);
     printer.print(cases);
+    return true;
 }

@@ -42,17 +42,17 @@ class TestGenerator
 public:
     TestGenerator(const RunParameters &params);
 
-    void run() const;
+    bool run() const;
 
 private:
     std::unique_ptr<Data::Project> createDataTree() const;
     std::unique_ptr<Data::Project> createRelaxedCopyOf(const Data::Project &project) const;
-    void dumpRelaxedModelFrom(const Data::Project &project) const;
+    bool dumpRelaxedModelFrom(const Data::Project &project) const;
     bool createOutputDirectory() const;
-    std::unique_ptr<Cases::TestCaseSink> buildTestCases(const Data::Project &project) const;
-    void checkAndDumpCases(std::unique_ptr<Cases::TestCaseSink> cases) const;
-    void dumpTestCases(const Cases::TestCaseSink &cases) const;
-    void reportOnNotFoundStructure() const;
+    std::unique_ptr<Cases::TestCaseSink> buildCasesFor(const Data::Project &project) const;
+    bool dumpCases(std::unique_ptr<Cases::TestCaseSink> cases) const;
+    bool dumpTestCases(const Cases::TestCaseSink &cases) const;
+    bool reportOnNotFoundStructure() const;
 
     const RunParameters m_params;
 };

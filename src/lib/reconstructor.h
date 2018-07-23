@@ -37,13 +37,13 @@ class Reconstructor
 {
 public:
     using StreamFactory = std::function<std::unique_ptr<QTextStream>(const QString &name)>;
-    Reconstructor(const StreamFactory &streamFactory);
+    explicit Reconstructor(const StreamFactory &streamFactory);
 
-    void reconstruct(const Data::Project &project);
+    bool reconstruct(const Data::Project &project);
 
 private:
-    void reconstructAsn1File(const Data::File &file);
-    void reconstructAcnFile(const Data::File &file);
+    bool reconstructAsn1File(const Data::File &file);
+    bool reconstructAcnFile(const Data::File &file);
 
     StreamFactory m_streamFactory;
 };

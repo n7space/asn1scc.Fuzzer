@@ -37,22 +37,25 @@ Reconstructor::Reconstructor(const StreamFactory &streamFactory)
     : m_streamFactory(streamFactory)
 {}
 
-void Reconstructor::reconstruct(const Data::Project &project)
+bool Reconstructor::reconstruct(const Data::Project &project)
 {
+    bool result = true;
     for (const auto &file : project.files()) {
-        reconstructAsn1File(*file);
-        reconstructAcnFile(*file);
+        result &= reconstructAsn1File(*file);
+        result &= reconstructAcnFile(*file);
     }
+    return result;
 }
 
-void Reconstructor::reconstructAsn1File(const Data::File &file)
+bool Reconstructor::reconstructAsn1File(const Data::File &file)
 {
     auto outStream = m_streamFactory(file.name());
     if (outStream == nullptr)
-        return;
+        return false;
 
     Asn1NodeReconstructingVisitor visitor(*outStream);
     visitor.visit(file);
+    return true;
 }
 
 namespace {
@@ -66,12 +69,13 @@ QString makeAcnFileName(const QString &name)
 }
 } // namespace
 
-void Reconstructor::reconstructAcnFile(const Data::File &file)
+bool Reconstructor::reconstructAcnFile(const Data::File &file)
 {
     auto outStream = m_streamFactory(makeAcnFileName(file.name()));
     if (outStream == nullptr)
-        return;
+        return false;
 
     AcnNodeReconstructingVisitor visitor(*outStream);
     visitor.visit(file);
+    return true;
 }

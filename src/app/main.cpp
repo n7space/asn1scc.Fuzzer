@@ -34,7 +34,11 @@ void initializeApplication(QCoreApplication &app, MalTester::MainTask &task)
     QCoreApplication::setApplicationName("MalTester-App");
     QCoreApplication::setApplicationVersion("0.1");
 
-    QObject::connect(&task, &MalTester::MainTask::finished, &app, &QCoreApplication::quit);
+    QObject::connect(&task,
+                     &MalTester::MainTask::finished,
+                     &app,
+                     &QCoreApplication::exit,
+                     Qt::QueuedConnection);
     QTimer::singleShot(0, &task, &MalTester::MainTask::start);
 }
 

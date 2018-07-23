@@ -44,9 +44,11 @@ public slots:
     void start();
 
 signals:
-    void finished();
+    void finished(int exitCode);
 
 private:
+    bool doWork();
+
     const int m_argc;
     char **m_argv;
 };

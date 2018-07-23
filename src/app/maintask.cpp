@@ -33,11 +33,16 @@ using namespace MalTester;
 
 void MainTask::start()
 {
+    const auto success = doWork();
+    emit finished(success ? 0 : 1);
+}
+
+bool MainTask::doWork()
+{
     MalTester::InputParametersParser p;
-    p.parse(m_argc, m_argv);
+    if (!p.parse(m_argc, m_argv))
+        return false;
 
     MalTester::TestGenerator t(p.parameters());
-    t.run();
-
-    emit finished();
+    return t.run();
 }

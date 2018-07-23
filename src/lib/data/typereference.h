@@ -35,7 +35,7 @@ namespace Data {
 class TypeReference
 {
 public:
-    explicit TypeReference() = default;
+    TypeReference() = default;
     TypeReference(const QString &name, const QString &module, const SourceLocation &location = {})
         : m_location(location)
         , m_name(name)

@@ -15,7 +15,6 @@ SOURCES += \
     data/root.cpp \
     data/sourcelocation.cpp \
     data/typeassignment.cpp \
-    data/typereference.cpp \
     data/valueassignment.cpp \
     data/visitor.cpp \
     data/mutatingvisitor.cpp \

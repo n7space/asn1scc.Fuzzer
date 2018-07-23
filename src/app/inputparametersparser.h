@@ -37,7 +37,7 @@ class InputParametersParser
 public:
     InputParametersParser();
 
-    void parse(int argc, char *argv[]);
+    bool parse(int argc, char *argv[]);
     RunParameters parameters() const;
 
 private:
@@ -51,7 +51,7 @@ private:
     QString readOutputDir();
     RunParameters::CcsdsWrap readCcsdsValue();
 
-    void printUsageAndExit(const QString &message = QString());
+    bool printUsageAndFail(const QString &message = QString());
 
     QCommandLineOption m_mainStructure;
     QCommandLineOption m_asn1sccPath;
@@ -61,6 +61,7 @@ private:
 
     QCommandLineParser m_parser;
     RunParameters m_params;
+    bool m_failed;
 };
 
 } // namespace MalTester

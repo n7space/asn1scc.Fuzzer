@@ -23,10 +23,10 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-
 #include "inputparametersparser.h"
 
 #include <QString>
+#include <QtDebug>
 
 using namespace MalTester;
 
@@ -37,15 +37,16 @@ InputParametersParser::InputParametersParser()
     , m_asn1sccFlags ({"f", "asn1scc-flags"},  "Asn1scc compiler flags.",                              "asn1scc flags", "--field-prefix AUTO --type-prefix T --acn-enc")
     , m_outputDir    ({"o", "output-dir"},     "Output directory for generated files.",                "output directory")
     , m_wrapAsCcsds  ({"w", "wrap-as-ccsds"},  "Wrapping main structure inside CCSDS packets",         "[tc, tm]")
+    , m_failed(false)
 // clang-format on
 {
     setupParser();
 }
 
-void InputParametersParser::parse(int argc, char *argv[])
+bool InputParametersParser::parse(int argc, char *argv[])
 {
     if (argc <= 1)
-        printUsageAndExit("Invalid arguments number: " + QString::number(argc - 1));
+        return printUsageAndFail("Invalid arguments number: " + QString::number(argc - 1));
 
     QStringList args;
     for (int i = 0; i < argc; i++)
@@ -53,9 +54,10 @@ void InputParametersParser::parse(int argc, char *argv[])
 
     auto help = m_parser.addHelpOption();
     if (!m_parser.parse(args) || m_parser.isSet(help))
-        printUsageAndExit(m_parser.errorText());
+        return printUsageAndFail(m_parser.errorText());
 
     updateRunParams();
+    return !m_failed;
 }
 
 RunParameters InputParametersParser::parameters() const
@@ -88,7 +90,7 @@ QStringList InputParametersParser::readFilesList()
     const auto args = m_parser.positionalArguments();
 
     if (args.empty())
-        printUsageAndExit("No files provided");
+        printUsageAndFail("No files provided");
 
     return args;
 }
@@ -96,11 +98,13 @@ QStringList InputParametersParser::readFilesList()
 Data::TypeReference InputParametersParser::readMainStructure()
 {
     if (!m_parser.isSet(m_mainStructure))
-        printUsageAndExit("Main structure name must be set");
+        printUsageAndFail("Main structure name must be set");
 
     const auto pair = m_parser.value(m_mainStructure).split('.', QString::SkipEmptyParts);
-    if (pair.count() != 2 && pair.count() != 1)
-        printUsageAndExit("Main structure must be provided in format Module.Type or UniqueTypeName");
+    if (pair.count() != 2 && pair.count() != 1) {
+        printUsageAndFail("Main structure must be provided in format Module.Type or UniqueTypeName");
+        return {};
+    }
 
     if (pair.count() == 2)
         return {pair[1], pair[0]};
@@ -124,27 +128,26 @@ QString InputParametersParser::readOutputDir()
 
 RunParameters::CcsdsWrap InputParametersParser::readCcsdsValue()
 {
-    RunParameters::CcsdsWrap val = RunParameters::CcsdsWrap::none;
     if (!m_parser.isSet(m_wrapAsCcsds))
-        return val;
+        return RunParameters::CcsdsWrap::none;
 
     const auto ccsds = m_parser.value(m_wrapAsCcsds);
     if (ccsds == "tc")
-        val = RunParameters::CcsdsWrap::tc;
+        return RunParameters::CcsdsWrap::tc;
     else if (ccsds == "tm")
-        val = RunParameters::CcsdsWrap::tm;
-    else
-        printUsageAndExit("Unrecognised ccsds option: " + ccsds);
+        return RunParameters::CcsdsWrap::tm;
 
-    return val;
+    printUsageAndFail("Unrecognised ccsds option: " + ccsds);
+    return RunParameters::CcsdsWrap::none;
 }
 
-void InputParametersParser::printUsageAndExit(const QString &message)
+bool InputParametersParser::printUsageAndFail(const QString &message)
 {
     if (!message.isEmpty())
-        qInfo("%s", qPrintable(message));
+        qInfo() << message;
 
-    qInfo("%s", qPrintable(m_parser.helpText()));
+    qInfo() << m_parser.helpText();
 
-    exit(1);
+    m_failed = true;
+    return false;
 }

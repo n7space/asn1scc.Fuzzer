@@ -1,5 +1,7 @@
 TEMPLATE = app
 
+TARGET = asn1scc-maltester
+
 CONFIG += console
 CONFIG += c++14
 CONFIG -= app_bundle

@@ -23,7 +23,6 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-
 #include "maintask.h"
 
 #include <inputparametersparser.h>
@@ -33,16 +32,11 @@ using namespace MalTester;
 
 void MainTask::start()
 {
-    const auto success = doWork();
-    emit finished(success ? 0 : 1);
-}
-
-bool MainTask::doWork()
-{
     MalTester::InputParametersParser p;
-    if (!p.parse(m_argc, m_argv))
-        return false;
+    p.process(m_app.arguments());
 
     MalTester::TestGenerator t(p.parameters());
-    return t.run();
+    const auto success = t.run();
+
+    emit finished(success ? 0 : 1);
 }

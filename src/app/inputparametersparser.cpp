@@ -25,6 +25,7 @@
 ****************************************************************************/
 #include "inputparametersparser.h"
 
+#include <QFileInfo>
 #include <QString>
 #include <QtDebug>
 
@@ -37,27 +38,16 @@ InputParametersParser::InputParametersParser()
     , m_asn1sccFlags ({"f", "asn1scc-flags"},  "Asn1scc compiler flags.",                              "asn1scc flags", "--field-prefix AUTO --type-prefix T --acn-enc")
     , m_outputDir    ({"o", "output-dir"},     "Output directory for generated files.",                "output directory")
     , m_wrapAsCcsds  ({"w", "wrap-as-ccsds"},  "Wrapping main structure inside CCSDS packets",         "[tc, tm]")
-    , m_failed(false)
 // clang-format on
 {
     setupParser();
 }
 
-bool InputParametersParser::parse(int argc, char *argv[])
+void InputParametersParser::process(const QStringList &args)
 {
-    if (argc <= 1)
-        return printUsageAndFail("Invalid arguments number: " + QString::number(argc - 1));
-
-    QStringList args;
-    for (int i = 0; i < argc; i++)
-        args << argv[i];
-
-    auto help = m_parser.addHelpOption();
-    if (!m_parser.parse(args) || m_parser.isSet(help))
-        return printUsageAndFail(m_parser.errorText());
+    m_parser.process(args);
 
     updateRunParams();
-    return !m_failed;
 }
 
 RunParameters InputParametersParser::parameters() const
@@ -67,6 +57,9 @@ RunParameters InputParametersParser::parameters() const
 
 void InputParametersParser::setupParser()
 {
+    m_parser.addHelpOption();
+    m_parser.addVersionOption();
+
     m_parser.addOption(m_asn1sccPath);
     m_parser.addOption(m_asn1sccFlags);
     m_parser.addOption(m_outputDir);
@@ -141,13 +134,8 @@ RunParameters::CcsdsWrap InputParametersParser::readCcsdsValue()
     return RunParameters::CcsdsWrap::none;
 }
 
-bool InputParametersParser::printUsageAndFail(const QString &message)
+void InputParametersParser::printUsageAndFail(const QString &message)
 {
-    if (!message.isEmpty())
-        qInfo().noquote() << message;
-
-    qInfo().noquote() << m_parser.helpText();
-
-    m_failed = true;
-    return false;
+    qCritical().noquote() << "ERROR:" << message;
+    exit(1);
 }

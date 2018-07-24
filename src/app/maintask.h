@@ -34,10 +34,9 @@ class MainTask : public QObject
     Q_OBJECT
 
 public:
-    MainTask(int argc, char *argv[], QObject *parent = nullptr)
+    MainTask(QCoreApplication &app, QObject *parent = nullptr)
         : QObject(parent)
-        , m_argc(argc)
-        , m_argv(argv)
+        , m_app(app)
     {}
 
 public slots:
@@ -47,10 +46,7 @@ signals:
     void finished(int exitCode);
 
 private:
-    bool doWork();
-
-    const int m_argc;
-    char **m_argv;
+    QCoreApplication &m_app;
 };
 
 } // namespace MalTester

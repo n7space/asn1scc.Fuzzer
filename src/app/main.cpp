@@ -31,8 +31,10 @@
 
 void initializeApplication(QCoreApplication &app, MalTester::MainTask &task)
 {
-    QCoreApplication::setApplicationName("MalTester-App");
+    QCoreApplication::setApplicationName("asn1scc-MalTester");
     QCoreApplication::setApplicationVersion("0.1");
+    QCoreApplication::setOrganizationDomain("n7space.com");
+    QCoreApplication::setOrganizationName("N7 Space sp. z o.o.");
 
     QObject::connect(&task,
                      &MalTester::MainTask::finished,
@@ -45,7 +47,7 @@ void initializeApplication(QCoreApplication &app, MalTester::MainTask &task)
 int main(int argc, char *argv[])
 {
     QCoreApplication app(argc, argv);
-    MalTester::MainTask task(argc, argv);
+    MalTester::MainTask task(app);
 
     initializeApplication(app, task);
 

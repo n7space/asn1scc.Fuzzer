@@ -1,0 +1,77 @@
+# Keep no new line at end to make it work on Windows
+  $ ${TESTDIR}/copy_test_resources.sh
+  $ asn1scc-maltester -m Tests.MyInt -o generated a.asn1 b.asn1 a.acn b.acn
+  Generated 1 case(s).
+  $ ${TESTDIR}/list_files.sh generated
+  AllModels.acn
+  AllModels.asn1
+  test_main.c
+  $ cat generated/AllModels.asn1
+  Tests DEFINITIONS ::= BEGIN
+  MyInt ::= INTEGER(0 .. 255)
+  END
+  
+  Tests2 DEFINITIONS ::= BEGIN
+  MyInt2 ::= INTEGER(0 .. 15)
+  END
+  
+  $ cat generated/AllModels.acn
+  Tests DEFINITIONS ::= BEGIN
+  MyInt [size 8, encoding pos-int]
+  END
+  
+  Tests2 DEFINITIONS ::= BEGIN
+  MyInt2 []
+  END
+  
+  $ cat generated/test_main.c
+  #include <stdio.h>
+  #include <stdbool.h>
+  
+  #include "AllModels.h"
+  
+  #define RUN_TEST(T, ...) \
+    (printf("Executing " #T " ... "), \
+     (T(__VA_ARGS__) \
+        ? (printf("PASSED\n"), 0) \
+        : (printf("FAILED\n"), 1)))
+  
+  static void MyInt_encode(const MyInt *v, BitStream *stream)
+  {
+    BitStream_Init(stream, stream->buf, stream->count);
+    int errCode = 0;
+    MyInt_ACN_Encode(v, stream, &errCode, FALSE);
+  }
+  
+  static bool validate(BitStream *stream)
+  {
+    // TODO - fill to perform tests on desired target
+    return false;
+  }
+  
+  static bool test_255(MyInt *v, BitStream *stream)
+  {
+    MyInt_Initialize(v);
+  
+    *v = 255;
+  
+    MyInt_encode(v, stream);
+    return validate(stream);
+  }
+  
+  int main()
+  {
+    MyInt v;
+    byte buf[MyInt_REQUIRED_BYTES_FOR_ACN_ENCODING];
+    BitStream stream;
+    BitStream_Init(&stream, buf, sizeof(buf));
+    int result = 0;
+  
+    result += RUN_TEST(test_255, &v, &stream);
+  
+    if (result == 0)
+      printf("OK - all (1) tests passed\n.");
+    else
+      printf("ERROR - Failed %d out of 1 tests\n.", result);
+    return result;
+  }

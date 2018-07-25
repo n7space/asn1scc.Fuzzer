@@ -1,0 +1,5 @@
+Tests DEFINITIONS ::= BEGIN
+
+MyInt ::= INTEGER(0 .. 254)
+
+END

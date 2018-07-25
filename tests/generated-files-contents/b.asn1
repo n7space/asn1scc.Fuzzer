@@ -1,0 +1,5 @@
+Tests2 DEFINITIONS ::= BEGIN
+
+MyInt2 ::= INTEGER(0 .. 10)
+
+END

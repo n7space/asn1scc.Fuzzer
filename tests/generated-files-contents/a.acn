@@ -1,5 +1,5 @@
 Tests DEFINITIONS ::= BEGIN
 
-MyInt ::= INTEGER(0 .. 10)
+MyInt [size 8, encoding pos-int]
 
 END

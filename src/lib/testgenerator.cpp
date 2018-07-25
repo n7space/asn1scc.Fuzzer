@@ -149,6 +149,6 @@ bool TestGenerator::dumpTestCases(const Cases::TestCaseSink &cases) const
     QTextStream stream(&out);
     Cases::TestCasePrinter printer(stream);
     printer.print(cases);
-    qInfo() << "Generated" << cases.cases().count() << "cases.";
+    qInfo() << "Generated" << cases.cases().count() << "case(s).";
     return true;
 }

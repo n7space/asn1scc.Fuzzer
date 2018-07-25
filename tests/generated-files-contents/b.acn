@@ -1,0 +1,5 @@
+Tests DEFINITIONS ::= BEGIN
+
+MyInt2 []
+
+END

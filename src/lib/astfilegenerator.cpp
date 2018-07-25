@@ -113,5 +113,5 @@ void AstFileGenerator::writeMessage(const QString &message) const
 
     const auto processMsg = m_process->readAll();
     if (!processMsg.isEmpty())
-        qCritical().noquote() << processMsg;
+        qCritical().noquote() << processMsg.trimmed() << endl;
 }

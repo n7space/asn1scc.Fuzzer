@@ -7,6 +7,8 @@ CONFIG += c++14
 CONFIG -= app_bundle
 QT -= gui
 
+QMAKE_RPATHDIR += $ORIGIN/lib
+
 include(../../includelib.pri)
 include(../../warnings.pri)
 

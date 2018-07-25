@@ -88,7 +88,7 @@ AstFileGenerator::Result AstFileGenerator::processFinished() const
 AstFileGenerator::Result AstFileGenerator::handleNormalExit() const
 {
     if (m_process->exitCode() != 0) {
-        writeMessage("Build failed");
+        writeMessage("failed");
         return Result::BuildFailed;
     }
 
@@ -97,20 +97,19 @@ AstFileGenerator::Result AstFileGenerator::handleNormalExit() const
 
 AstFileGenerator::Result AstFileGenerator::handleCrashExit() const
 {
-    writeMessage("Crashed");
+    writeMessage("crashed");
     return Result::ProcessCrashed;
 }
 
 AstFileGenerator::Result AstFileGenerator::handleTimeout() const
 {
-    writeMessage("Timeouted");
+    writeMessage("timed out");
     return Result::ProcessTimeouted;
 }
 
 void AstFileGenerator::writeMessage(const QString &message) const
 {
-    qCritical().noquote().nospace() << "asn1scc: " << message << " [" << m_params.m_asn1SccPath
-                                    << ' ' << m_process->arguments().join(' ') << "]";
+    qCritical().noquote().nospace() << "ERROR: asn1scc call " << message;
 
     const auto processMsg = m_process->readAll();
     if (!processMsg.isEmpty())

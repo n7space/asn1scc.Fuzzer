@@ -14,3 +14,8 @@ elif [[ $"$BUILD_OS_NAME" == "linux" ]]; then
 fi
 
 sudo pip install cram
+
+pushd $HOME
+wget "https://drive.google.com/uc?export=download&id=1tzZdsXU4CHbppf4TQMrkNx-6p0zsCuEt" -O asn1scc.7z
+7z x asn1scc.7z
+popd

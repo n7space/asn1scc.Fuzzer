@@ -33,6 +33,9 @@ addons:
     - qt510tools
     - python-setuptools
     - python-pip
+    - p7zip-full
+    - mono-complete
+    - fsharp
 
 install:
   - travis/install.sh

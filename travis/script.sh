@@ -22,4 +22,4 @@ echo "Running Unit Tests"
 src/tests/tests || exit 1
 
 echo "Running Integration Tests"
-PATH=${BUILD_DIR}/src/app:$PATH cram "${PROJECT_DIR}"/tests/*.t || exit 1
+PATH=${BUILD_DIR}/src/app:$HOME/asn1scc:$PATH cram "${PROJECT_DIR}"/tests/*.t || exit 1

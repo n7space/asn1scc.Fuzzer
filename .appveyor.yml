@@ -38,3 +38,26 @@ build_script:
   - cmd: SET CRAMTESTS=
   - cmd: FOR %%t IN ("%APPVEYOR_BUILD_FOLDER%\tests\*.t") DO CALL SET CRAMTESTS= %%CRAMTESTS%% %%t
   - cmd: python -m cram -v -E -y --shell="C:\Program Files\Git\bin\sh.exe" %CRAMTESTS%
+
+after_build:
+  - cmd: mkdir %DIST_DIR%\asn1scc-MalTester
+  - cmd: cd %DIST_DIR%\asn1scc-MalTester
+  - cmd: copy /Y %BUILD_DIR%\src\app\release\*.exe .
+  - cmd: copy /Y %APPVEYOR_BUILD_FOLDER%\LICENSE .
+  - cmd: copy /Y %APPVEYOR_BUILD_FOLDER%\README.md .
+  - cmd: copy /Y %QTDIR%\bin\Qt5Core.dll .
+  - cmd: cd %DIST_DIR%
+  - cmd: 7z a %APPVEYOR_BUILD_FOLDER%\asn1scc-MalTester-%APPVEYOR_REPO_TAG_NAME%-win.zip *
+
+artifacts:
+  - path: 'asn1scc-MalTester-*.zip'
+    name: zip_archive
+
+deploy:
+  provider: GitHub
+  description: ' '
+  auth_token:
+    secure: a0s0itv384dggr5rZVAK34HpB4dOBbG7LBZusrbtcK0KWbvkh89AZfGrwQXDAvB2
+  artifact: zip_archive
+  on:
+    appveyor_repo_tag: true

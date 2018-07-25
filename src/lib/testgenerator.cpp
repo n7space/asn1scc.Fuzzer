@@ -47,8 +47,10 @@ TestGenerator::TestGenerator(const RunParameters &params)
 
 bool TestGenerator::reportOnNotFoundStructure() const
 {
-    qCritical() << "Structure" << m_params.m_mainStructure.name()
-                << "(module:" << m_params.m_mainStructure.module() << ") not found."
+    qCritical() << "Type" << m_params.m_mainStructure.name() << "from module:"
+                << (m_params.m_mainStructure.module().isEmpty() ? QStringLiteral("*any*")
+                                                                : m_params.m_mainStructure.module())
+                << "not found."
                 << "No cases were generated.";
     return false;
 }

@@ -36,7 +36,7 @@ InputParametersParser::InputParametersParser()
     : m_mainStructure({"m", "main-structure"}, "Main structure for generation of malformed messages.", "main structure")
     , m_asn1sccPath  ({"a", "asn1scc-path"},   "Asn1scc compiler path.",                               "asn1scc path", "asn1.exe")
     , m_asn1sccFlags ({"f", "asn1scc-flags"},  "Asn1scc compiler flags.",                              "asn1scc flags", "--field-prefix AUTO --type-prefix T --acn-enc")
-    , m_outputDir    ({"o", "output-dir"},     "Output directory for generated files.",                "output directory")
+    , m_outputDir    ({"o", "output-dir"},     "Output directory for generated files.",                "output directory", "out")
     , m_wrapAsCcsds  ({"w", "wrap-as-ccsds"},  "Wrapping main structure inside CCSDS packets",         "[tc, tm]")
 // clang-format on
 {

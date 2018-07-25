@@ -30,4 +30,6 @@ build_script:
   - cmd: nmake.exe
   - cmd: "%BUILD_DIR%/src/tests/release/tests.exe"
   - cmd: SET PATH=%BUILD_DIR%\src\app\release;%PATH%
-  - cmd: FOR %%t IN ("%APPVEYOR_BUILD_FOLDER%\tests\*.t") DO python -m cram -v -E -y --shell="C:\Program Files\Git\bin\sh.exe" %%t
+  - cmd: SET CRAMTESTS=
+  - cmd: FOR %%t IN ("%APPVEYOR_BUILD_FOLDER%\tests\*.t") DO CALL SET CRAMTESTS= %%CRAMTESTS%% %%t
+  - cmd: python -m cram -v -E -y --shell="C:\Program Files\Git\bin\sh.exe" %CRAMTESTS%

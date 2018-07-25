@@ -2,13 +2,15 @@ version: 0.0.1.{build}
 
 image: Visual Studio 2015
 
+clone_folder: c:\projects\asn1scc.MalTester\src
+
 environment:
   QTDIR: C:\Qt\5.10.1\msvc2015
   ENV_MSVC_PLATFORM: x86
-  BUILD_DIR: c:\projects\build
-  DIST_DIR: c:\projects\dist
+  BUILD_DIR: c:\projects\asn1scc.MalTester\build
+  DIST_DIR: c:\projects\asn1scc.MalTester\dist
+  DOWNLOAD_DIR: c:\projects\asn1scc.MalTester\downloads
   VSVER: 14.0
-  PUSC_VERSION: 1.0.1
 
 configuration:
   - Release
@@ -18,6 +20,9 @@ init:
 
 install:
   - cmd: pip install cram
+  - cmd: mkdir %DOWNLOAD_DIR%
+  - cmd: curl -fsSL "https://drive.google.com/uc?export=download&id=1tzZdsXU4CHbppf4TQMrkNx-6p0zsCuEt" -o %DOWNLOAD_DIR%\asn1scc.7z
+  - cmd: 7z x -y "%DOWNLOAD_DIR%\asn1scc.7z" -o"%DOWNLOAD_DIR%" | findstr /b /r /c:"\<Everything is Ok"
 
 before_build:
   - cmd: '%QTDIR%\bin\qtenv2.bat'
@@ -29,7 +34,7 @@ build_script:
   - cmd: qmake %APPVEYOR_BUILD_FOLDER%/maltester.pro -r "CONFIG+=%configuration%"
   - cmd: nmake.exe
   - cmd: "%BUILD_DIR%/src/tests/release/tests.exe"
-  - cmd: SET PATH=%BUILD_DIR%\src\app\release;%PATH%
+  - cmd: SET PATH=%BUILD_DIR%\src\app\release;%DOWNLOAD_DIR%\asn1scc;%PATH%
   - cmd: SET CRAMTESTS=
   - cmd: FOR %%t IN ("%APPVEYOR_BUILD_FOLDER%\tests\*.t") DO CALL SET CRAMTESTS= %%CRAMTESTS%% %%t
   - cmd: python -m cram -v -E -y --shell="C:\Program Files\Git\bin\sh.exe" %CRAMTESTS%

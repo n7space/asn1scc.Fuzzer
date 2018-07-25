@@ -21,5 +21,7 @@ make || exit 1
 echo "Running Unit Tests"
 src/tests/tests || exit 1
 
-echo "Running Integration Tests"
-PATH=${BUILD_DIR}/src/app:$HOME/asn1scc:$PATH cram "${PROJECT_DIR}"/tests/*.t || exit 1
+if [[ $BUILD_OS_NAME == 'linux' ]]; then
+    echo "Running Integration Tests"
+    PATH=${BUILD_DIR}/src/app:$HOME/asn1scc:$PATH cram "${PROJECT_DIR}"/tests/*.t || exit 1
+fi

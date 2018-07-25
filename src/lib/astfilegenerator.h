@@ -62,6 +62,7 @@ private:
     Result handleTimeout() const;
     Result handleNormalExit() const;
     Result handleCrashExit() const;
+    Result handleNotStarted() const;
 
     void writeMessage(const QString &message) const;
 

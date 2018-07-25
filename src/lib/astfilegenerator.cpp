@@ -44,6 +44,8 @@ AstFileGenerator::Result AstFileGenerator::generate()
 {
     m_process.reset(createProcess());
     m_process->start();
+    if (!m_process->waitForStarted())
+        return handleNotStarted();
     return m_process->waitForFinished() ? processFinished() : handleTimeout();
 }
 
@@ -98,6 +100,12 @@ AstFileGenerator::Result AstFileGenerator::handleNormalExit() const
 AstFileGenerator::Result AstFileGenerator::handleCrashExit() const
 {
     writeMessage("crashed");
+    return Result::ProcessCrashed;
+}
+
+AstFileGenerator::Result AstFileGenerator::handleNotStarted() const
+{
+    writeMessage("failed to start");
     return Result::ProcessCrashed;
 }
 

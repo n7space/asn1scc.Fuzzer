@@ -32,7 +32,7 @@
 void initializeApplication(QCoreApplication &app, MalTester::MainTask &task)
 {
     QCoreApplication::setApplicationName("asn1scc-MalTester");
-    QCoreApplication::setApplicationVersion("0.1");
+    QCoreApplication::setApplicationVersion("0.2");
     QCoreApplication::setOrganizationDomain("n7space.com");
     QCoreApplication::setOrganizationName("N7 Space sp. z o.o.");
 

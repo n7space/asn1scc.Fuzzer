@@ -43,11 +43,11 @@ class TestCasePrinter
 public:
     explicit TestCasePrinter(QTextStream &stream);
 
-    void print(const QString &mainStructure, const TestCase &test);
+    void print(const QString &rootType, const TestCase &test);
     void print(const TestCaseSink &sink);
 
 private:
-    void printFileHeader(const QString &mainStructure);
+    void printFileHeader(const QString &rootType);
     void printMain(const TestCaseSink &sink);
     void printBodies(const TestCaseSink &sink);
 

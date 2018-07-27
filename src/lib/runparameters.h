@@ -36,7 +36,7 @@ struct RunParameters
 {
     QStringList m_inputFiles;
 
-    Data::TypeReference m_mainStructure;
+    Data::TypeReference m_rootType;
     QString m_asn1SccPath;
     QStringList m_asn1SccFlags;
     QString m_outputDir;

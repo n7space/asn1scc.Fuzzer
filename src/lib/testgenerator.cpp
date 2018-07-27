@@ -47,9 +47,9 @@ TestGenerator::TestGenerator(const RunParameters &params)
 
 bool TestGenerator::reportOnNotFoundStructure() const
 {
-    qCritical() << "Type" << m_params.m_mainStructure.name() << "from module:"
-                << (m_params.m_mainStructure.module().isEmpty() ? QStringLiteral("*any*")
-                                                                : m_params.m_mainStructure.module())
+    qCritical() << "Type" << m_params.m_rootType.name() << "from module:"
+                << (m_params.m_rootType.module().isEmpty() ? QStringLiteral("*any*")
+                                                           : m_params.m_rootType.module())
                 << "not found."
                 << "No cases were generated.";
     return false;
@@ -57,7 +57,7 @@ bool TestGenerator::reportOnNotFoundStructure() const
 
 static bool reportOnNoCasesFound()
 {
-    qCritical() << "No cases were found for structure.";
+    qCritical() << "No cases were found for type.";
     return false;
 }
 
@@ -80,7 +80,7 @@ bool TestGenerator::createOutputDirectory() const
 
 std::unique_ptr<Cases::TestCaseSink> TestGenerator::buildCasesFor(const Data::Project &project) const
 {
-    Cases::TestCaseBuilder builder(m_params.m_mainStructure);
+    Cases::TestCaseBuilder builder(m_params.m_rootType);
     project.accept(builder);
     return builder.takeResult();
 }

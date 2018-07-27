@@ -42,8 +42,8 @@ using namespace MalTester::Cases;
 using namespace MalTester::Data::Types;
 using namespace MalTester::Data;
 
-TestCaseBuilder::TestCaseBuilder(const TypeReference &mainStructure)
-    : m_mainStructure(mainStructure)
+TestCaseBuilder::TestCaseBuilder(const TypeReference &rootType)
+    : m_rootType(rootType)
 {}
 
 TestCaseBuilder::~TestCaseBuilder() {}
@@ -149,7 +149,7 @@ void TestCaseBuilder::visit(const Root &root)
 void TestCaseBuilder::visit(const Definitions &defs)
 {
     for (const auto &t : defs.types())
-        if (m_mainStructure.module().isEmpty() || defs.name() == m_mainStructure.module())
+        if (m_rootType.module().isEmpty() || defs.name() == m_rootType.module())
             t->accept(*this);
 }
 
@@ -168,7 +168,7 @@ void TestCaseBuilder::buildCasesForAssignment(const TypeAssignment &type)
 
 void TestCaseBuilder::visit(const TypeAssignment &type)
 {
-    if (type.type() != nullptr && type.name() == m_mainStructure.name())
+    if (type.type() != nullptr && type.name() == m_rootType.name())
         buildCasesForAssignment(type);
 }
 

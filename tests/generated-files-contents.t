@@ -1,6 +1,6 @@
 # Keep no new line at end to make it work on Windows
   $ ${TESTDIR}/copy_test_resources.sh
-  $ asn1scc-maltester -m Tests.MyInt -o generated a.asn1 b.asn1 a.acn b.acn
+  $ asn1scc-maltester -r Tests.MyInt -o generated a.asn1 b.asn1 a.acn b.acn
   Generated 1 case(s).
   $ ${TESTDIR}/list_files.sh generated
   AllModels.acn

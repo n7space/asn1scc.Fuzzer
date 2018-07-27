@@ -33,11 +33,11 @@ using namespace MalTester;
 
 InputParametersParser::InputParametersParser()
     // clang-format off
-    : m_mainStructure({"m", "main-structure"}, "Main structure for generation of malformed messages.", "main structure")
-    , m_asn1sccPath  ({"a", "asn1scc-path"},   "Asn1scc compiler path.",                               "asn1scc path", "asn1.exe")
-    , m_asn1sccFlags ({"f", "asn1scc-flags"},  "Asn1scc compiler flags.",                              "asn1scc flags", "--field-prefix AUTO --type-prefix T --acn-enc")
-    , m_outputDir    ({"o", "output-dir"},     "Output directory for generated files.",                "output directory", "out")
-    , m_wrapAsCcsds  ({"w", "wrap-as-ccsds"},  "Wrapping main structure inside CCSDS packets",         "[tc, tm]")
+    : m_rootType     ({"r", "root-type"},     "Root type representing message to be malformed.", "root type")
+    , m_asn1sccPath  ({"a", "asn1scc-path"},  "ASN1SCC compiler path.",                          "asn1scc path", "asn1.exe")
+    , m_asn1sccFlags ({"f", "asn1scc-flags"}, "ASN1SCC compiler flags.",                         "asn1scc flags", "--field-prefix AUTO --type-prefix T --acn-enc")
+    , m_outputDir    ({"o", "output-dir"},    "Output directory for generated files.",           "output directory", "out")
+    , m_wrapAsCcsds  ({"w", "wrap-as-ccsds"}, "Wrapping root type inside CCSDS packets.",        "[tc, tm]")
 // clang-format on
 {
     setupParser();
@@ -63,15 +63,15 @@ void InputParametersParser::setupParser()
     m_parser.addOption(m_asn1sccPath);
     m_parser.addOption(m_asn1sccFlags);
     m_parser.addOption(m_outputDir);
-    m_parser.addOption(m_mainStructure);
+    m_parser.addOption(m_rootType);
     m_parser.addOption(m_wrapAsCcsds);
-    m_parser.addPositionalArgument("<files>", "List of files to be passed to asn1scc.");
+    m_parser.addPositionalArgument("<files>", "List of files to be processed.");
 }
 
 void InputParametersParser::updateRunParams()
 {
     m_params.m_inputFiles = readFilesList();
-    m_params.m_mainStructure = readMainStructure();
+    m_params.m_rootType = readRootType();
     m_params.m_asn1SccPath = readAsn1SccPath();
     m_params.m_asn1SccFlags = readAsn1SccFlags();
     m_params.m_outputDir = readOutputDir();
@@ -88,14 +88,14 @@ QStringList InputParametersParser::readFilesList()
     return args;
 }
 
-Data::TypeReference InputParametersParser::readMainStructure()
+Data::TypeReference InputParametersParser::readRootType()
 {
-    if (!m_parser.isSet(m_mainStructure))
-        printUsageAndFail("Main structure name must be set");
+    if (!m_parser.isSet(m_rootType))
+        printUsageAndFail("Root type name must be set");
 
-    const auto pair = m_parser.value(m_mainStructure).split('.', QString::SkipEmptyParts);
+    const auto pair = m_parser.value(m_rootType).split('.', QString::SkipEmptyParts);
     if (pair.count() != 2 && pair.count() != 1) {
-        printUsageAndFail("Main structure must be provided in format Module.Type or UniqueTypeName");
+        printUsageAndFail("Root type must be provided in format Module.Type or UniqueTypeName");
         return {};
     }
 

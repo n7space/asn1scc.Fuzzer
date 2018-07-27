@@ -45,7 +45,7 @@ private:
     void updateRunParams();
 
     QStringList readFilesList();
-    Data::TypeReference readMainStructure();
+    Data::TypeReference readRootType();
     QString readAsn1SccPath();
     QStringList readAsn1SccFlags();
     QString readOutputDir();
@@ -53,7 +53,7 @@ private:
 
     void printUsageAndFail(const QString &message);
 
-    QCommandLineOption m_mainStructure;
+    QCommandLineOption m_rootType;
     QCommandLineOption m_asn1sccPath;
     QCommandLineOption m_asn1sccFlags;
     QCommandLineOption m_outputDir;

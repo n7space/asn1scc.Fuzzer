@@ -38,7 +38,7 @@ static QString asString(const FieldPath &p)
     return "v->" + p.join('.');
 }
 
-void TestCasePrinter::print(const QString &mainStructure, const TestCase &test)
+void TestCasePrinter::print(const QString &rootType, const TestCase &test)
 {
     m_stream << QStringLiteral("static bool test_%1(%2 *v, BitStream *stream)\n"
                                "{\n"
@@ -50,19 +50,19 @@ void TestCasePrinter::print(const QString &mainStructure, const TestCase &test)
                                "  return validate(stream);\n"
                                "}\n")
                     .arg(test.name())
-                    .arg(mainStructure)
+                    .arg(rootType)
                     .arg(asString(test.fieldAssignment().m_path))
                     .arg(test.fieldAssignment().m_value);
 }
 
 void TestCasePrinter::print(const TestCaseSink &sink)
 {
-    printFileHeader(sink.mainStructure());
+    printFileHeader(sink.rootType());
     printBodies(sink);
     printMain(sink);
 }
 
-void TestCasePrinter::printFileHeader(const QString &mainStructure)
+void TestCasePrinter::printFileHeader(const QString &rootType)
 {
     m_stream << "#include <stdio.h>\n"
              << "#include <stdbool.h>\n"
@@ -82,7 +82,7 @@ void TestCasePrinter::printFileHeader(const QString &mainStructure)
                                "  %1_ACN_Encode(v, stream, &errCode, FALSE);\n"
                                // TODO CCSDS ?
                                "}\n")
-                    .arg(mainStructure)
+                    .arg(rootType)
              << endl
              << QStringLiteral("static bool validate(BitStream *stream)\n"
                                "{\n"
@@ -95,7 +95,7 @@ void TestCasePrinter::printFileHeader(const QString &mainStructure)
 void TestCasePrinter::printBodies(const TestCaseSink &sink)
 {
     for (const auto &t : sink.cases()) {
-        print(sink.mainStructure(), t);
+        print(sink.rootType(), t);
         m_stream << endl;
     }
 }
@@ -110,7 +110,7 @@ void TestCasePrinter::printMain(const TestCaseSink &sink)
                                "  BitStream_Init(&stream, buf, sizeof(buf));\n"
                                "  int result = 0;\n"
                                "\n")
-                    .arg(sink.mainStructure());
+                    .arg(sink.rootType());
 
     for (const auto &t : sink.cases())
         m_stream << QStringLiteral("  result += RUN_TEST(test_%1, &v, &stream);\n").arg(t.name());

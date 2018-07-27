@@ -42,7 +42,7 @@ namespace Cases {
 class TestCaseBuilder : public Data::Visitor
 {
 public:
-    explicit TestCaseBuilder(const Data::TypeReference &mainStructure);
+    explicit TestCaseBuilder(const Data::TypeReference &rootType);
     ~TestCaseBuilder() override;
 
     std::unique_ptr<TestCaseSink> takeResult() { return std::move(m_result); }
@@ -57,7 +57,7 @@ public:
 private:
     void buildCasesForAssignment(const Data::TypeAssignment &type);
 
-    Data::TypeReference m_mainStructure;
+    Data::TypeReference m_rootType;
     std::unique_ptr<TestCaseSink> m_result;
 };
 

@@ -193,16 +193,7 @@ public:
     void visit(Data::Types::OctetString &type) override { Q_UNUSED(type); }
     void visit(Data::Types::IA5String &type) override { Q_UNUSED(type); }
     void visit(Data::Types::NumericString &type) override { Q_UNUSED(type); }
-
-    void visit(Data::Types::Enumerated &type) override
-    {
-        const auto itemName = readStringAttribute(QStringLiteral("Name"));
-        const auto value = readIntegerAttribute(QStringLiteral("Value"));
-        Data::SourceLocation location(m_currentFile,
-                                      readIntegerAttribute(QStringLiteral("Line")),
-                                      readIntegerAttribute(QStringLiteral("CharPositionInLine")));
-        type.addItem(itemName, {itemName, value, location});
-    }
+    void visit(Data::Types::Enumerated &type) override { Q_UNUSED(type); }
 
     void visit(Data::Types::Choice &type) override
     {
@@ -256,16 +247,42 @@ public:
         type.setType(std::move(m_childType));
     }
 
-private:
+protected:
     int readIntegerAttribute(const QString &key) const { return m_attributes.value(key).toInt(); }
     QString readStringAttribute(const QString &key) const
     {
         return m_attributes.value(key).toString();
     }
+    const QString &currentFile() const { return m_currentFile; }
 
+private:
     const QXmlStreamAttributes &m_attributes;
     const QString &m_currentFile;
     std::unique_ptr<Data::Types::Type> m_childType;
+};
+
+class EnumeratedItemAddingVisitor : public ChildItemAddingVisitor
+{
+public:
+    EnumeratedItemAddingVisitor(const QXmlStreamAttributes &attributes,
+                                const QString &currentFile,
+                                int index)
+        : ChildItemAddingVisitor(attributes, currentFile)
+        , m_index(index)
+    {}
+
+    void visit(Data::Types::Enumerated &type) override
+    {
+        const auto itemName = readStringAttribute(QStringLiteral("Name"));
+        const auto value = readIntegerAttribute(QStringLiteral("Value"));
+        Data::SourceLocation location(currentFile(),
+                                      readIntegerAttribute(QStringLiteral("Line")),
+                                      readIntegerAttribute(QStringLiteral("CharPositionInLine")));
+        type.addItem(itemName, {m_index, itemName, value, location});
+    }
+
+private:
+    const int m_index;
 };
 
 class AcnDefinedItemsAddingVisitor : public Data::Types::TypeMutatingVisitor
@@ -943,9 +960,10 @@ void AstXmlParser::readBitString(Data::Types::Type &type)
 
 void AstXmlParser::readEnumeratedItem(Data::Types::Type &type)
 {
+    int index = 0;
     while (m_xmlReader.readNextStartElement()) {
         if (m_xmlReader.name() == QStringLiteral("Item")) {
-            ChildItemAddingVisitor visitor(m_xmlReader.attributes(), m_currentFile);
+            EnumeratedItemAddingVisitor visitor(m_xmlReader.attributes(), m_currentFile, index++);
             type.accept(visitor);
         }
 

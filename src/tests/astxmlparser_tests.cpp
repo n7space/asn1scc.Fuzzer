@@ -719,9 +719,9 @@ void AstXmlParserTests::test_enumeratedItems()
         R"(            <Asn1Type id="Constrained.MyEnum" Line="9" CharPositionInLine="21" ParameterizedTypeInstance="false">)"
         R"(              <ENUMERATED>)"
         R"(                <Items>)"
-        R"(                  <Item Name="ldev1" Value="0" Line="11" CharPositionInLine="4" />)"
-        R"(                  <Item Name="ldev2" Value="1" Line="12" CharPositionInLine="4" />)"
-        R"(                  <Item Name="ldev3" Value="2" Line="13" CharPositionInLine="4" />)"
+        R"(                  <Item Name="ldev1" Value="10" Line="11" CharPositionInLine="4" />)"
+        R"(                  <Item Name="ldev2" Value="11" Line="12" CharPositionInLine="4" />)"
+        R"(                  <Item Name="ldev3" Value="12" Line="13" CharPositionInLine="4" />)"
         R"(                </Items>)"
         R"(                <Constraints />)"
         R"(                <WithComponentConstraints />)"
@@ -743,17 +743,20 @@ void AstXmlParserTests::test_enumeratedItems()
     QVERIFY(items.contains("ldev1"));
     auto item = items.value("ldev1");
     QCOMPARE(item.location(), Data::SourceLocation("Test2File.asn", 11, 4));
-    QCOMPARE(item.value(), 0);
+    QCOMPARE(item.value(), 10);
+    QCOMPARE(item.index(), 0);
 
     QVERIFY(items.contains("ldev2"));
     item = items.value("ldev2");
     QCOMPARE(item.location(), Data::SourceLocation("Test2File.asn", 12, 4));
-    QCOMPARE(item.value(), 1);
+    QCOMPARE(item.value(), 11);
+    QCOMPARE(item.index(), 1);
 
     QVERIFY(items.contains("ldev3"));
     item = items.value("ldev3");
     QCOMPARE(item.location(), Data::SourceLocation("Test2File.asn", 13, 4));
-    QCOMPARE(item.value(), 2);
+    QCOMPARE(item.value(), 12);
+    QCOMPARE(item.index(), 2);
 }
 
 void AstXmlParserTests::test_enumeratedConstraints()

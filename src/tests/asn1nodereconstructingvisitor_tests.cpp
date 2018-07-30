@@ -313,9 +313,9 @@ void Asn1NodeReconstructingVisitorTests::test_typeAssignmentEnumerated()
 {
     auto type = std::make_unique<Data::Types::Enumerated>();
     type->addItem(QStringLiteral("e1"),
-                  Data::Types::EnumeratedItem(QStringLiteral("e1"), 1, Data::SourceLocation()));
+                  Data::Types::EnumeratedItem(0, QStringLiteral("e1"), 1, Data::SourceLocation()));
     type->addItem(QStringLiteral("e2"),
-                  Data::Types::EnumeratedItem(QStringLiteral("e2"), 2, Data::SourceLocation()));
+                  Data::Types::EnumeratedItem(1, QStringLiteral("e2"), 2, Data::SourceLocation()));
 
     auto actual = createComponentialTypeAssignmentValue(std::move(type));
 

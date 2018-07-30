@@ -34,18 +34,9 @@
 using namespace MalTester::Cases;
 using namespace MalTester::Data;
 
-namespace {
-RangeList<std::int64_t> definedRangesFor(const Types::Integer &integer)
-{
-    Constraints::RangeListingVisitor<IntegerValue> visitor;
-    integer.constraints().accept(visitor);
-    return visitor.result();
-}
-} // namespace
-
 IntegerIncorrectValues::IntegerIncorrectValues(const Types::Integer &integer)
 {
-    const auto definedRanges = definedRangesFor(integer);
+    const auto definedRanges = toRangeList(integer.constraints());
     if (definedRanges.isEmpty())
         return;
     const auto maliciousRanges = difference(maxValueRangeFor(integer), definedRanges);

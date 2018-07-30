@@ -26,6 +26,7 @@
 #pragma once
 
 #include <algorithm>
+#include <functional>
 #include <stdexcept>
 
 #include <data/rangelist.h>
@@ -42,24 +43,35 @@ namespace MalTester {
 namespace Data {
 namespace Constraints {
 
-template<typename ValueType>
-class RangeListingVisitor : public ConstraintVisitor<ValueType>
+template<typename ValueType, typename ResultType = typename ValueType::Type>
+class RangeListingVisitorBase : public ConstraintVisitor<ValueType>
 {
+protected:
+    RangeListingVisitorBase() = default;
+
 public:
-    using Result = RangeList<typename ValueType::Type>;
-    RangeListingVisitor() = default;
+    const RangeList<ResultType> &result() const { return m_result; }
 
-    const Result &result() const { return m_result; }
-
-    void visit(const RangeConstraint<ValueType> &constraint) override;
     void visit(const AndConstraint<ValueType> &constraint) override;
     void visit(const OrConstraint<ValueType> &constraint) override;
     void visit(const FromConstraint<ValueType> &constraint) override;
     void visit(const SizeConstraint<ValueType> &constraint) override;
     void visit(const ConstraintList<ValueType> &constraint) override;
 
+protected:
+    virtual RangeList<ResultType> toRangeList(const Constraint<ValueType> &c) const = 0;
+
+    RangeList<ResultType> m_result;
+};
+
+template<typename ValueType>
+class RangeListingVisitor : public RangeListingVisitorBase<ValueType, typename ValueType::Type>
+{
+public:
+    void visit(const RangeConstraint<ValueType> &constraint) override;
+
 private:
-    Result m_result;
+    RangeList<typename ValueType::Type> toRangeList(const Constraint<ValueType> &c) const override;
 };
 
 template<typename ValueType>
@@ -73,37 +85,45 @@ inline RangeList<typename ValueType::Type> toRangeList(const Constraint<ValueTyp
 template<typename ValueType>
 void RangeListingVisitor<ValueType>::visit(const RangeConstraint<ValueType> &constraint)
 {
-    m_result = {constraint.range()};
+    this->m_result = {constraint.range()};
 }
 
 template<typename ValueType>
-void RangeListingVisitor<ValueType>::visit(const AndConstraint<ValueType> &constraint)
+RangeList<typename ValueType::Type> RangeListingVisitor<ValueType>::toRangeList(
+    const Constraint<ValueType> &c) const
 {
-    m_result = toRangeList(constraint.leftChild());
-    m_result.intersect(toRangeList(constraint.rightChild()));
+    return MalTester::Data::Constraints ::toRangeList(c);
 }
 
-template<typename ValueType>
-void RangeListingVisitor<ValueType>::visit(const OrConstraint<ValueType> &constraint)
+template<typename ValueType, typename ResultType>
+void RangeListingVisitorBase<ValueType, ResultType>::visit(const AndConstraint<ValueType> &constraint)
 {
-    m_result = toRangeList(constraint.leftChild());
-    m_result.merge(toRangeList(constraint.rightChild()));
+    m_result = this->toRangeList(constraint.leftChild());
+    m_result.intersect(this->toRangeList(constraint.rightChild()));
 }
 
-template<typename ValueType>
-void RangeListingVisitor<ValueType>::visit(const FromConstraint<ValueType> &)
+template<typename ValueType, typename ResultType>
+void RangeListingVisitorBase<ValueType, ResultType>::visit(const OrConstraint<ValueType> &constraint)
+{
+    m_result = this->toRangeList(constraint.leftChild());
+    m_result.merge(this->toRangeList(constraint.rightChild()));
+}
+
+template<typename ValueType, typename ResultType>
+void RangeListingVisitorBase<ValueType, ResultType>::visit(const FromConstraint<ValueType> &)
 {
     throw std::runtime_error("Unable to flatten FROM constaint");
 }
 
-template<typename ValueType>
-void RangeListingVisitor<ValueType>::visit(const SizeConstraint<ValueType> &)
+template<typename ValueType, typename ResultType>
+void RangeListingVisitorBase<ValueType, ResultType>::visit(const SizeConstraint<ValueType> &)
 {
     throw std::runtime_error("Unable to flatten SIZE constaint");
 }
 
-template<typename ValueType>
-void RangeListingVisitor<ValueType>::visit(const ConstraintList<ValueType> &constraint)
+template<typename ValueType, typename ResultType>
+void RangeListingVisitorBase<ValueType, ResultType>::visit(
+    const ConstraintList<ValueType> &constraint)
 {
     const auto &constraints = constraint.constraints();
     if (constraints.empty())

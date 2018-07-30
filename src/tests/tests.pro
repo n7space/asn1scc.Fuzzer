@@ -17,6 +17,7 @@ SOURCES += \
     astxmlconstraintparser_tests.cpp \
     \
     cases/integerincorrectvalues_tests.cpp \
+    cases/enumeratedincorrectitems_tests.cpp \
     cases/integerranges_tests.cpp \
     cases/testcaseprinter_tests.cpp \
     \
@@ -35,6 +36,7 @@ HEADERS += \
     astxmlconstraintparser_tests.h \
     \
     cases/integerincorrectvalues_tests.h \
+    cases/enumeratedincorrectitems_tests.h \
     cases/integerranges_tests.h \
     cases/testcaseprinter_tests.h \
     \

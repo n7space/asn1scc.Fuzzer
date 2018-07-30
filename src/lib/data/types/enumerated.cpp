@@ -55,9 +55,9 @@ void Enumerated::accept(TypeReadingVisitor &visitor) const
     visitor.visit(*this);
 }
 
-void Enumerated::addItem(const QString &key, const EnumeratedItem &item)
+void Enumerated::addItem(const EnumeratedItem &item)
 {
-    m_items.insert(key, item);
+    m_items.insert(item.name(), item);
 }
 
 int Enumerated::mapToValue(const QString &key) const

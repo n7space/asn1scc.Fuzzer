@@ -62,6 +62,7 @@ public:
     void sort();
     void compact();
 
+    void append(const Range<T> &range) { m_ranges.append(range); }
     void merge(const RangeList &other) { m_ranges.append(other.m_ranges); }
     void intersect(const RangeList &other);
     RangeList intersection(const Range<T> &range) const;

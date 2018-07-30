@@ -278,7 +278,7 @@ public:
         Data::SourceLocation location(currentFile(),
                                       readIntegerAttribute(QStringLiteral("Line")),
                                       readIntegerAttribute(QStringLiteral("CharPositionInLine")));
-        type.addItem(itemName, {m_index, itemName, value, location});
+        type.addItem({m_index, itemName, value, location});
     }
 
 private:

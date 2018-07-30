@@ -46,6 +46,7 @@ SOURCES += \
     data/types/asciistringacnparameters.cpp \
     \
     cases/integerincorrectvalues.cpp \
+    cases/enumeratedincorrectitems.cpp \
     cases/constraintsrelaxingvisitor.cpp \
     cases/integerranges.cpp \
     cases/testcaseprinter.cpp \
@@ -128,6 +129,7 @@ HEADERS += \
     data/constraints/rangelistingvisitor.h \
     \
     cases/integerincorrectvalues.h \
+    cases/enumeratedincorrectitems.h \
     cases/constraintsrelaxingvisitor.h \
     cases/integerranges.h \
     cases/testcase.h \

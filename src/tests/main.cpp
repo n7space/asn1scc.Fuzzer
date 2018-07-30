@@ -38,6 +38,7 @@
 #include "data/range_tests.h"
 #include "data/rangelist_tests.h"
 
+#include "cases/enumeratedincorrectitems_tests.h"
 #include "cases/integerincorrectvalues_tests.h"
 #include "cases/integerranges_tests.h"
 #include "cases/testcaseprinter_tests.h"
@@ -59,6 +60,7 @@ int main(int argc, char *argv[])
     runTest(new MalTester::Data::Tests::RangeListTests);
     runTest(new MalTester::Data::Constraints::Tests::PrintingVisitorTests);
     runTest(new MalTester::Cases::Tests::IntegerIncorrectValuesTests);
+    runTest(new MalTester::Cases::Tests::EnumeratedIncorrectItemsTests);
     runTest(new MalTester::Cases::Tests::IntegerRangesTests);
     runTest(new MalTester::Cases::Tests::TestCasePrinterTests);
 

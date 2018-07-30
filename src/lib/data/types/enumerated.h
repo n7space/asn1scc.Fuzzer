@@ -81,7 +81,7 @@ public:
     using Items = QMap<QString, EnumeratedItem>;
 
     const Items &items() const { return m_items; }
-    void addItem(const QString &key, const EnumeratedItem &item);
+    void addItem(const EnumeratedItem &item);
 
     void setEncodeValues(bool encodeValues) { m_encodeValues = encodeValues; }
     bool encodeValues() const { return m_encodeValues; }

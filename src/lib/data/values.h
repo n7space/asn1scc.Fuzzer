@@ -55,6 +55,7 @@ struct EnumValue
     static Type fromAstValue(const QString &value) { return value; }
     static QString asString(Type t) { return t; }
 };
+
 struct BooleanValue
 {
     using Type = bool;
@@ -79,6 +80,7 @@ struct BitStringValue
     static Type fromAstValue(const QString &value) { return value; }
     static QString asString(Type t) { return "'" + t + "'B"; }
 };
+
 struct OctetStringValue
 {
     using Type = QString;

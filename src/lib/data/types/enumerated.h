@@ -35,6 +35,8 @@
 
 #include <data/constraints/withconstraints.h>
 
+#include <data/range.h>
+
 namespace MalTester {
 namespace Data {
 namespace Types {
@@ -44,7 +46,7 @@ class EnumeratedItem
 public:
     EnumeratedItem() = default;
 
-    EnumeratedItem(int index, const QString &name, int value, const SourceLocation &location)
+    EnumeratedItem(int index, const QString &name, int value, const SourceLocation &location = {})
         : m_index(index)
         , m_name(name)
         , m_value(value)
@@ -83,6 +85,9 @@ public:
 
     void setEncodeValues(bool encodeValues) { m_encodeValues = encodeValues; }
     bool encodeValues() const { return m_encodeValues; }
+
+    int mapToValue(const QString &key) const;
+    Range<int64_t> mapToValue(const Range<QString> &r) const;
 
 private:
     Items m_items;

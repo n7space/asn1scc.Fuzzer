@@ -29,6 +29,7 @@
 #include "typereadingvisitor.h"
 
 using namespace MalTester::Data::Types;
+using namespace MalTester::Data;
 
 Enumerated::Enumerated()
     : m_encodeValues(false)
@@ -57,4 +58,19 @@ void Enumerated::accept(TypeReadingVisitor &visitor) const
 void Enumerated::addItem(const QString &key, const EnumeratedItem &item)
 {
     m_items.insert(key, item);
+}
+
+int Enumerated::mapToValue(const QString &key) const
+{
+    const auto it = items().find(key);
+    if (it == items().end())
+        throw std::runtime_error("Unknown key in ENUMERATED");
+    return encodeValues() ? it->value() : it->index();
+}
+
+Range<std::int64_t> Enumerated::mapToValue(const Range<QString> &r) const
+{
+    if (!r.isSingleItem())
+        throw std::runtime_error("Multi-item range in ENUMERATED");
+    return Range<std::int64_t>(mapToValue(r.begin()));
 }

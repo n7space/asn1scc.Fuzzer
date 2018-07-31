@@ -312,21 +312,18 @@ void Asn1NodeReconstructingVisitorTests::test_typeAssignmentNumericStringWithVal
 void Asn1NodeReconstructingVisitorTests::test_typeAssignmentEnumerated()
 {
     auto type = std::make_unique<Data::Types::Enumerated>();
-    type->addItem(QStringLiteral("e1"),
-                  Data::Types::EnumeratedItem(0, QStringLiteral("e1"), 1, Data::SourceLocation()));
-    type->addItem(QStringLiteral("e2"),
-                  Data::Types::EnumeratedItem(1, QStringLiteral("e2"), 2, Data::SourceLocation()));
+    type->addItem(Data::Types::EnumeratedItem(1, QStringLiteral("e1"), 10, Data::SourceLocation()));
+    type->addItem(Data::Types::EnumeratedItem(2, QStringLiteral("e2"), 20, Data::SourceLocation()));
+    type->addItem(Data::Types::EnumeratedItem(0, QStringLiteral("e3"), 30, Data::SourceLocation()));
 
-    auto actual = createComponentialTypeAssignmentValue(std::move(type));
+    const auto actual = createComponentialTypeAssignmentValue(std::move(type));
 
-    // clang-format off
-    QString expected =
-        "MyType ::= ENUMERATED\n"
-        "{\n"
-        "    e1(1),\n"
-        "    e2(2)\n"
-        "}\n";
-    // clang-format on
+    const QString expected = "MyType ::= ENUMERATED\n"
+                             "{\n"
+                             "    e3(30),\n"
+                             "    e1(10),\n"
+                             "    e2(20)\n"
+                             "}\n";
 
     QCOMPARE(actual, expected);
 }

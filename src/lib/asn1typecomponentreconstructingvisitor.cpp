@@ -71,12 +71,25 @@ void Asn1TypeComponentReconstructingVisitor::visit(const Data::Types::NumericStr
     valueForStraightType(type);
 }
 
+namespace {
+QList<Data::Types::EnumeratedItem> itemsSortedByIndex(const Data::Types::Enumerated &type)
+{
+    auto items = type.items().values();
+    std::sort(items.begin(),
+              items.end(),
+              [](const Data::Types::EnumeratedItem &a, const Data::Types::EnumeratedItem &b) {
+                  return a.index() < b.index();
+              });
+    return items;
+}
+} // namespace
+
 void Asn1TypeComponentReconstructingVisitor::visit(const Data::Types::Enumerated &type)
 {
     m_outStream << type.name() << QStringLiteral("\n");
     m_outStream << QString(m_indent, QChar(' ')) << QStringLiteral("{") << QStringLiteral("\n");
 
-    const auto &items = type.items();
+    const auto items = itemsSortedByIndex(type);
     for (auto it = items.begin(); it != items.end(); it++) {
         m_outStream << QString(m_indent + INDENT_SIZE, QChar(' '));
         m_outStream << (*it).name();

@@ -40,10 +40,13 @@ class TypeAssignment : public Node
 {
 public:
     TypeAssignment(const QString &name,
+                   const QString &cName,
                    const SourceLocation &location,
                    std::unique_ptr<Types::Type> type);
     TypeAssignment(const TypeAssignment &other);
     ~TypeAssignment() override;
+
+    const QString &cName() const { return m_cName; }
 
     void accept(Visitor &visitor) const override;
     void accept(MutatingVisitor &visitor) override;
@@ -52,6 +55,7 @@ public:
     Types::Type *type() { return m_type.get(); }
 
 private:
+    QString m_cName;
     std::unique_ptr<Types::Type> m_type;
 };
 

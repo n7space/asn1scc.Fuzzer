@@ -79,6 +79,7 @@ private:
     void createNewModule();
     QString readIdAttribute(const QString &id);
     QString readNameAttribute();
+    QString readCNameAttribute();
     QString readTypeAttribute();
     int readLineAttribute();
     int readCharPossitionInLineAttribute();

@@ -567,6 +567,7 @@ void Asn1NodeReconstructingVisitorTests::test_typeAssignmentUserDefined()
     type->setType(Data::Types::TypeFactory::createBuiltinType(QStringLiteral("INTEGER")));
 
     auto assignment = std::make_unique<Data::TypeAssignment>(QStringLiteral("MyType"),
+                                                             QStringLiteral("MyTypeT"),
                                                              Data::SourceLocation(),
                                                              std::move(type));
     auto actual = restoreNode(*assignment);
@@ -586,6 +587,7 @@ void Asn1NodeReconstructingVisitorTests::test_typeAssignmentUserDefinedWithValue
                                                                QStringLiteral("MyModule"));
     type->setType(std::move(referedType));
     auto assignment = std::make_unique<Data::TypeAssignment>(QStringLiteral("MyType"),
+                                                             QStringLiteral("MyTypeT"),
                                                              Data::SourceLocation(),
                                                              std::move(type));
 
@@ -612,6 +614,7 @@ std::unique_ptr<Data::TypeAssignment> Asn1NodeReconstructingVisitorTests::create
 {
     auto type = Data::Types::TypeFactory::createBuiltinType(astTypeName);
     auto assignment = std::make_unique<Data::TypeAssignment>(QStringLiteral("MyType"),
+                                                             QStringLiteral("MyTypeT"),
                                                              Data::SourceLocation(),
                                                              std::move(type));
 
@@ -689,6 +692,7 @@ QString Asn1NodeReconstructingVisitorTests::createComponentialTypeAssignmentValu
     std::unique_ptr<Data::Types::Type> type) const
 {
     auto assignment = std::make_unique<Data::TypeAssignment>(QStringLiteral("MyType"),
+                                                             QStringLiteral("MyTypeT"),
                                                              Data::SourceLocation(),
                                                              std::move(type));
     return restoreNode(*assignment);

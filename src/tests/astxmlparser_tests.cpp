@@ -97,27 +97,29 @@ void AstXmlParserTests::test_emptyDefinitions()
 
 void AstXmlParserTests::test_singleTypeAssignment()
 {
-    parse(R"(<?xml version="1.0" encoding="utf-8"?>)"
-          R"(<AstRoot>)"
-          R"(  <Asn1File FileName="Test2File.asn">)"
-          R"(    <Modules>)"
-          R"(      <Module Name="TestDefinitions" Line="13" CharPositionInLine="42">)"
-          R"(        <TypeAssignments>)"
-          R"(          <TypeAssignment Name="MyInt" Line="4" CharPositionInLine="10">)"
-          R"(            <Asn1Type>)"
-          R"(              <INTEGER/>)"
-          R"(            </Asn1Type>)"
-          R"(          </TypeAssignment>)"
-          R"(        </TypeAssignments>)"
-          R"(      </Module>)"
-          R"(    </Modules>)"
-          R"(  </Asn1File>)"
-          R"(</AstRoot>)");
+    parse(
+        R"(<?xml version="1.0" encoding="utf-8"?>)"
+        R"(<AstRoot>)"
+        R"(  <Asn1File FileName="Test2File.asn">)"
+        R"(    <Modules>)"
+        R"(      <Module Name="TestDefinitions" Line="13" CharPositionInLine="42">)"
+        R"(        <TypeAssignments>)"
+        R"(          <TypeAssignment Name="MyInt" CName="TMyInt" Line="4" CharPositionInLine="10">)"
+        R"(            <Asn1Type>)"
+        R"(              <INTEGER/>)"
+        R"(            </Asn1Type>)"
+        R"(          </TypeAssignment>)"
+        R"(        </TypeAssignments>)"
+        R"(      </Module>)"
+        R"(    </Modules>)"
+        R"(  </Asn1File>)"
+        R"(</AstRoot>)");
 
     QCOMPARE(m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->types().size(),
              std::size_t{1});
     const auto type = m_parsedData["Test2File.asn"]->definitions("TestDefinitions")->type("MyInt");
     QCOMPARE(type->name(), QStringLiteral("MyInt"));
+    QCOMPARE(type->cName(), QStringLiteral("TMyInt"));
     QCOMPARE(type->location().path(), QStringLiteral("Test2File.asn"));
     QCOMPARE(type->location().line(), 4);
     QCOMPARE(type->location().column(), 10);

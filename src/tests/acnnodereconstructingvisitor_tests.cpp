@@ -451,6 +451,7 @@ void AcnNodeReconstructingVisitorTests::performTest(const QString &name,
                                                     std::unique_ptr<Data::Types::Type> type) const
 {
     auto assignment = std::make_unique<Data::TypeAssignment>(name,
+                                                             name + "T",
                                                              Data::SourceLocation(),
                                                              std::move(type));
 

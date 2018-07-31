@@ -437,11 +437,12 @@ void AstXmlParser::readTypeAssignment()
 
     const auto location = readLocationFromAttributes();
     const auto name = readNameAttribute();
+    const auto cname = readCNameAttribute();
     auto type = findAndReadType();
     m_xmlReader.skipCurrentElement();
 
     m_currentDefinitions->addType(
-        std::make_unique<Data::TypeAssignment>(name, location, std::move(type)));
+        std::make_unique<Data::TypeAssignment>(name, cname, location, std::move(type)));
 
     m_data[m_currentFile]->addTypeReference(
         std::make_unique<Data::TypeReference>(name, m_currentDefinitions->name(), location));
@@ -591,6 +592,11 @@ QString AstXmlParser::readModuleAttribute()
 QString AstXmlParser::readNameAttribute()
 {
     return m_xmlReader.attributes().value(QStringLiteral("Name")).toString();
+}
+
+QString AstXmlParser::readCNameAttribute()
+{
+    return m_xmlReader.attributes().value(QStringLiteral("CName")).toString();
 }
 
 QString AstXmlParser::readTypeAttribute()

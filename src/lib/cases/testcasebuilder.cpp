@@ -36,6 +36,7 @@
 
 #include <data/constraints/rangeconstraint.h>
 
+#include "enumeratedincorrectitems.h"
 #include "integerincorrectvalues.h"
 
 using namespace MalTester::Cases;
@@ -87,7 +88,16 @@ void TypeTestCaseBuilder::visit(const NumericString &type)
 
 void TypeTestCaseBuilder::visit(const Enumerated &type)
 {
-    Q_UNUSED(type);
+    const EnumeratedIncorrectItems incorrect(type);
+    for (const auto &item : incorrect.items())
+        addCaseForValue(item.value());
+}
+
+void TypeTestCaseBuilder::addCaseForValue(int value)
+{
+    TestCase c{caseNameFor(value)};
+    c.setAssignment({m_path, QString::number(value)});
+    m_sink.append(c);
 }
 
 void TypeTestCaseBuilder::visit(const Choice &type)
@@ -121,11 +131,8 @@ void TypeTestCaseBuilder::visit(const LabelType &type)
 void TypeTestCaseBuilder::visit(const Integer &type)
 {
     const IntegerIncorrectValues values(type);
-    for (const auto value : values.items()) {
-        TestCase c{caseNameFor(value)};
-        c.setAssignment({m_path, QString::number(value)});
-        m_sink.append(c);
-    }
+    for (const auto value : values.items())
+        addCaseForValue(value);
 }
 
 QString TypeTestCaseBuilder::caseNameFor(int value) const

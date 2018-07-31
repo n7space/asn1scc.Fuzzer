@@ -84,6 +84,7 @@ public:
 
 private:
     QString caseNameFor(int value) const;
+    void addCaseForValue(int value);
 
     TestCaseSink &m_sink;
     const FieldPath m_path;

@@ -38,6 +38,7 @@
 
 #include <data/constraints/rangeconstraint.h>
 
+#include "enumeratedincorrectitems.h"
 #include "integerranges.h"
 
 using namespace MalTester::Cases;
@@ -78,7 +79,9 @@ void ConstraintsRelaxingVisitor::visit(NumericString &type)
 
 void ConstraintsRelaxingVisitor::visit(Enumerated &type)
 {
-    Q_UNUSED(type);
+    const auto additionalItems = EnumeratedIncorrectItems(type).items();
+    for (const auto &i : additionalItems)
+        type.addItem(i);
 }
 
 void ConstraintsRelaxingVisitor::visit(Choice &type)

@@ -57,7 +57,7 @@ void TestCasePrinter::print(const QString &rootType, const TestCase &test)
 
 void TestCasePrinter::print(const TestCaseSink &sink)
 {
-    printFileHeader(sink.rootType());
+    printFileHeader(sink.rootTypeCName());
     printBodies(sink);
     printMain(sink);
 }
@@ -95,7 +95,7 @@ void TestCasePrinter::printFileHeader(const QString &rootType)
 void TestCasePrinter::printBodies(const TestCaseSink &sink)
 {
     for (const auto &t : sink.cases()) {
-        print(sink.rootType(), t);
+        print(sink.rootTypeCName(), t);
         m_stream << endl;
     }
 }
@@ -110,7 +110,7 @@ void TestCasePrinter::printMain(const TestCaseSink &sink)
                                "  BitStream_Init(&stream, buf, sizeof(buf));\n"
                                "  int result = 0;\n"
                                "\n")
-                    .arg(sink.rootType());
+                    .arg(sink.rootTypeCName());
 
     for (const auto &t : sink.cases())
         m_stream << QStringLiteral("  result += RUN_TEST(test_%1, &v, &stream);\n").arg(t.name());

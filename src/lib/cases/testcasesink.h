@@ -36,18 +36,18 @@ namespace Cases {
 class TestCaseSink
 {
 public:
-    explicit TestCaseSink(const QString &rootType)
-        : m_rootType(rootType)
+    explicit TestCaseSink(const QString &rootTypeCName)
+        : m_rootTypeCName(rootTypeCName)
     {}
 
     void append(const TestCase &c) { m_cases.append(c); }
 
     const QList<TestCase> &cases() const { return m_cases; }
-    const QString &rootType() const { return m_rootType; }
+    const QString &rootTypeCName() const { return m_rootTypeCName; }
 
 private:
     QList<TestCase> m_cases;
-    QString m_rootType;
+    QString m_rootTypeCName;
 };
 
 } // namespace Cases

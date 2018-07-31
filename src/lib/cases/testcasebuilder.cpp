@@ -161,7 +161,7 @@ void TestCaseBuilder::visit(const File &file)
 
 void TestCaseBuilder::buildCasesForAssignment(const TypeAssignment &type)
 {
-    m_result = std::make_unique<TestCaseSink>(type.name()); // TODO CName
+    m_result = std::make_unique<TestCaseSink>(type.cName());
     TypeTestCaseBuilder b{*m_result};
     type.type()->accept(b);
 }

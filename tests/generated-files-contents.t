@@ -36,11 +36,11 @@
         ? (printf("PASSED\n"), 0) \
         : (printf("FAILED\n"), 1)))
   
-  static void MyInt_encode(const MyInt *v, BitStream *stream)
+  static void TMyInt_encode(const TMyInt *v, BitStream *stream)
   {
     BitStream_Init(stream, stream->buf, stream->count);
     int errCode = 0;
-    MyInt_ACN_Encode(v, stream, &errCode, FALSE);
+    TMyInt_ACN_Encode(v, stream, &errCode, FALSE);
   }
   
   static bool validate(BitStream *stream)
@@ -49,20 +49,20 @@
     return false;
   }
   
-  static bool test_255(MyInt *v, BitStream *stream)
+  static bool test_255(TMyInt *v, BitStream *stream)
   {
-    MyInt_Initialize(v);
+    TMyInt_Initialize(v);
   
     *v = 255;
   
-    MyInt_encode(v, stream);
+    TMyInt_encode(v, stream);
     return validate(stream);
   }
   
   int main()
   {
-    MyInt v;
-    byte buf[MyInt_REQUIRED_BYTES_FOR_ACN_ENCODING];
+    TMyInt v;
+    byte buf[TMyInt_REQUIRED_BYTES_FOR_ACN_ENCODING];
     BitStream stream;
     BitStream_Init(&stream, buf, sizeof(buf));
     int result = 0;

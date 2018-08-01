@@ -37,10 +37,10 @@ namespace Cases {
 class TestCaseSink;
 }
 
-class TestGenerator
+class MalTesterRunner
 {
 public:
-    TestGenerator(const RunParameters &params);
+    MalTesterRunner(const RunParameters &params);
 
     bool run() const;
 

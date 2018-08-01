@@ -53,9 +53,7 @@ SOURCES += \
     cases/testcasebuilder.cpp \
     \
     astxmlparser.cpp \
-    astfilegenerator.cpp \
     astfileprocessor.cpp \
-    testgenerator.cpp \
     reconstructor.cpp \
     asn1nodereconstructingvisitor.cpp \
     acnnodereconstructingvisitor.cpp \
@@ -139,10 +137,7 @@ HEADERS += \
     \
     astxmlparser.h \
     astxmlconstraintparser.h \
-    runparameters.h \
-    astfilegenerator.h \
     astfileprocessor.h \
-    testgenerator.h \
     reconstructor.h \
     asn1typecomponentreconstructingvisitor.h \
     typeconstraintsreconstructingvisitor.h \

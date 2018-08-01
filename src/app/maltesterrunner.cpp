@@ -23,7 +23,7 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-#include "testgenerator.h"
+#include "maltesterrunner.h"
 
 #include <QDir>
 #include <QFile>
@@ -41,11 +41,11 @@
 
 using namespace MalTester;
 
-TestGenerator::TestGenerator(const RunParameters &params)
+MalTesterRunner::MalTesterRunner(const RunParameters &params)
     : m_params(params)
 {}
 
-bool TestGenerator::reportOnNotFoundStructure() const
+bool MalTesterRunner::reportOnNotFoundStructure() const
 {
     qCritical() << "Type" << m_params.m_rootType.name() << "from module:"
                 << (m_params.m_rootType.module().isEmpty() ? QStringLiteral("*any*")
@@ -61,7 +61,7 @@ static bool reportOnNoCasesFound()
     return false;
 }
 
-bool TestGenerator::run() const
+bool MalTesterRunner::run() const
 {
     const auto ast = createDataTree();
     if (ast == nullptr)
@@ -70,7 +70,7 @@ bool TestGenerator::run() const
            && dumpStaticFiles();
 }
 
-bool TestGenerator::createOutputDirectory() const
+bool MalTesterRunner::createOutputDirectory() const
 {
     if (QDir().mkpath(m_params.m_outputDir))
         return true;
@@ -79,14 +79,14 @@ bool TestGenerator::createOutputDirectory() const
     return false;
 }
 
-std::unique_ptr<Cases::TestCaseSink> TestGenerator::buildCasesFor(const Data::Project &project) const
+std::unique_ptr<Cases::TestCaseSink> MalTesterRunner::buildCasesFor(const Data::Project &project) const
 {
     Cases::TestCaseBuilder builder(m_params.m_rootType);
     project.accept(builder);
     return builder.takeResult();
 }
 
-bool TestGenerator::dumpCases(std::unique_ptr<Cases::TestCaseSink> cases) const
+bool MalTesterRunner::dumpCases(std::unique_ptr<Cases::TestCaseSink> cases) const
 {
     if (cases == nullptr)
         return reportOnNotFoundStructure();
@@ -95,12 +95,12 @@ bool TestGenerator::dumpCases(std::unique_ptr<Cases::TestCaseSink> cases) const
     return dumpTestCases(*cases);
 }
 
-bool TestGenerator::dumpStaticFiles() const
+bool MalTesterRunner::dumpStaticFiles() const
 {
     return dumpStaticFile("verify.h");
 }
 
-bool TestGenerator::dumpStaticFile(const QString &file) const
+bool MalTesterRunner::dumpStaticFile(const QString &file) const
 {
     const auto target = m_params.m_outputDir + "/" + file;
     if (!QFile::copy(":/templates/" + file, target)) {
@@ -110,7 +110,7 @@ bool TestGenerator::dumpStaticFile(const QString &file) const
     return true;
 }
 
-std::unique_ptr<Data::Project> TestGenerator::createDataTree() const
+std::unique_ptr<Data::Project> MalTesterRunner::createDataTree() const
 {
     const QTemporaryDir dir;
     if (!dir.isValid())
@@ -126,7 +126,7 @@ std::unique_ptr<Data::Project> TestGenerator::createDataTree() const
     return astProc.process();
 }
 
-std::unique_ptr<Data::Project> TestGenerator::createRelaxedCopyOf(const Data::Project &project) const
+std::unique_ptr<Data::Project> MalTesterRunner::createRelaxedCopyOf(const Data::Project &project) const
 {
     auto copy = std::make_unique<Data::Project>(project);
     Cases::ConstraintsRelaxingVisitor v;
@@ -145,7 +145,7 @@ std::unique_ptr<QTextStream> openFile(QFile &file)
 }
 } // namespace
 
-bool TestGenerator::dumpRelaxedModelFrom(const Data::Project &project) const
+bool MalTesterRunner::dumpRelaxedModelFrom(const Data::Project &project) const
 {
     QFile asnFile(m_params.m_outputDir + "/AllModels.asn1");
     QFile acnFile(m_params.m_outputDir + "/AllModels.acn");
@@ -155,7 +155,7 @@ bool TestGenerator::dumpRelaxedModelFrom(const Data::Project &project) const
     return r.reconstruct(*createRelaxedCopyOf(project));
 }
 
-bool TestGenerator::dumpTestCases(const Cases::TestCaseSink &cases) const
+bool MalTesterRunner::dumpTestCases(const Cases::TestCaseSink &cases) const
 {
     QFile out(m_params.m_outputDir + "/test_main.c");
     if (!out.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate)) {

@@ -82,9 +82,8 @@ AstFileGenerator::Result AstFileGenerator::processFinished() const
         return handleNormalExit();
     case QProcess::CrashExit:
         return handleCrashExit();
-    default:
-        return Result::Unknown;
     }
+    return Result::Unknown;
 }
 
 AstFileGenerator::Result AstFileGenerator::handleNormalExit() const

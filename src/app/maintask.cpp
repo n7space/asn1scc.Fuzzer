@@ -26,17 +26,16 @@
 #include "maintask.h"
 
 #include <inputparametersparser.h>
-#include <testgenerator.h>
+#include <maltesterrunner.h>
 
 using namespace MalTester;
 
 void MainTask::start()
 {
-    MalTester::InputParametersParser p;
+    InputParametersParser p;
     p.process(m_app.arguments());
 
-    MalTester::TestGenerator t(p.parameters());
-    const auto success = t.run();
+    MalTesterRunner r(p.parameters());
 
-    emit finished(success ? 0 : 1);
+    emit finished(r.run() ? 0 : 1);
 }

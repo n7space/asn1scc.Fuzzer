@@ -15,11 +15,16 @@ include(../../warnings.pri)
 SOURCES += \
     main.cpp \
     inputparametersparser.cpp \
-    maintask.cpp
+    maintask.cpp \
+    maltesterrunner.cpp \
+    astfilegenerator.cpp
 
 HEADERS += \
     inputparametersparser.h \
-    maintask.h
+    maintask.h \
+    maltesterrunner.h \
+    astfilegenerator.h \
+    runparameters.h
 
 RESOURCES += \
     templates.qrc

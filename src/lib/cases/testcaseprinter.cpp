@@ -68,6 +68,7 @@ void TestCasePrinter::printFileHeader(const QString &rootType)
              << "#include <stdbool.h>\n"
              << endl
              << "#include \"AllModels.h\"\n"
+             << "#include \"verify.h\"\n"
              << endl
              << QStringLiteral("#define RUN_TEST(T, ...) \\\n"
                                "  (printf(\"Executing \" #T \" ... \"), \\\n"
@@ -83,12 +84,6 @@ void TestCasePrinter::printFileHeader(const QString &rootType)
                                // TODO CCSDS ?
                                "}\n")
                     .arg(rootType)
-             << endl
-             << QStringLiteral("static bool validate(BitStream *stream)\n"
-                               "{\n"
-                               "  // TODO - fill to perform tests on desired target\n"
-                               "  return false;\n"
-                               "}\n")
              << endl;
 }
 

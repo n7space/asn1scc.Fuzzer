@@ -51,6 +51,8 @@ private:
     bool createOutputDirectory() const;
     std::unique_ptr<Cases::TestCaseSink> buildCasesFor(const Data::Project &project) const;
     bool dumpCases(std::unique_ptr<Cases::TestCaseSink> cases) const;
+    bool dumpStaticFiles() const;
+    bool dumpStaticFile(const QString &file) const;
     bool dumpTestCases(const Cases::TestCaseSink &cases) const;
     bool reportOnNotFoundStructure() const;
 

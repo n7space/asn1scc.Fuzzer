@@ -6,6 +6,7 @@
   AllModels.acn
   AllModels.asn1
   test_main.c
+  verify.h
   $ cat generated/AllModels.asn1
   EnumTests DEFINITIONS ::= BEGIN
   MyEnum ::= ENUMERATED
@@ -27,6 +28,7 @@
   #include <stdbool.h>
   
   #include "AllModels.h"
+  #include "verify.h"
   
   #define RUN_TEST(T, ...) \
     (printf("Executing " #T " ... "), \
@@ -39,12 +41,6 @@
     BitStream_Init(stream, stream->buf, stream->count);
     int errCode = 0;
     TMyEnum_ACN_Encode(v, stream, &errCode, FALSE);
-  }
-  
-  static bool validate(BitStream *stream)
-  {
-    // TODO - fill to perform tests on desired target
-    return false;
   }
   
   static bool test_3(TMyEnum *v, BitStream *stream)

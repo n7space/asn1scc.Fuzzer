@@ -20,3 +20,6 @@ SOURCES += \
 HEADERS += \
     inputparametersparser.h \
     maintask.h
+
+RESOURCES += \
+    templates.qrc

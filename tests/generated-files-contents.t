@@ -6,6 +6,7 @@
   AllModels.acn
   AllModels.asn1
   test_main.c
+  verify.h
   $ cat generated/AllModels.asn1
   Tests DEFINITIONS ::= BEGIN
   MyInt ::= INTEGER(0 .. 255)
@@ -29,6 +30,7 @@
   #include <stdbool.h>
   
   #include "AllModels.h"
+  #include "verify.h"
   
   #define RUN_TEST(T, ...) \
     (printf("Executing " #T " ... "), \
@@ -41,12 +43,6 @@
     BitStream_Init(stream, stream->buf, stream->count);
     int errCode = 0;
     TMyInt_ACN_Encode(v, stream, &errCode, FALSE);
-  }
-  
-  static bool validate(BitStream *stream)
-  {
-    // TODO - fill to perform tests on desired target
-    return false;
   }
   
   static bool test_255(TMyInt *v, BitStream *stream)
@@ -75,3 +71,14 @@
       printf("ERROR - Failed %d out of 1 tests\n.", result);
     return result;
   }
+  $ cat generated/verify.h
+  #ifndef ASN1SCC_MALTESTER_H
+  #define ASN1SCC_MALTESTER_H
+  
+  #include <stdbool.h>
+  
+  #include "asn1crt.h"
+  
+  bool verify(const BitStream* stream);
+  
+  #endif

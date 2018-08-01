@@ -66,7 +66,8 @@ bool TestGenerator::run() const
     const auto ast = createDataTree();
     if (ast == nullptr)
         return false;
-    return createOutputDirectory() && dumpRelaxedModelFrom(*ast) && dumpCases(buildCasesFor(*ast));
+    return createOutputDirectory() && dumpRelaxedModelFrom(*ast) && dumpCases(buildCasesFor(*ast))
+           && dumpStaticFiles();
 }
 
 bool TestGenerator::createOutputDirectory() const
@@ -92,6 +93,21 @@ bool TestGenerator::dumpCases(std::unique_ptr<Cases::TestCaseSink> cases) const
     if (cases->cases().isEmpty())
         return reportOnNoCasesFound();
     return dumpTestCases(*cases);
+}
+
+bool TestGenerator::dumpStaticFiles() const
+{
+    return dumpStaticFile("verify.h");
+}
+
+bool TestGenerator::dumpStaticFile(const QString &file) const
+{
+    const auto target = m_params.m_outputDir + "/" + file;
+    if (!QFile::copy(":/templates/" + file, target)) {
+        qCritical() << "Unable to write to:" << target;
+        return false;
+    }
+    return true;
 }
 
 std::unique_ptr<Data::Project> TestGenerator::createDataTree() const
@@ -133,7 +149,7 @@ bool TestGenerator::dumpRelaxedModelFrom(const Data::Project &project) const
 {
     QFile asnFile(m_params.m_outputDir + "/AllModels.asn1");
     QFile acnFile(m_params.m_outputDir + "/AllModels.acn");
-    Reconstructor r([this, &asnFile, &acnFile](const QString &name) {
+    Reconstructor r([&asnFile, &acnFile](const QString &name) {
         return openFile(name.endsWith(".acn") ? acnFile : asnFile);
     });
     return r.reconstruct(*createRelaxedCopyOf(project));

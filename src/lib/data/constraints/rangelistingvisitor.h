@@ -57,6 +57,7 @@ public:
     void visit(const FromConstraint<ValueType> &constraint) override;
     void visit(const SizeConstraint<ValueType> &constraint) override;
     void visit(const ConstraintList<ValueType> &constraint) override;
+    void visit(const RangeConstraint<ValueType> &constraint) override = 0;
 
 protected:
     virtual RangeList<ResultType> toRangeList(const Constraint<ValueType> &c) const = 0;

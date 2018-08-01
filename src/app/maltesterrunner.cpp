@@ -103,7 +103,10 @@ bool MalTesterRunner::dumpStaticFiles() const
 bool MalTesterRunner::dumpStaticFile(const QString &file) const
 {
     const auto target = m_params.m_outputDir + "/" + file;
-    if (!QFile::copy(":/templates/" + file, target)) {
+    if (!QFile::copy(":/templates/" + file, target)
+        || !QFile::setPermissions(target,
+                                  QFile::WriteUser | QFile::ReadUser | QFile::WriteOwner
+                                      | QFile::ReadOwner)) {
         qCritical() << "Unable to write to:" << target;
         return false;
     }

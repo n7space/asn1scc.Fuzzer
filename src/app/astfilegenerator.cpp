@@ -40,13 +40,15 @@ AstFileGenerator::~AstFileGenerator()
     m_process->close();
 }
 
+static const int TIMEOUT_MS = 60 * 1000;
+
 AstFileGenerator::Result AstFileGenerator::generate()
 {
     m_process.reset(createProcess());
     m_process->start();
     if (!m_process->waitForStarted())
         return handleNotStarted();
-    return m_process->waitForFinished() ? processFinished() : handleTimeout();
+    return m_process->waitForFinished(TIMEOUT_MS) ? processFinished() : handleTimeout();
 }
 
 QProcess *AstFileGenerator::createProcess() const

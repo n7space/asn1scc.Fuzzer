@@ -97,12 +97,14 @@ bool MalTesterRunner::dumpCases(std::unique_ptr<Cases::TestCaseSink> cases) cons
 
 bool MalTesterRunner::dumpStaticFiles() const
 {
-    return dumpStaticFile("verify.h");
+    return dumpStaticFile("validate.h");
 }
 
 bool MalTesterRunner::dumpStaticFile(const QString &file) const
 {
     const auto target = m_params.m_outputDir + "/" + file;
+    if (QFile::exists(target))
+        QFile::remove(target);
     if (!QFile::copy(":/templates/" + file, target)
         || !QFile::setPermissions(target,
                                   QFile::WriteUser | QFile::ReadUser | QFile::WriteOwner

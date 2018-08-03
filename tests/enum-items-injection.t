@@ -1,4 +1,3 @@
-# Keep no new line at end to make it work on Windows
   $ ${TESTDIR}/copy_test_resources.sh
   $ asn1scc-maltester -r EnumTests.MyEnum -o generated myenum.asn1 myenum.acn
   Generated 1 case(s).

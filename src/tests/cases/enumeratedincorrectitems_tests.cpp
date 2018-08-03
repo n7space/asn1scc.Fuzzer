@@ -85,3 +85,38 @@ void EnumeratedIncorrectItemsTests::test_encodeValues()
     QCOMPARE(r.size(), 1);
     QCOMPARE(r.at(0).value(), 0LL);
 }
+
+void EnumeratedIncorrectItemsTests::test_incorrectValuesOverlapWithIndexes()
+{
+    Enumerated e;
+    e.setSize(2);
+    e.setEncoding(IntegerEncoding::pos_int);
+    e.setEncodeValues(true);
+    e.addItem({0, "item1", 1});
+    e.addItem({1, "item2", 3});
+
+    const auto r = EnumeratedIncorrectItems(e).items();
+
+    QCOMPARE(r.size(), 2);
+    QCOMPARE(r.at(0).value(), 0LL);
+    QCOMPARE(r.at(1).value(), 2LL);
+}
+
+void EnumeratedIncorrectItemsTests::test_enumWithConstraints()
+{
+    Enumerated e;
+    e.setSize(2);
+    e.setEncoding(IntegerEncoding::pos_int);
+    e.setEncodeValues(true);
+    e.addItem({0, "item1", 1});
+    e.addItem({1, "item2", 3});
+    e.constraints().append(std::make_unique<Constraints::OrConstraint<EnumValue>>(
+        Constraints::RangeConstraint<EnumValue>::create(QStringLiteral("item1")),
+        Constraints::RangeConstraint<EnumValue>::create(QStringLiteral("item2"))));
+
+    const auto r = EnumeratedIncorrectItems(e).items();
+
+    QCOMPARE(r.size(), 2);
+    QCOMPARE(r.at(0).value(), 0LL);
+    QCOMPARE(r.at(1).value(), 2LL);
+}

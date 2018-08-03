@@ -46,7 +46,7 @@ class EnumeratedItem
 public:
     EnumeratedItem() = default;
 
-    EnumeratedItem(int index, const QString &name, int value, const SourceLocation &location = {})
+    EnumeratedItem(long index, const QString &name, long value, const SourceLocation &location = {})
         : m_index(index)
         , m_name(name)
         , m_value(value)
@@ -54,14 +54,14 @@ public:
     {}
 
     const QString &name() const { return m_name; }
-    int value() const { return m_value; }
-    int index() const { return m_index; }
+    long value() const { return m_value; }
+    long index() const { return m_index; }
     const SourceLocation &location() const { return m_location; }
 
 private:
-    int m_index;
+    long m_index;
     QString m_name;
-    int m_value;
+    long m_value;
     SourceLocation m_location;
 };
 

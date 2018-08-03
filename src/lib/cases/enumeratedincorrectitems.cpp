@@ -85,21 +85,28 @@ RangeList<std::int64_t> allowedItems(const Types::Enumerated &enumerated)
 
 EnumeratedIncorrectItems::EnumeratedIncorrectItems(const Types::Enumerated &enumerated)
 {
+    long index = enumerated.items().count();
     const auto items = allowedItems(enumerated);
     const auto maliciousRanges = difference(maxValueRangeFor(enumerated), items);
 
-    for (const auto r : maliciousRanges)
-        for (int i = r.begin(); i <= r.end(); ++i)
-            m_items.append({i, "maltester-injected-" + QString::number(i), i});
+    for (const auto &r : maliciousRanges)
+        for (long i = r.begin(); i <= r.end(); ++i)
+            m_items.append({index++, "maltester-injected-" + QString::number(i), i});
 
     makeItemsUnique();
 }
 
 void EnumeratedIncorrectItems::makeItemsUnique()
 {
-    const auto cmp = [](const Types::EnumeratedItem &a, const Types::EnumeratedItem &b) {
-        return a.index() < b.index();
-    };
-    std::sort(m_items.begin(), m_items.end(), cmp);
-    m_items.erase(std::unique(m_items.begin(), m_items.end(), cmp), m_items.end());
+    std::sort(m_items.begin(),
+              m_items.end(),
+              [](const Types::EnumeratedItem &a, const Types::EnumeratedItem &b) {
+                  return a.index() < b.index();
+              });
+    m_items.erase(std::unique(m_items.begin(),
+                              m_items.end(),
+                              [](const Types::EnumeratedItem &a, const Types::EnumeratedItem &b) {
+                                  return a.index() == b.index();
+                              }),
+                  m_items.end());
 }

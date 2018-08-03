@@ -44,15 +44,15 @@ Range<std::int64_t> MalTester::Cases::maxValueRangeFor(const IntegerAcnParameter
 {
     switch (type.encoding()) {
     case IntegerEncoding::pos_int:
-        return {0, (1LL << type.size()) - 1};
+        return {0, (1L << type.size()) - 1};
     case IntegerEncoding::twos_complement:
-        return {-(1LL << (type.size() - 1)), (1LL << (type.size() - 1)) - 1};
+        return {-(1L << (type.size() - 1)), (1L << (type.size() - 1)) - 1};
     case IntegerEncoding::ASCII:
         return {-nineRepeated((type.size() / 8) - 1), nineRepeated((type.size() / 8) - 1)};
     case IntegerEncoding::BCD:
         return {0, nineRepeated(type.size() / 4)};
     case IntegerEncoding::unspecified:
-        return {0, (1LL << type.acnMaxSizeInBits()) - 1};
+        return {0, (1L << type.acnMaxSizeInBits()) - 1};
     }
     return {0, 0};
 }

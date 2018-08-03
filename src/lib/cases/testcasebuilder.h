@@ -83,8 +83,8 @@ public:
     void visit(const Data::Types::UserdefinedType &type) override;
 
 private:
-    QString caseNameFor(int value) const;
-    void addCaseForValue(int value);
+    QString caseNameFor(long value) const;
+    void addCaseForValue(long value);
 
     TestCaseSink &m_sink;
     const FieldPath m_path;

@@ -35,12 +35,14 @@ class EnumeratedIncorrectItemsTests : public QObject
 {
     Q_OBJECT
 public:
-    explicit EnumeratedIncorrectItemsTests(QObject *parent = 0);
+    explicit EnumeratedIncorrectItemsTests(QObject *parent = nullptr);
 
 private slots:
     void test_itemsMatchingSize();
     void test_additionalItemsArePossible();
     void test_encodeValues();
+    void test_incorrectValuesOverlapWithIndexes();
+    void test_enumWithConstraints();
 };
 
 } // namespace Tests

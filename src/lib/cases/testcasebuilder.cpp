@@ -93,7 +93,7 @@ void TypeTestCaseBuilder::visit(const Enumerated &type)
         addCaseForValue(item.value());
 }
 
-void TypeTestCaseBuilder::addCaseForValue(int value)
+void TypeTestCaseBuilder::addCaseForValue(long value)
 {
     TestCase c{caseNameFor(value)};
     c.setAssignment({m_path, QString::number(value)});
@@ -135,7 +135,7 @@ void TypeTestCaseBuilder::visit(const Integer &type)
         addCaseForValue(value);
 }
 
-QString TypeTestCaseBuilder::caseNameFor(int value) const
+QString TypeTestCaseBuilder::caseNameFor(long value) const
 {
     if (m_path.isEmpty())
         return QString::number(value);

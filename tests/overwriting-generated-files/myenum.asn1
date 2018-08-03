@@ -1,0 +1,5 @@
+EnumTests DEFINITIONS ::= BEGIN
+
+MyEnum ::= ENUMERATED { a(0), b(1), c(2) }
+
+END

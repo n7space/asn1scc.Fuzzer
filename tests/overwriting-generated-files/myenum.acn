@@ -1,0 +1,5 @@
+Tests DEFINITIONS ::= BEGIN
+
+MyEnum [encoding pos-int, size 2, encode-values]
+
+END

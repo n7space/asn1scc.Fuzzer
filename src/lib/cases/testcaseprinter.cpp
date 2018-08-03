@@ -68,7 +68,7 @@ void TestCasePrinter::printFileHeader(const QString &rootType)
              << "#include <stdbool.h>\n"
              << endl
              << "#include \"AllModels.h\"\n"
-             << "#include \"verify.h\"\n"
+             << "#include \"validate.h\"\n"
              << endl
              << QStringLiteral("#define RUN_TEST(T, ...) \\\n"
                                "  (printf(\"Executing \" #T \" ... \"), \\\n"

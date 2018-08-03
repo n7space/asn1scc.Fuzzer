@@ -6,7 +6,7 @@
   AllModels.acn
   AllModels.asn1
   test_main.c
-  verify.h
+  validate.h
   $ cat generated/AllModels.asn1
   Tests DEFINITIONS ::= BEGIN
   MyInt ::= INTEGER(0 .. 255)
@@ -30,7 +30,7 @@
   #include <stdbool.h>
   
   #include "AllModels.h"
-  #include "verify.h"
+  #include "validate.h"
   
   #define RUN_TEST(T, ...) \
     (printf("Executing " #T " ... "), \
@@ -71,14 +71,14 @@
       printf("ERROR - Failed %d out of 1 tests\n.", result);
     return result;
   }
-  $ cat generated/verify.h
-  #ifndef ASN1SCC_MALTESTER_H
-  #define ASN1SCC_MALTESTER_H
+  $ cat generated/validate.h
+  #ifndef ASN1SCC_MALTESTER_VALIDATE_H
+  #define ASN1SCC_MALTESTER_VALIDATE_H
   
   #include <stdbool.h>
   
   #include "asn1crt.h"
   
-  bool verify(const BitStream* stream);
+  bool validate(const BitStream *stream);
   
   #endif

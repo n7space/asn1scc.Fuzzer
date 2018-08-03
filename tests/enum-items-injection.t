@@ -6,7 +6,7 @@
   AllModels.acn
   AllModels.asn1
   test_main.c
-  verify.h
+  validate.h
   $ cat generated/AllModels.asn1
   EnumTests DEFINITIONS ::= BEGIN
   MyEnum ::= ENUMERATED
@@ -28,7 +28,7 @@
   #include <stdbool.h>
   
   #include "AllModels.h"
-  #include "verify.h"
+  #include "validate.h"
   
   #define RUN_TEST(T, ...) \
     (printf("Executing " #T " ... "), \

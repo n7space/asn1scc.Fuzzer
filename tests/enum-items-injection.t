@@ -1,6 +1,6 @@
   $ ${TESTDIR}/copy_test_resources.sh
   $ asn1scc-maltester -r EnumTests.MyEnum -o generated myenum.asn1 myenum.acn
-  Generated 1 case(s).
+  Generated 2 case(s).
   $ ${TESTDIR}/list_files.sh generated
   AllModels.acn
   AllModels.asn1
@@ -10,16 +10,16 @@
   EnumTests DEFINITIONS ::= BEGIN
   MyEnum ::= ENUMERATED
   {
-      a(0),
-      b(1),
-      c(2),
-      maltester-injected-3(3)
+      a(1),
+      b(3),
+      maltester-injected-0(0),
+      maltester-injected-2(2)
   }
   END
   
   $ cat generated/AllModels.acn
   EnumTests DEFINITIONS ::= BEGIN
-  MyEnum []
+  MyEnum [size 2, encoding pos-int]
   END
   
   $ cat generated/test_main.c
@@ -42,14 +42,27 @@
     TMyEnum_ACN_Encode(v, stream, &errCode, FALSE);
   }
   
-  /// \brief Test 3 validating incorrect message processing.
-  /// \details Prepares TMyEnum type with incorrect value (3)
+  /// \brief Test 0 validating incorrect message processing.
+  /// \details Prepares TMyEnum type with incorrect value (0)
   ///          stored inside.
-  static bool test_3(TMyEnum *v, BitStream *stream)
+  static bool test_0(TMyEnum *v, BitStream *stream)
   {
     TMyEnum_Initialize(v);
   
-    *v = 3;
+    *v = 0;
+  
+    TMyEnum_encode(v, stream);
+    return validate(stream);
+  }
+  
+  /// \brief Test 2 validating incorrect message processing.
+  /// \details Prepares TMyEnum type with incorrect value (2)
+  ///          stored inside.
+  static bool test_2(TMyEnum *v, BitStream *stream)
+  {
+    TMyEnum_Initialize(v);
+  
+    *v = 2;
   
     TMyEnum_encode(v, stream);
     return validate(stream);
@@ -63,11 +76,12 @@
     BitStream_Init(&stream, buf, sizeof(buf));
     int result = 0;
   
-    result += RUN_TEST(test_3, &v, &stream);
+    result += RUN_TEST(test_0, &v, &stream);
+    result += RUN_TEST(test_2, &v, &stream);
   
     if (result == 0)
-      printf("OK - all (1) tests passed\n.");
+      printf("OK - all (2) tests passed\n.");
     else
-      printf("ERROR - Failed %d out of 1 tests\n.", result);
+      printf("ERROR - Failed %d out of 2 tests\n.", result);
     return result;
   }

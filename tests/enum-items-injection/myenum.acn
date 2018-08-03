@@ -1,4 +1,4 @@
-Tests DEFINITIONS ::= BEGIN
+EnumTests DEFINITIONS ::= BEGIN
 
 MyEnum [encoding pos-int, size 2, encode-values]
 

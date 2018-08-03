@@ -1,5 +1,5 @@
 EnumTests DEFINITIONS ::= BEGIN
 
-MyEnum ::= ENUMERATED { a(0), b(1), c(2) }
+MyEnum ::= ENUMERATED { a(1), b(3) }
 
 END

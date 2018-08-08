@@ -35,9 +35,6 @@
 namespace MalTester {
 namespace Cases {
 
-// TODO rename file
-// TODO rename class (MalformedValueTestCase?)
-
 class TestCasePrinter
 {
 public:

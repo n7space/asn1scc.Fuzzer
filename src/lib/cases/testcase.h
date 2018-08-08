@@ -30,9 +30,6 @@
 namespace MalTester {
 namespace Cases {
 
-// TODO rename file
-// TODO rename class (MalformedValueTestCase?)
-
 using FieldPath = QStringList;
 
 struct FieldAssignment

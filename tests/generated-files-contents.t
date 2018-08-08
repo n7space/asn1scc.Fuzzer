@@ -44,6 +44,9 @@
     TMyInt_ACN_Encode(v, stream, &errCode, FALSE);
   }
   
+  /// \brief Test 255 validating incorrect message processing.
+  /// \details Prepares TMyInt type with incorrect value (255)
+  ///          stored inside.
   static bool test_255(TMyInt *v, BitStream *stream)
   {
     TMyInt_Initialize(v);

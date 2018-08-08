@@ -55,7 +55,10 @@ void TestCasePrinterTests::test_emptyPath()
     const auto result = print(c);
 
     QCOMPARE(result,
-             QStringLiteral("static bool test_Name(MySeq *v, BitStream *stream)\n"
+             QStringLiteral("/// \\brief Test Name validating incorrect message processing.\n"
+                            "/// \\details Prepares MySeq type with incorrect value (1410)\n"
+                            "///          stored inside.\n"
+                            "static bool test_Name(MySeq *v, BitStream *stream)\n"
                             "{\n"
                             "  MySeq_Initialize(v);\n"
                             "\n"
@@ -74,7 +77,10 @@ void TestCasePrinterTests::test_longPath()
     const auto result = print(c);
 
     QCOMPARE(result,
-             QStringLiteral("static bool test_Name(MySeq *v, BitStream *stream)\n"
+             QStringLiteral("/// \\brief Test Name validating incorrect message processing.\n"
+                            "/// \\details Prepares MySeq type with incorrect value (1410)\n"
+                            "///          stored inside field a.b.\n"
+                            "static bool test_Name(MySeq *v, BitStream *stream)\n"
                             "{\n"
                             "  MySeq_Initialize(v);\n"
                             "\n"

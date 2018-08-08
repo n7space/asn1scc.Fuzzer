@@ -42,6 +42,9 @@
     TMyEnum_ACN_Encode(v, stream, &errCode, FALSE);
   }
   
+  /// \brief Test 3 validating incorrect message processing.
+  /// \details Prepares TMyEnum type with incorrect value (3)
+  ///          stored inside.
   static bool test_3(TMyEnum *v, BitStream *stream)
   {
     TMyEnum_Initialize(v);

@@ -38,9 +38,19 @@ static QString asString(const FieldPath &p)
     return "v->" + p.join('.');
 }
 
+static QString asDocString(const FieldPath &p)
+{
+    if (p.isEmpty())
+        return {};
+    return " field " + p.join('.');
+}
+
 void TestCasePrinter::print(const QString &rootType, const TestCase &test)
 {
-    m_stream << QStringLiteral("static bool test_%1(%2 *v, BitStream *stream)\n"
+    m_stream << QStringLiteral("/// \\brief Test %1 validating incorrect message processing.\n"
+                               "/// \\details Prepares %2 type with incorrect value (%4)\n"
+                               "///          stored inside%5.\n"
+                               "static bool test_%1(%2 *v, BitStream *stream)\n"
                                "{\n"
                                "  %2_Initialize(v);\n"
                                "\n"
@@ -52,7 +62,8 @@ void TestCasePrinter::print(const QString &rootType, const TestCase &test)
                     .arg(test.name())
                     .arg(rootType)
                     .arg(asString(test.fieldAssignment().m_path))
-                    .arg(test.fieldAssignment().m_value);
+                    .arg(test.fieldAssignment().m_value)
+                    .arg(asDocString(test.fieldAssignment().m_path));
 }
 
 void TestCasePrinter::print(const TestCaseSink &sink)

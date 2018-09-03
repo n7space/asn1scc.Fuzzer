@@ -134,11 +134,7 @@ public:
         type.setDeterminant(m_attributes.value(QLatin1String("determinant")).toString());
     }
 
-    void visit(Data::Types::Sequence &type) override
-    {
-        Q_UNUSED(type);
-        // TODO?
-    }
+    void visit(Data::Types::Sequence &type) override { Q_UNUSED(type); }
 
     void visit(Data::Types::SequenceOf &type) override
     {

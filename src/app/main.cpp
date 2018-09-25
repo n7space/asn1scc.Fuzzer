@@ -32,7 +32,7 @@
 void initializeApplication(QCoreApplication &app, Fuzzer::MainTask &task)
 {
     QCoreApplication::setApplicationName("asn1scc-Fuzzer");
-    QCoreApplication::setApplicationVersion("0.2");
+    QCoreApplication::setApplicationVersion("0.9");
     QCoreApplication::setOrganizationDomain("n7space.com");
     QCoreApplication::setOrganizationName("N7 Space sp. z o.o.");
 

@@ -50,10 +50,10 @@ deploy:
   api_key:
     secure: LrMbS9n3HkvRh9T/HP9fSpdsJoiDHjcdiZ65Z2QLrtOiwv5Uxf/7vC7yMdPNmnPMVAOCW++AaTxP2TzLUEvelS+kxAt06EETKTBLadO8xf7ifrizB945ImX4aH4QJl4f+8dr59Mu/MacJYbniX/cJ2mDB/YNOzvYSPY6jUfL0VAT0AQ1HXuJSUG0qak3xUMaln5eeqrblYkzw6gRJELvDH/slRYR32b2nS3FS4Q6Frr7Tamgb+Egbv9SQD9Y4DqxzvPuVNMMVXmi8vW+q4Lw2ib9Wv1Su55wMJXZZKOqv/LZ/XuD+IUVaoWcdHsuknnmSdRT35bH13rV/locQvvF9HMKVQvrivQy9T4NbyBh2IFoI8YemeLxwx90Ie8I/rlhVAHkVOtzzEKCXqMwlvI7M6kpw+KhiFKythigWgAVdCyPDPjar88JHv8GJ3e6gz+7SgPlXBf/IYqkgOGPZFqVBmKOLnyj/HxfcGLj2vIm2AT728yBONgz+EFN0lVOdSjjdqmA2QVbEuZuMRqN1SK1a+OGsiopZcDN0790jNp6U7hrmZyYmeluw2jVkVDjrDMq/BuhhA68sRQHQ0a9zdK3KZGbfbzHe6m9FvwM1hkn7FBZR/NWhcjudVeBnoWCnnQEahN/3CXl1zdAJdLN2QZxH/4xpevlrDV44U0JkxKuVeE=
   file_glob: true
-  file: asn1scc-MalTester-*.tar.gz
+  file: asn1scc-Fuzzer-*.tar.gz
   skip_cleanup: true
   overwrite: true
   on:
-    repo: n7space/asn1scc.MalTester
+    repo: n7space/asn1scc.Fuzzer
     tags: true
     condition: "$CXX = g++"

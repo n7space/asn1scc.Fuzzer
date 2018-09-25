@@ -3,7 +3,7 @@
 ** Copyright (C) 2018 N7 Space sp. z o. o.
 ** Contact: http://n7space.com
 **
-** This file is part of ASN.1/ACN MalTester - Tool for generating test cases
+** This file is part of ASN.1/ACN Fuzzer - Tool for generating test cases
 ** based on ASN.1/ACN models and simulating malformed or malicious data.
 **
 ** Tool was developed under a programme and funded by
@@ -28,7 +28,7 @@
 #include <data/mutatingvisitor.h>
 #include <data/types/typemutatingvisitor.h>
 
-namespace MalTester {
+namespace Fuzzer {
 namespace Cases {
 
 class ConstraintsRelaxingVisitor : public Data::Types::TypeMutatingVisitor,
@@ -61,4 +61,4 @@ public:
 };
 
 } // namespace Cases
-} // namespace MalTester
+} // namespace Fuzzer

@@ -3,7 +3,7 @@
 ** Copyright (C) 2018 N7 Space sp. z o. o.
 ** Contact: http://n7space.com
 **
-** This file is part of ASN.1/ACN MalTester - Tool for generating test cases
+** This file is part of ASN.1/ACN Fuzzer - Tool for generating test cases
 ** based on ASN.1/ACN models and simulating malformed or malicious data.
 **
 ** Tool was developed under a m_processogramme and funded by
@@ -32,7 +32,7 @@
 
 #include <astxmlparser.h>
 
-using namespace MalTester;
+using namespace Fuzzer;
 
 AstFileProcessor::AstFileProcessor(const QString &astPath)
     : m_astPath(astPath)

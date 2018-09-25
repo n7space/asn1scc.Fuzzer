@@ -3,7 +3,7 @@
 ** Copyright (C) 2018 N7 Space sp. z o. o.
 ** Contact: http://n7space.com
 **
-** This file is part of ASN.1/ACN MalTester - Tool for generating test cases
+** This file is part of ASN.1/ACN Fuzzer - Tool for generating test cases
 ** based on ASN.1/ACN models and simulating malformed or malicious data.
 **
 ** Tool was developed under a programme and funded by
@@ -31,16 +31,16 @@
 
 #include <runparameters.h>
 
-namespace MalTester {
+namespace Fuzzer {
 
 namespace Cases {
 class TestCaseSink;
 }
 
-class MalTesterRunner
+class FuzzerRunner
 {
 public:
-    MalTesterRunner(const RunParameters &params);
+    FuzzerRunner(const RunParameters &params);
 
     bool run() const;
 
@@ -59,4 +59,4 @@ private:
     const RunParameters m_params;
 };
 
-} // namespace MalTester
+} // namespace Fuzzer

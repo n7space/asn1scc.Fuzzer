@@ -3,7 +3,7 @@
 ** Copyright (C) 2018 N7 Space sp. z o. o.
 ** Contact: http://n7space.com
 **
-** This file is part of ASN.1/ACN MalTester - Tool for generating test cases
+** This file is part of ASN.1/ACN Fuzzer - Tool for generating test cases
 ** based on ASN.1/ACN models and simulating malformed or malicious data.
 **
 ** Tool was developed under a programme and funded by
@@ -32,8 +32,8 @@
 
 #include <cases/integerranges.h>
 
-using namespace MalTester::Cases::Tests;
-using namespace MalTester::Data::Types;
+using namespace Fuzzer::Cases::Tests;
+using namespace Fuzzer::Data::Types;
 
 IntegerRangesTests::IntegerRangesTests(QObject *parent)
     : QObject(parent)

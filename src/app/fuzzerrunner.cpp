@@ -3,7 +3,7 @@
 ** Copyright (C) 2018 N7 Space sp. z o. o.
 ** Contact: http://n7space.com
 **
-** This file is part of ASN.1/ACN MalTester - Tool for generating test cases
+** This file is part of ASN.1/ACN Fuzzer - Tool for generating test cases
 ** based on ASN.1/ACN models and simulating malformed or malicious data.
 **
 ** Tool was developed under a programme and funded by
@@ -23,7 +23,7 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-#include "maltesterrunner.h"
+#include "fuzzerrunner.h"
 
 #include <QDir>
 #include <QFile>
@@ -39,13 +39,13 @@
 #include <astfileprocessor.h>
 #include <reconstructor.h>
 
-using namespace MalTester;
+using namespace Fuzzer;
 
-MalTesterRunner::MalTesterRunner(const RunParameters &params)
+FuzzerRunner::FuzzerRunner(const RunParameters &params)
     : m_params(params)
 {}
 
-bool MalTesterRunner::reportOnNotFoundStructure() const
+bool FuzzerRunner::reportOnNotFoundStructure() const
 {
     qCritical() << "Type" << m_params.m_rootType.name() << "from module:"
                 << (m_params.m_rootType.module().isEmpty() ? QStringLiteral("*any*")
@@ -61,7 +61,7 @@ static bool reportOnNoCasesFound()
     return false;
 }
 
-bool MalTesterRunner::run() const
+bool FuzzerRunner::run() const
 {
     const auto ast = createDataTree();
     if (ast == nullptr)
@@ -70,7 +70,7 @@ bool MalTesterRunner::run() const
            && dumpStaticFiles();
 }
 
-bool MalTesterRunner::createOutputDirectory() const
+bool FuzzerRunner::createOutputDirectory() const
 {
     if (QDir().mkpath(m_params.m_outputDir))
         return true;
@@ -79,14 +79,14 @@ bool MalTesterRunner::createOutputDirectory() const
     return false;
 }
 
-std::unique_ptr<Cases::TestCaseSink> MalTesterRunner::buildCasesFor(const Data::Project &project) const
+std::unique_ptr<Cases::TestCaseSink> FuzzerRunner::buildCasesFor(const Data::Project &project) const
 {
     Cases::TestCaseBuilder builder(m_params.m_rootType);
     project.accept(builder);
     return builder.takeResult();
 }
 
-bool MalTesterRunner::dumpCases(std::unique_ptr<Cases::TestCaseSink> cases) const
+bool FuzzerRunner::dumpCases(std::unique_ptr<Cases::TestCaseSink> cases) const
 {
     if (cases == nullptr)
         return reportOnNotFoundStructure();
@@ -95,12 +95,12 @@ bool MalTesterRunner::dumpCases(std::unique_ptr<Cases::TestCaseSink> cases) cons
     return dumpTestCases(*cases);
 }
 
-bool MalTesterRunner::dumpStaticFiles() const
+bool FuzzerRunner::dumpStaticFiles() const
 {
     return dumpStaticFile("validate.h");
 }
 
-bool MalTesterRunner::dumpStaticFile(const QString &file) const
+bool FuzzerRunner::dumpStaticFile(const QString &file) const
 {
     const auto target = m_params.m_outputDir + "/" + file;
     if (QFile::exists(target))
@@ -115,7 +115,7 @@ bool MalTesterRunner::dumpStaticFile(const QString &file) const
     return true;
 }
 
-std::unique_ptr<Data::Project> MalTesterRunner::createDataTree() const
+std::unique_ptr<Data::Project> FuzzerRunner::createDataTree() const
 {
     const QTemporaryDir dir;
     if (!dir.isValid())
@@ -131,7 +131,7 @@ std::unique_ptr<Data::Project> MalTesterRunner::createDataTree() const
     return astProc.process();
 }
 
-std::unique_ptr<Data::Project> MalTesterRunner::createRelaxedCopyOf(const Data::Project &project) const
+std::unique_ptr<Data::Project> FuzzerRunner::createRelaxedCopyOf(const Data::Project &project) const
 {
     auto copy = std::make_unique<Data::Project>(project);
     Cases::ConstraintsRelaxingVisitor v;
@@ -150,7 +150,7 @@ std::unique_ptr<QTextStream> openFile(QFile &file)
 }
 } // namespace
 
-bool MalTesterRunner::dumpRelaxedModelFrom(const Data::Project &project) const
+bool FuzzerRunner::dumpRelaxedModelFrom(const Data::Project &project) const
 {
     QFile asnFile(m_params.m_outputDir + "/AllModels.asn1");
     QFile acnFile(m_params.m_outputDir + "/AllModels.acn");
@@ -160,7 +160,7 @@ bool MalTesterRunner::dumpRelaxedModelFrom(const Data::Project &project) const
     return r.reconstruct(*createRelaxedCopyOf(project));
 }
 
-bool MalTesterRunner::dumpTestCases(const Cases::TestCaseSink &cases) const
+bool FuzzerRunner::dumpTestCases(const Cases::TestCaseSink &cases) const
 {
     QFile out(m_params.m_outputDir + "/test_main.c");
     if (!out.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate)) {

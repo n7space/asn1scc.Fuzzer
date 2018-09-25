@@ -3,7 +3,7 @@
 ** Copyright (C) 2018 N7 Space sp. z o. o.
 ** Contact: http://n7space.com
 **
-** This file is part of ASN.1/ACN MalTester - Tool for generating test cases
+** This file is part of ASN.1/ACN Fuzzer - Tool for generating test cases
 ** based on ASN.1/ACN models and simulating malformed or malicious data.
 **
 ** Tool was developed under a programme and funded by
@@ -31,10 +31,10 @@
 
 #include <data/range.h>
 
-namespace MalTester {
+namespace Fuzzer {
 namespace Cases {
 
 Data::Range<std::int64_t> maxValueRangeFor(const Data::Types::IntegerAcnParameters &type);
 
 } // namespace Cases
-} // namespace MalTester
+} // namespace Fuzzer

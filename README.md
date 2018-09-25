@@ -1,8 +1,8 @@
-# asn1scc.MalTester
+# asn1scc.Fuzzer
 Tool for generating test cases based on ASN.1/ACN models and simulating malformed or malicious data.
 
-[![Build Status](https://travis-ci.org/n7space/asn1scc.MalTester.svg?branch=master)](https://travis-ci.org/n7space/asn1scc.MalTester)
-[![Build status](https://ci.appveyor.com/api/projects/status/8876k84l5edrhql3/branch/master?svg=true)](https://ci.appveyor.com/project/hcorg/asn1scc-maltester/branch/master)
+[![Build Status](https://travis-ci.org/n7space/asn1scc.Fuzzer.svg?branch=master)](https://travis-ci.org/n7space/asn1scc.Fuzzer)
+[![Build status](https://ci.appveyor.com/api/projects/status/8876k84l5edrhql3/branch/master?svg=true)](https://ci.appveyor.com/project/hcorg/asn1scc-fuzzer/branch/master)
 
 Example usage
 ------------
@@ -31,10 +31,10 @@ MySeq [] {
 END
 ```
 
-Such models describes message, which apart from accepted range of integers, can fit additional values. Software should properly react when such incorrect message is sent to it. That's where asn1scc-MalTester comes in:
+Such models describes message, which apart from accepted range of integers, can fit additional values. Software should properly react when such incorrect message is sent to it. That's where asn1scc-Fuzzer comes in:
 
 ```
-asn1scc-maltester -r MySeq a.asn1 a.acn
+asn1scc-fuzzer -r MySeq a.asn1 a.acn
 Generated 7 case(s).
 ```
 
@@ -53,21 +53,21 @@ User is responsible for providing those messages to System Under Test and valida
 
 Installation
 ------------
-Download appropriate package from https://github.com/n7space/asn1scc.MalTester/releases and unpack. Software requires ASN1SCC compiler (https://github.com/ttsiodras/asn1scc).
+Download appropriate package from https://github.com/n7space/asn1scc.Fuzzer/releases and unpack. Software requires ASN1SCC compiler (https://github.com/ttsiodras/asn1scc).
 
 Compilation
 ------------
 Requires C++14 compatible compiler and Qt5.
  * clone repository
  * create build directory (outside cloned source)
- * in build directory execute `qmake -r SRCDIR/maltester.pro`
+ * in build directory execute `qmake -r SRCDIR/fuzzer.pro`
  * execute generated build system (e.g. `make` on Linux)
 
 Usage
 ------------
 
 ```
-asn1scc-maltester [options] <files>
+asn1scc-fuzzer [options] <files>
 
 Options:
   -h, --help                           Displays this help.

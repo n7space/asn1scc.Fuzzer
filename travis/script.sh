@@ -12,7 +12,7 @@ cd "${BUILD_DIR}"
 $CXX --version
 echo "Executing qmake..."
 set -x
-qmake "${PROJECT_DIR}"/maltester.pro -r ${QMAKE_PARAMS} \
+qmake "${PROJECT_DIR}"/fuzzer.pro -r ${QMAKE_PARAMS} \
       CONFIG+=release
 set +x
 echo "Executing make..."

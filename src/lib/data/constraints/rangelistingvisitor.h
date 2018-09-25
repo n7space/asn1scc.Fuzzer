@@ -3,7 +3,7 @@
 ** Copyright (C) 2018 N7 Space sp. z o. o.
 ** Contact: http://n7space.com
 **
-** This file is part of ASN.1/ACN MalTester - Tool for generating test cases
+** This file is part of ASN.1/ACN Fuzzer - Tool for generating test cases
 ** based on ASN.1/ACN models and simulating malformed or malicious data.
 **
 ** Tool was developed under a programme and funded by
@@ -39,7 +39,7 @@
 #include "rangeconstraint.h"
 #include "sizeconstraint.h"
 
-namespace MalTester {
+namespace Fuzzer {
 namespace Data {
 namespace Constraints {
 
@@ -93,7 +93,7 @@ template<typename ValueType>
 RangeList<typename ValueType::Type> RangeListingVisitor<ValueType>::toRangeList(
     const Constraint<ValueType> &c) const
 {
-    return MalTester::Data::Constraints ::toRangeList(c);
+    return Fuzzer::Data::Constraints ::toRangeList(c);
 }
 
 template<typename ValueType, typename ResultType>
@@ -140,4 +140,4 @@ void RangeListingVisitorBase<ValueType, ResultType>::visit(
 
 } // namespace Constraints
 } // namespace Data
-} // namespace MalTester
+} // namespace Fuzzer

@@ -2,14 +2,14 @@ version: 0.2.{build}
 
 image: Visual Studio 2015
 
-clone_folder: c:\projects\asn1scc.MalTester\src
+clone_folder: c:\projects\asn1scc.Fuzzer\src
 
 environment:
   QTDIR: C:\Qt\5.10.1\msvc2015
   ENV_MSVC_PLATFORM: x86
-  BUILD_DIR: c:\projects\asn1scc.MalTester\build
-  DIST_DIR: c:\projects\asn1scc.MalTester\dist
-  DOWNLOAD_DIR: c:\projects\asn1scc.MalTester\downloads
+  BUILD_DIR: c:\projects\asn1scc.Fuzzer\build
+  DIST_DIR: c:\projects\asn1scc.Fuzzer\dist
+  DOWNLOAD_DIR: c:\projects\asn1scc.Fuzzer\downloads
   VSVER: 14.0
 
 configuration:
@@ -31,7 +31,7 @@ before_build:
 build_script:
   - cmd: mkdir %BUILD_DIR%
   - cmd: cd %BUILD_DIR%
-  - cmd: qmake %APPVEYOR_BUILD_FOLDER%/maltester.pro -r "CONFIG+=%configuration%"
+  - cmd: qmake %APPVEYOR_BUILD_FOLDER%/fuzzer.pro -r "CONFIG+=%configuration%"
   - cmd: nmake.exe
   - cmd: "%BUILD_DIR%/src/tests/release/tests.exe"
   - cmd: SET PATH=%BUILD_DIR%\src\app\release;%DOWNLOAD_DIR%\asn1scc;%PATH%
@@ -40,17 +40,17 @@ build_script:
   - cmd: python -m cram -v -E -y --shell="C:\Program Files\Git\bin\sh.exe" %CRAMTESTS%
 
 after_build:
-  - cmd: mkdir %DIST_DIR%\asn1scc-MalTester
-  - cmd: cd %DIST_DIR%\asn1scc-MalTester
+  - cmd: mkdir %DIST_DIR%\asn1scc-Fuzzer
+  - cmd: cd %DIST_DIR%\asn1scc-Fuzzer
   - cmd: copy /Y %BUILD_DIR%\src\app\release\*.exe .
   - cmd: copy /Y %APPVEYOR_BUILD_FOLDER%\LICENSE .
   - cmd: copy /Y %APPVEYOR_BUILD_FOLDER%\README.md .
   - cmd: copy /Y %QTDIR%\bin\Qt5Core.dll .
   - cmd: cd %DIST_DIR%
-  - cmd: 7z a %APPVEYOR_BUILD_FOLDER%\asn1scc-MalTester-%APPVEYOR_REPO_TAG_NAME%-win.zip *
+  - cmd: 7z a %APPVEYOR_BUILD_FOLDER%\asn1scc-Fuzzer-%APPVEYOR_REPO_TAG_NAME%-win.zip *
 
 artifacts:
-  - path: 'asn1scc-MalTester-*.zip'
+  - path: 'asn1scc-Fuzzer-*.zip'
     name: zip_archive
 
 deploy:

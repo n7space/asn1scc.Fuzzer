@@ -1,6 +1,6 @@
 TEMPLATE = app
 
-TARGET = asn1scc-maltester
+TARGET = asn1scc-fuzzer
 
 CONFIG += console
 CONFIG += c++14
@@ -16,15 +16,15 @@ SOURCES += \
     main.cpp \
     inputparametersparser.cpp \
     maintask.cpp \
-    maltesterrunner.cpp \
-    astfilegenerator.cpp
+    astfilegenerator.cpp \
+    fuzzerrunner.cpp
 
 HEADERS += \
     inputparametersparser.h \
     maintask.h \
-    maltesterrunner.h \
     astfilegenerator.h \
-    runparameters.h
+    runparameters.h \
+    fuzzerrunner.h
 
 RESOURCES += \
     templates.qrc

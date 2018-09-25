@@ -3,7 +3,7 @@
 ** Copyright (C) 2018 N7 Space sp. z o. o.
 ** Contact: http://n7space.com
 **
-** This file is part of ASN.1/ACN MalTester - Tool for generating test cases
+** This file is part of ASN.1/ACN Fuzzer - Tool for generating test cases
 ** based on ASN.1/ACN models and simulating malformed or malicious data.
 **
 ** Tool was developed under a programme and funded by
@@ -29,7 +29,7 @@
 
 #include <data/types/typevisitorwithvalue.h>
 
-namespace MalTester {
+namespace Fuzzer {
 
 class TypeConstraintsReconstructingVisitor : public Data::Types::TypeVisitorWithValue<QString>
 {
@@ -53,4 +53,4 @@ public:
     QString valueFor(const Data::Types::UserdefinedType &type) const override;
 };
 
-} // namespace MalTester
+} // namespace Fuzzer

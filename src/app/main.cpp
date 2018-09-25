@@ -3,7 +3,7 @@
 ** Copyright (C) 2018 N7 Space sp. z o. o.
 ** Contact: http://n7space.com
 **
-** This file is part of ASN.1/ACN MalTester - Tool for generating test cases
+** This file is part of ASN.1/ACN Fuzzer - Tool for generating test cases
 ** based on ASN.1/ACN models and simulating malformed or malicious data.
 **
 ** Tool was developed under a programme and funded by
@@ -29,25 +29,25 @@
 
 #include <maintask.h>
 
-void initializeApplication(QCoreApplication &app, MalTester::MainTask &task)
+void initializeApplication(QCoreApplication &app, Fuzzer::MainTask &task)
 {
-    QCoreApplication::setApplicationName("asn1scc-MalTester");
+    QCoreApplication::setApplicationName("asn1scc-Fuzzer");
     QCoreApplication::setApplicationVersion("0.2");
     QCoreApplication::setOrganizationDomain("n7space.com");
     QCoreApplication::setOrganizationName("N7 Space sp. z o.o.");
 
     QObject::connect(&task,
-                     &MalTester::MainTask::finished,
+                     &Fuzzer::MainTask::finished,
                      &app,
                      &QCoreApplication::exit,
                      Qt::QueuedConnection);
-    QTimer::singleShot(0, &task, &MalTester::MainTask::start);
+    QTimer::singleShot(0, &task, &Fuzzer::MainTask::start);
 }
 
 int main(int argc, char *argv[])
 {
     QCoreApplication app(argc, argv);
-    MalTester::MainTask task(app);
+    Fuzzer::MainTask task(app);
 
     initializeApplication(app, task);
 

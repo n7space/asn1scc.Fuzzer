@@ -1,5 +1,5 @@
   $ ${TESTDIR}/copy_test_resources.sh
-  $ asn1scc-maltester -r EnumTests.MyEnum -o generated myenum.asn1 myenum.acn
+  $ asn1scc-fuzzer -r EnumTests.MyEnum -o generated myenum.asn1 myenum.acn
   Generated 2 case(s).
   $ ${TESTDIR}/list_files.sh generated
   AllModels.acn
@@ -12,8 +12,8 @@
   {
       a(1),
       b(3),
-      maltester-injected-0(0),
-      maltester-injected-2(2)
+      fuzzer-injected-0(0),
+      fuzzer-injected-2(2)
   }
   END
   

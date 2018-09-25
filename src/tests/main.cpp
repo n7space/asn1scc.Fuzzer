@@ -3,7 +3,7 @@
 ** Copyright (C) 2018 N7 Space sp. z o. o.
 ** Contact: http://n7space.com
 **
-** This file is part of ASN.1/ACN MalTester - Tool for generating test cases
+** This file is part of ASN.1/ACN Fuzzer - Tool for generating test cases
 ** based on ASN.1/ACN models and simulating malformed or malicious data.
 **
 ** Tool was developed under a programme and funded by
@@ -51,18 +51,18 @@ int main(int argc, char *argv[])
         delete obj;
     };
 
-    runTest(new MalTester::Tests::AstXmlParserTests);
-    runTest(new MalTester::Tests::Asn1NodeReconstructingVisitorTests);
-    runTest(new MalTester::Tests::AcnNodeReconstructingVisitorTests);
-    runTest(new MalTester::Tests::ReconstructorTests);
-    runTest(new MalTester::Tests::AstXmlConstraintParserTests);
-    runTest(new MalTester::Data::Tests::RangeTests);
-    runTest(new MalTester::Data::Tests::RangeListTests);
-    runTest(new MalTester::Data::Constraints::Tests::PrintingVisitorTests);
-    runTest(new MalTester::Cases::Tests::IntegerIncorrectValuesTests);
-    runTest(new MalTester::Cases::Tests::EnumeratedIncorrectItemsTests);
-    runTest(new MalTester::Cases::Tests::IntegerRangesTests);
-    runTest(new MalTester::Cases::Tests::TestCasePrinterTests);
+    runTest(new Fuzzer::Tests::AstXmlParserTests);
+    runTest(new Fuzzer::Tests::Asn1NodeReconstructingVisitorTests);
+    runTest(new Fuzzer::Tests::AcnNodeReconstructingVisitorTests);
+    runTest(new Fuzzer::Tests::ReconstructorTests);
+    runTest(new Fuzzer::Tests::AstXmlConstraintParserTests);
+    runTest(new Fuzzer::Data::Tests::RangeTests);
+    runTest(new Fuzzer::Data::Tests::RangeListTests);
+    runTest(new Fuzzer::Data::Constraints::Tests::PrintingVisitorTests);
+    runTest(new Fuzzer::Cases::Tests::IntegerIncorrectValuesTests);
+    runTest(new Fuzzer::Cases::Tests::EnumeratedIncorrectItemsTests);
+    runTest(new Fuzzer::Cases::Tests::IntegerRangesTests);
+    runTest(new Fuzzer::Cases::Tests::TestCasePrinterTests);
 
     return ret;
 }

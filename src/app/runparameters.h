@@ -40,8 +40,6 @@ struct RunParameters
     QString m_asn1SccPath;
     QStringList m_asn1SccFlags;
     QString m_outputDir;
-
-    enum class CcsdsWrap { tc, tm, none } m_ccsdsWrap;
 };
 
 } // namespace Fuzzer

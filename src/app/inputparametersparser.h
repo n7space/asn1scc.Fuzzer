@@ -49,7 +49,6 @@ private:
     QString readAsn1SccPath();
     QStringList readAsn1SccFlags();
     QString readOutputDir();
-    RunParameters::CcsdsWrap readCcsdsValue();
 
     void printUsageAndFail(const QString &message);
 
@@ -57,7 +56,6 @@ private:
     QCommandLineOption m_asn1sccPath;
     QCommandLineOption m_asn1sccFlags;
     QCommandLineOption m_outputDir;
-    QCommandLineOption m_wrapAsCcsds;
 
     QCommandLineParser m_parser;
     RunParameters m_params;

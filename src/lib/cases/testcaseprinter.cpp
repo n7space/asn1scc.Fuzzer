@@ -92,7 +92,6 @@ void TestCasePrinter::printFileHeader(const QString &rootType)
                                "  BitStream_Init(stream, stream->buf, stream->count);\n"
                                "  int errCode = 0;\n"
                                "  %1_ACN_Encode(v, stream, &errCode, FALSE);\n"
-                               // TODO CCSDS wrapping
                                "}\n")
                     .arg(rootType)
              << endl;

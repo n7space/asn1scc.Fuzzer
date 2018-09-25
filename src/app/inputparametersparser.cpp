@@ -37,7 +37,6 @@ InputParametersParser::InputParametersParser()
     , m_asn1sccPath  ({"a", "asn1scc-path"},  "ASN1SCC compiler path.",                          "asn1scc path", "asn1.exe")
     , m_asn1sccFlags ({"f", "asn1scc-flags"}, "ASN1SCC compiler flags.",                         "asn1scc flags", "--field-prefix AUTO --type-prefix T --acn-enc")
     , m_outputDir    ({"o", "output-dir"},    "Output directory for generated files.",           "output directory", "out")
-    , m_wrapAsCcsds  ({"w", "wrap-as-ccsds"}, "Wrapping root type inside CCSDS packets.",        "[tc, tm]")
 // clang-format on
 {
     setupParser();
@@ -64,7 +63,6 @@ void InputParametersParser::setupParser()
     m_parser.addOption(m_asn1sccFlags);
     m_parser.addOption(m_outputDir);
     m_parser.addOption(m_rootType);
-    m_parser.addOption(m_wrapAsCcsds);
     m_parser.addPositionalArgument("<files>", "List of files to be processed.");
 }
 
@@ -75,7 +73,6 @@ void InputParametersParser::updateRunParams()
     m_params.m_asn1SccPath = readAsn1SccPath();
     m_params.m_asn1SccFlags = readAsn1SccFlags();
     m_params.m_outputDir = readOutputDir();
-    m_params.m_ccsdsWrap = readCcsdsValue();
 }
 
 QStringList InputParametersParser::readFilesList()
@@ -117,21 +114,6 @@ QStringList InputParametersParser::readAsn1SccFlags()
 QString InputParametersParser::readOutputDir()
 {
     return m_parser.value(m_outputDir);
-}
-
-RunParameters::CcsdsWrap InputParametersParser::readCcsdsValue()
-{
-    if (!m_parser.isSet(m_wrapAsCcsds))
-        return RunParameters::CcsdsWrap::none;
-
-    const auto ccsds = m_parser.value(m_wrapAsCcsds);
-    if (ccsds == "tc")
-        return RunParameters::CcsdsWrap::tc;
-    else if (ccsds == "tm")
-        return RunParameters::CcsdsWrap::tm;
-
-    printUsageAndFail("Unrecognised ccsds option: " + ccsds);
-    return RunParameters::CcsdsWrap::none;
 }
 
 void InputParametersParser::printUsageAndFail(const QString &message)

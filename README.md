@@ -77,7 +77,6 @@ Options:
   -o, --output-dir <output directory>  Output directory for generated files.
   -r, --root-type <root type>          Root type representing message to be
                                        malformed.
-  -w, --wrap-as-ccsds <[tc, tm]>       Wrapping root type inside CCSDS packets.
 
 Arguments:
   <files>                              List of files to be processed.

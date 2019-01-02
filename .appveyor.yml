@@ -5,7 +5,7 @@ image: Visual Studio 2015
 clone_folder: c:\projects\asn1scc.Fuzzer\src
 
 environment:
-  QTDIR: C:\Qt\5.10.1\msvc2015
+  QTDIR: C:\Qt\5.11\msvc2015
   ENV_MSVC_PLATFORM: x86
   BUILD_DIR: c:\projects\asn1scc.Fuzzer\build
   DIST_DIR: c:\projects\asn1scc.Fuzzer\dist

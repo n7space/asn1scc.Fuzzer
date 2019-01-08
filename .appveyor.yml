@@ -21,7 +21,7 @@ init:
 install:
   - cmd: pip install cram
   - cmd: mkdir %DOWNLOAD_DIR%
-  - cmd: curl -fsSL "https://n7space-my.sharepoint.com/:u:/p/kgrochowski/EZSwzkHV-C1Mn1nppkUqKIcBjFpzsn67G_N_1RMW2Yr7dQ?download=1" -o %DOWNLOAD_DIR%\asn1scc.7z
+  - cmd: curl -c sharepointcookie -fsSL "https://n7space-my.sharepoint.com/:u:/p/kgrochowski/EZSwzkHV-C1Mn1nppkUqKIcBjFpzsn67G_N_1RMW2Yr7dQ?download=1" -o %DOWNLOAD_DIR%\asn1scc.7z
   - cmd: 7z x -y "%DOWNLOAD_DIR%\asn1scc.7z" -o"%DOWNLOAD_DIR%" | findstr /b /r /c:"\<Everything is Ok"
 
 before_build:
